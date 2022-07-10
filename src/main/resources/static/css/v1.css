@@ -1,0 +1,30 @@
+header {
+    color : black;
+    text-align: center;
+    padding-bottom: 5px;
+}
+
+.HomeMenu {
+    margin-right : 3px;
+    position: absolute;
+    right : 30px;
+}
+
+.ButtonManual1 {
+    background-color : skyblue;
+    color : white;
+    font:bold;
+}
+
+#line1 {
+    margin-top : 20px;
+    border-style: solid;
+    border-width: 4px;
+    border-color: silver;
+}
+
+footer {
+    font-size : 6px;
+    text-align: center;
+    color : silver;
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>GAME</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="css/game.css">
+    
+</head>
+<body>
+    <div id="header">
+        <div class="HomeMenu">
+            <button class="ButtonManual1" id="bt_sty1" type="button" onclick="location.href='./index.html'" style="cursor:pointer;"> HOME </button>
+            <button class="ButtonManual1" id="bt_sty2" type="button" th:onclick="" style="cursor:pointer;"> STUDY </button>
+            <button class="ButtonManual1" id="bt_sty3" type="button" th:onclick="" style="cursor:pointer;"> SHOP </button>
+            <button class="ButtonManual1" id="bt_sty3" type="button" onclick="location.href='./game.html'" style="cursor:pointer;"> GAME </button>
+        </div>
+    </div>
+
+    <div id="container">
+        <div id="box1">
+            
+        </div>
+        <div id="obstacle1">
+        
+        </div>
+            
+        </button>
+        <img id="resetImg1" src="img/resetImg.png" alt="resetBtn" onclick="gameReset()" style="cursor:pointer;">
+    </div>
+
+</body>
+<script type="text/javascript" src="js/game.js"></script>
+</html>
