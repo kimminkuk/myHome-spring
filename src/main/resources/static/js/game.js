@@ -5,6 +5,11 @@ var run_arrow = 1;
 var ob1 = document.querySelector("#obstacle1");
 var el = document.querySelector("#box1");
 
+function gameStart() {
+    gameInit();
+    return;
+}
+
 function gameInit() {
     ob1.style.left = "300px";    
     el.style.left = "0px";
@@ -38,4 +43,6 @@ function gameEnd() {
     return;
 }
 
-gameInit();
+
+
+//gameInit();
