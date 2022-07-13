@@ -1,0 +1,15 @@
+# myHome-spring
+
+
+# 현재 막힌 부분
+1. Html에서 화면 생성하고, 모션 동작 등등 이벤트 발생(JavaScript, Front) 신호를 -> 
+   Java Class(Back)로 Data(모션 종료 이벤트 신호 등등)처리해서 전송 후 DB에 저장하고 싶은데...
+   JavaScript -> Java 데이터 넘기는건 ajax로 get, post로 넘기면 될 거 같긴한데...
+   어느 타이밍? 어느 시점? 어떤 Flow로 진행해야할지 모르겠네.
+   html btn 클릭 -> javaScript에서 모션동작 처리, 종료 이벤트 발생 -> java Class로 데이터 넘기기 (???)
+   그냥 이렇게 하면 될려나
+# DB
+1. REDIS
+   - Lettuce 설치
+   - Spring Boot에서 Reids 설정 방법 Study
+   
