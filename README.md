@@ -13,3 +13,7 @@
    - Lettuce 설치
    - Spring Boot에서 Reids 설정 방법 Study
    
+# REDIS
+1. redis-server : redis server 실행
+2. redis-cli ping :PONG 출력되면 Redis Server 실행 중
+3. redis-cli : redis command 사용할 수 있게 된다.
