@@ -9,5 +9,4 @@ class MyHomeSpringApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

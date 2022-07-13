@@ -1,5 +1,6 @@
 package com.example.myHome.myHomespring.controller;
 
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,5 +16,10 @@ public class myHomeController {
     @GetMapping("/my-home/game")
     public String myHomeGame(Model model) {
         return "basic/game";
+    }
+
+    @GetMapping("/my-home/test")
+    public void redisTest() {
+
     }
 }
