@@ -1,6 +1,7 @@
 package com.example.myHome.myHomespring.repository;
 
 import com.example.myHome.myHomespring.domain.Member;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
