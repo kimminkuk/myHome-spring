@@ -1,9 +1,10 @@
 package com.example.myHome.myHomespring;
 
-import io.lettuce.core.dynamic.annotation.Value;
+import com.example.myHome.myHomespring.repository.RedisMemberRepository;
+import com.example.myHome.myHomespring.repository.RedisMemberRepository_2;
+import com.example.myHome.myHomespring.repository.RedisRepository;
+import com.example.myHome.myHomespring.service.RedisMemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -32,5 +33,14 @@ public class RedisRepositoryConfig {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
         return redisTemplate;
+    }
+    @Bean
+    public RedisMemberService redisMemberService() {
+        return new RedisMemberService(redisRepository());
+    }
+    @Bean
+    public RedisRepository redisRepository() {
+        //return new RedisMemberRepository_2();
+        return new RedisMemberRepository();
     }
 }

@@ -1,24 +1,20 @@
 package com.example.myHome.myHomespring.controller;
 
-import com.example.myHome.myHomespring.service.MemberService;
+import com.example.myHome.myHomespring.service.RedisMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class myHomeController {
-    private final MemberService memberService;
+    private final RedisMemberService redisMemberService;
 
     @Autowired
-    public myHomeController(MemberService memberService) {
-        this.memberService = memberService;
+    public myHomeController(RedisMemberService redisMemberService) {
+        this.redisMemberService = redisMemberService;
     }
-
-    @Autowired
-    private RedisTemplate redisTemplate;
 
     @GetMapping("/")
     public String home() {
@@ -38,11 +34,14 @@ public class myHomeController {
 
     @GetMapping("/my-home/test")
     public String redisTest() {
-        String key = "banana";
-        String data = "yellow";
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set(key, data);
-        String result = valueOperations.get(key);
+        String key = "banana222";
+        String data = "yellow222";
+        redisMemberService.join(key,data);
+        return "basic/home";
+    }
+
+    @GetMapping("/my-home/test2")
+    public String redisTest2() {
         return "basic/home";
     }
 }

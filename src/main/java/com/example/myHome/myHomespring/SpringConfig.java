@@ -17,5 +17,7 @@ public class SpringConfig {
     @Bean
     public MemberRepository memberRepository() {
         return new MemoryMemberRepository();
+        //return new RedisMemberRepository();
     }
+
 }
