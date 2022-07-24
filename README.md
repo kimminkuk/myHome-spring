@@ -8,6 +8,11 @@
    어느 타이밍? 어느 시점? 어떤 Flow로 진행해야할지 모르겠네.
    html btn 클릭 -> javaScript에서 모션동작 처리, 종료 이벤트 발생 -> java Class로 데이터 넘기기 (???)
    그냥 이렇게 하면 될려나
+
+# TODO
+1. game html에서 이름 입력 후, enter 입력하면 post로 전송되는 문제
+2. game.js에서 gameEnd() xhr.readyState === xhr.DONE 처리 방법 어떻게 할지? (200, 201 이 아니라서 에러발생 중)
+
 # DB
 1. REDIS
    - Lettuce 설치
