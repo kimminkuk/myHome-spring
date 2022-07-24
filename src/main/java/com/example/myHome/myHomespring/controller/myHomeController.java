@@ -6,6 +6,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class myHomeController {
@@ -40,8 +43,11 @@ public class myHomeController {
         return "basic/home";
     }
 
-    @GetMapping("/my-home/test2")
-    public String redisTest2() {
+    @PostMapping("/my-home/game/result")
+    public String myHomeGameResult(Model model,
+                                   @RequestParam("name") String name,
+                                   @RequestParam("score") String score) {
+        redisMemberService.join(name, score);
         return "basic/home";
     }
 }
