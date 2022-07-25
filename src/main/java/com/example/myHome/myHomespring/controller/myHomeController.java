@@ -35,19 +35,11 @@ public class myHomeController {
         return "basic/game";
     }
 
-    @GetMapping("/my-home/test")
-    public String redisTest() {
-        String key = "banana222";
-        String data = "yellow222";
-        redisMemberService.join(key,data);
-        return "basic/home";
-    }
-
     @PostMapping("/my-home/game/result")
     public String myHomeGameResult(Model model,
                                    @RequestParam("name") String name,
                                    @RequestParam("score") String score) {
         redisMemberService.join(name, score);
-        return "basic/home";
+        return "basic/game";
     }
 }

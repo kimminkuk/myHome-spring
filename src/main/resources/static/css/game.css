@@ -47,6 +47,16 @@ footer {
     left: 300px;
 }
 
+#obstacle2 {
+    position: absolute;
+    background-color: RED;
+    width: 10px;
+    height: 100px;
+    color: #ffff;
+    left: 600px;
+    top: 0px;
+}
+
 #resetImg1 {
     position: absolute;
     width: 50px;
