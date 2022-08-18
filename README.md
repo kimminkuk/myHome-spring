@@ -8,8 +8,13 @@
    수정함 왜지지ㅣㅣㅣㅣㅣ.<br>
 
 # TODO
-1. game html에서 이름 입력 후, enter 입력하면 post로 전송되는 문제
-2. game.js에서 gameEnd() xhr.readyState === xhr.DONE 처리 방법 어떻게 할지? (200, 201 이 아니라서 에러발생 중)
+1. 게임페이지의 상호작용 처리 중.. 벽 튕기는거 코딩 중 (물리는 가속도만 적용시키자)
+    - game html에서 이름 입력 후, enter 입력하면 post로 전송되는 문제
+    - game.js에서 gameEnd() xhr.readyState === xhr.DONE 처리 방법 어떻게 할지? (200, 201 이 아니라서 에러발생 중)
+
+2. 쓰레기를 처리하는 페이지 생성 -> 앱
+    - 어떤 쓰레기인지 입력 ( 아이스팩 등등 입력 )
+    - 처리 하는 방법 설명 및 그림?
 
 # DB
 1. REDIS
