@@ -45,7 +45,8 @@ footer {
     border-radius: 50%;
     width: 5%;
     height: 10%;
-    top: 40%;
+    top: 30%;
+    bottom : 40%;
     left: 20%;
     color: #ffff;
 }
@@ -73,6 +74,18 @@ footer {
     height: 20%;
     left: 1%;
     top: 30%;
+    bottom : 50%;
+    
+}
+
+#com_bar1 {
+    position: absolute;
+    background-color: red;
+    width: 1%;
+    height: 20%;
+    right: 1%;
+    top: 30%;
+    bottom : 50%;
 }
 
 #obstacle1 {
