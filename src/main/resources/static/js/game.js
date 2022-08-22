@@ -9,8 +9,8 @@ const game_mutex_cond = {
 }
 
 const ob_dir_cond = {
-    UP: 1,
-    DOWN: -1,
+    UP: -1,
+    DOWN: 1,
     LEFT: -1,
     RIGHT: 1,
     HOLD : 0
@@ -34,6 +34,7 @@ let ob2_count = 0;
 let ob2_move = 0;
 let control_direction = ob_dir_cond.LEFT;
 let game_mutex = game_mutex_cond.WAIT;
+var ball_angle = 0;
 var ball_pos = new Array(ob_dir_cond.HOLD, ob_dir_cond.HOLD);
 var ob2_pos = new Array(ob_dir_cond.HOLD, ob_dir_cond.HOLD);
 var ball_velocity = 0.1;
@@ -53,6 +54,8 @@ function gameInitCondition_ver2() {
     userScore = 0;
     ob2_count = 0;
     ob2_move = 20;
+    ob_top.style.bottom =  55 / this_screen_y_percent + "%";
+    ob_bottom.style.top = ( document.documentElement.scrollHeight - 95 ) / this_screen_y_percent + "%";
     ob1.style.left = "30%";
     ob1.style.top = "60px";
     ob2.style.left = "600px";
@@ -85,6 +88,8 @@ function gameInitCondition() {
     userScore = 0;
     ob2_count = 0;
     ob2_move = 20;
+    ob_top.style.bottom =  55 / this_screen_y_percent + "%";
+    ob_bottom.style.top = ( document.documentElement.scrollHeight - 95 ) / this_screen_y_percent + "%";
     ob1.style.left = "30%";
     ob1.style.top = "60px";
     ob2.style.left = "600px";
@@ -147,7 +152,7 @@ function run() {
     count = 5;
     player_movement(player_bar1, mouse_pos);
     ball_movement(ball_1, count, ball_pos);
-    ob_judge(ball_1, player_bar1 ,ob1, ob2, ball_pos);
+    ob_judge(ball_1, player_bar1 ,ob_top, ob_bottom, ball_pos);
     
     requestAnimationFrame(run);
 }
@@ -209,6 +214,7 @@ function right_direction_movement(control_ob, speed_ob) {
 
 function ball_movement(control_ob, speed_ob, pos) {
     control_ob.style.left = parseFloat(control_ob.style.left) + ( speed_ob * pos[0] * ball_velocity ) + "%";
+    control_ob.style.bottom = parseFloat(control_ob.style.bottom) + ( speed_ob * pos[1] * ball_velocity ) + "%";
     control_ob.style.top = parseFloat(control_ob.style.top) + ( speed_ob * pos[1] * ball_velocity ) + "%";
     return;
 }
@@ -221,8 +227,18 @@ function ob_judge(control_ob, player_bar, ob1, ob2, b_pos) {
             && parseFloat(c_ob.y + ( 10 * this_screen_y_percent )) < parseFloat(p_ob.y + ( 20 * this_screen_y_percent ))) {
             b_pos[0] = ob_dir_cond.RIGHT;
             b_pos[1] = pbar_direct_up_down * mouse_speed;
+            
         }
     }
+
+    if ( parseFloat(control_ob.style.top) < parseFloat(ob1.style.bottom) ) {
+        b_pos[1] = b_pos[1] * -1;
+    }
+
+    if ( parseFloat(control_ob.style.bottom) > parseFloat(ob2.style.top) ) {
+        b_pos[1] = b_pos[1] * -1;
+    }
+
     return;
 }
 
@@ -240,11 +256,11 @@ function mousemove(event) {
 
     now_time_timestamp = now_time;
     pbar_direct_up_down = mouse_pos[1] - event.pageY; //Up:+ Down:-
-
+    
     if ( pbar_direct_up_down > 0 ) {
-        pbar_direct_up_down = ob_dir_cond.DOWN;
-    } else {
         pbar_direct_up_down = ob_dir_cond.UP;
+    } else {
+        pbar_direct_up_down = ob_dir_cond.DOWN;
     }
 
     if ( event.pageY < top_wall_pos) {
@@ -253,6 +269,18 @@ function mousemove(event) {
         mouse_pos[1] = event.pageY;    
     }
     
+    return;
+}
+
+function get_angle(x1, y1, x2, y2) {
+    var rad = Math.atan2(y2 - y1, x2 - x1);
+    
+    return ( rad * 180 ) / Math.PI;
+}
+
+function set_ball_angle(ob, x1, y1) {
+    let ob_pos = ob.getBoundingClientRect();
+    ball_angle = get_angle( x1, y1, ob_pos.x, ob_pos.y );
     return;
 }
 
