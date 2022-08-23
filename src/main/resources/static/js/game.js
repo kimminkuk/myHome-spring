@@ -60,18 +60,20 @@ function gameInitCondition_ver2() {
     ob1.style.top = "60px";
     ob2.style.left = "600px";
     ob2.style.top = "60px";
-    ball_1.style.top = "30%";
-    ball_1.style.bottom = "40%";
-    ball_1.style.left = "20%";
+    ball_1.style.bottom = "50%";
+    ball_1.style.top = "40%";
+    ball_1.style.left = "45%";
+    ball_1.style.right = "50%";
     
     player_bar1.style.left = "1%";
     player_bar1.style.right = "2%";
     player_bar1.style.top = "30%";
     player_bar1.style.bottom = "50%";
 
-    com_bar1.style.right = "1%";
+    com_bar1.style.left = "98%";
+    com_bar1.style.right = "99%";
     com_bar1.style.top = "30%";
-    com_bar1.style.bottom = "50%";
+    com_bar1.style.bottom = "55%";
 
     end_count = 0;
     control_direction = ob_dir_cond.LEFT;
@@ -94,18 +96,20 @@ function gameInitCondition() {
     ob1.style.top = "60px";
     ob2.style.left = "600px";
     ob2.style.top = "60px";
-    ball_1.style.top = "30%";
-    ball_1.style.bottom = "40%";
-    ball_1.style.left = "20%";
+    ball_1.style.bottom = "50%";
+    ball_1.style.top = "40%";
+    ball_1.style.left = "45%";
+    ball_1.style.right = "50%";
 
     player_bar1.style.left = "1%";
     player_bar1.style.right = "2%";
     player_bar1.style.top = "30%";
     player_bar1.style.bottom = "50%";  
 
-    com_bar1.style.right = "1%";
+    com_bar1.style.left = "98%";
+    com_bar1.style.right = "99%";
     com_bar1.style.top = "30%";
-    com_bar1.style.bottom = "50%";
+    com_bar1.style.bottom = "55%";
 
     end_count = 0;
     control_direction = ob_dir_cond.LEFT;
@@ -152,7 +156,7 @@ function run() {
     count = 5;
     player_movement(player_bar1, mouse_pos);
     ball_movement(ball_1, count, ball_pos);
-    ob_judge(ball_1, player_bar1 ,ob_top, ob_bottom, ball_pos);
+    ob_judge(ball_1, player_bar1, com_bar1, ob_top, ob_bottom, ball_pos);
     
     requestAnimationFrame(run);
 }
@@ -214,12 +218,13 @@ function right_direction_movement(control_ob, speed_ob) {
 
 function ball_movement(control_ob, speed_ob, pos) {
     control_ob.style.left = parseFloat(control_ob.style.left) + ( speed_ob * pos[0] * ball_velocity ) + "%";
+    control_ob.style.right = parseFloat(control_ob.style.right) + ( speed_ob * pos[0] * ball_velocity ) + "%";
     control_ob.style.bottom = parseFloat(control_ob.style.bottom) + ( speed_ob * pos[1] * ball_velocity ) + "%";
     control_ob.style.top = parseFloat(control_ob.style.top) + ( speed_ob * pos[1] * ball_velocity ) + "%";
     return;
 }
 
-function ob_judge(control_ob, player_bar, ob1, ob2, b_pos) {
+function ob_judge(control_ob, player_bar, com_bar, ob1, ob2, b_pos) {
     if ( parseFloat(control_ob.style.left) < parseFloat(player_bar.style.right) ) {
         let c_ob = control_ob.getBoundingClientRect();
         let p_ob = player_bar.getBoundingClientRect();
@@ -227,15 +232,22 @@ function ob_judge(control_ob, player_bar, ob1, ob2, b_pos) {
             && parseFloat(c_ob.y + ( 10 * this_screen_y_percent )) < parseFloat(p_ob.y + ( 20 * this_screen_y_percent ))) {
             b_pos[0] = ob_dir_cond.RIGHT;
             b_pos[1] = pbar_direct_up_down * mouse_speed;
-            
         }
     }
-
-    if ( parseFloat(control_ob.style.top) < parseFloat(ob1.style.bottom) ) {
+    else if ( parseFloat(control_ob.style.right) > parseFloat(com_bar.style.left) ) {
+        let ball_ob = control_ob.getBoundingClientRect();
+        let com_bar_ob = com_bar.getBoundingClientRect();
+        if ( parseFloat(ball_ob.y) > parseFloat(com_bar_ob.y)
+            && parseFloat(ball_ob.y + ( 10 * this_screen_y_percent )) < parseFloat(com_bar_ob.y + ( 25 * this_screen_y_percent ))) {
+            b_pos[0] = ob_dir_cond.LEFT;
+            //b_pos[1] = pbar_direct_up_down * mouse_speed;
+        }
+    }
+    else if ( parseFloat(control_ob.style.top) < parseFloat(ob1.style.bottom) ) {
         b_pos[1] = b_pos[1] * -1;
     }
 
-    if ( parseFloat(control_ob.style.bottom) > parseFloat(ob2.style.top) ) {
+    else if ( parseFloat(control_ob.style.bottom) > parseFloat(ob2.style.top) ) {
         b_pos[1] = b_pos[1] * -1;
     }
 
