@@ -1,14 +1,14 @@
-const game_end_cond = {
+const gameEndCond = {
     STOP: 0,
     RESET: 1
 };
 
-const game_mutex_cond = {
+const gameMutexCond = {
     WAIT: 0,
     EXECUTE: 1
 }
 
-const ob_dir_cond = {
+const obDirCond = {
     UP: -1,
     DOWN: 1,
     LEFT: -1,
@@ -16,46 +16,50 @@ const ob_dir_cond = {
     HOLD : 0
 }
 
-var count = 0;
+const gameWinner = {
+    PLAYER : 0,
+    COMPUTER : 1
+}
+
+var ballSpeed = 0;
 var move = 0;
-var end_count = 0;
-var run_arrow = 1;
-var ob_top = document.querySelector("#obstacle_top1");
-var ob_bottom = document.querySelector("#obstacle_bottom1");
+var endCount = 0;
+var obTop = document.querySelector("#obstacle_top1");
+var obBottom = document.querySelector("#obstacle_bottom1");
 var ob1 = document.querySelector("#obstacle1");
 var ob2 = document.querySelector("#obstacle2");
 var ball_1 = document.querySelector("#ball_1");
-var player_bar1 = document.querySelector("#player_bar1");
-var com_bar1 = document.querySelector("#com_bar1");
+var playerBar_1 = document.querySelector("#player_bar1");
+var comBar_1 = document.querySelector("#com_bar1");
 
 let userName = '';
 let userScore = 0;
-let ob2_count = 0;
-let ob2_move = 0;
-let control_direction = ob_dir_cond.LEFT;
-let game_mutex = game_mutex_cond.WAIT;
-var ball_angle = 0;
-var ball_pos = new Array(ob_dir_cond.HOLD, ob_dir_cond.HOLD);
-var ob2_pos = new Array(ob_dir_cond.HOLD, ob_dir_cond.HOLD);
-var ball_velocity = 0.1;
-var mouse_pos = new Array(2);
-var mouse_pos_init = new Array(2);
-const top_wall_pos = 50;
-const this_screen_y_percent = document.documentElement.scrollHeight / 100;
-const this_screen_x_percent = document.documentElement.scrollWidth / 100;
-const player_bar_screen_y = ( document.documentElement.scrollHeight / 100 ) * 20;
-var pbar_direct_up_down = ob_dir_cond.HOLD;
-var pbar_velocity = 0;
-var now_time_timestamp = 0;
-var mouse_speed = 0;
+let controlDirection = obDirCond.LEFT;
+let gameMutex = gameMutexCond.WAIT;
+var ballAngle = 0;
+var ballPos = new Array(obDirCond.HOLD, obDirCond.HOLD);
+var obPos_2 = new Array(obDirCond.HOLD, obDirCond.HOLD);
+var ballVelocity = 0.1;
+var mousePos = new Array(2);
+var mousePosInit = new Array(2);
+const topWallPos = 50;
+const thisScreenYpercent = document.documentElement.scrollHeight / 100;
+const thisScreenXpercent = document.documentElement.scrollWidth / 100;
+const playerBarScreenY = ( document.documentElement.scrollHeight / 100 ) * 20;
+const comBarScreenYofs = ( document.documentElement.scrollHeight / 100 ) * 25;
+var pBarDirectUpDown = obDirCond.HOLD;
+var nowTimeStamp = 0;
+var mouseSpeed = 0;
+var comSpeed = ballVelocity;
+var comBarCenter = 0;
+var ballCenter = 0;
+var playerBarCenter = 0;
 
 function gameInitCondition_ver2() {
     userName = '';
     userScore = 0;
-    ob2_count = 0;
-    ob2_move = 20;
-    ob_top.style.bottom =  55 / this_screen_y_percent + "%";
-    ob_bottom.style.top = ( document.documentElement.scrollHeight - 95 ) / this_screen_y_percent + "%";
+    obTop.style.bottom =  55 / thisScreenYpercent + "%";
+    obBottom.style.top = ( document.documentElement.scrollHeight - 95 ) / thisScreenYpercent + "%";
     ob1.style.left = "30%";
     ob1.style.top = "60px";
     ob2.style.left = "600px";
@@ -65,33 +69,38 @@ function gameInitCondition_ver2() {
     ball_1.style.left = "45%";
     ball_1.style.right = "50%";
     
-    player_bar1.style.left = "1%";
-    player_bar1.style.right = "2%";
-    player_bar1.style.top = "30%";
-    player_bar1.style.bottom = "50%";
+    playerBar_1.style.left = "1%";
+    playerBar_1.style.right = "2%";
+    playerBar_1.style.top = "30%";
+    playerBar_1.style.bottom = "50%";
 
-    com_bar1.style.left = "98%";
-    com_bar1.style.right = "99%";
-    com_bar1.style.top = "30%";
-    com_bar1.style.bottom = "55%";
+    comBar_1.style.left = "98%";
+    comBar_1.style.right = "99%";
+    comBar_1.style.top = "30%";
+    comBar_1.style.bottom = "55%";
 
-    end_count = 0;
-    control_direction = ob_dir_cond.LEFT;
-    game_mutex = game_mutex_cond.WAIT;
+    comBarCenter = getObCenterPos(comBar_1);
+    ballCenter = getObCenterPos(ball_1);
+    playerBarCenter = getObCenterPos(playerBar_1);
+
+    mouseSpeed = 0;
+    ballVelocity = 0.1;
+    comSpeed = ballVelocity;
+    endCount = 0;
+    controlDirection = obDirCond.LEFT;
+    gameMutex = gameMutexCond.WAIT;
     for (var i = 0; i < 2; i++) {
-        ball_pos[i] = ob_dir_cond.HOLD;
-        ob2_pos[i] = ob_dir_cond.HOLD;
-        mouse_pos[i] = 0;
-        mouse_pos_init[i] = 0;
+        ballPos[i] = obDirCond.HOLD;
+        obPos_2[i] = obDirCond.HOLD;
+        mousePos[i] = 0;
+        mousePosInit[i] = 0;
     }
 }
 function gameInitCondition() {
     userName = '';
     userScore = 0;
-    ob2_count = 0;
-    ob2_move = 20;
-    ob_top.style.bottom =  55 / this_screen_y_percent + "%";
-    ob_bottom.style.top = ( document.documentElement.scrollHeight - 95 ) / this_screen_y_percent + "%";
+    obTop.style.bottom =  55 / thisScreenYpercent + "%";
+    obBottom.style.top = ( document.documentElement.scrollHeight - 95 ) / thisScreenYpercent + "%";
     ob1.style.left = "30%";
     ob1.style.top = "60px";
     ob2.style.left = "600px";
@@ -101,31 +110,40 @@ function gameInitCondition() {
     ball_1.style.left = "45%";
     ball_1.style.right = "50%";
 
-    player_bar1.style.left = "1%";
-    player_bar1.style.right = "2%";
-    player_bar1.style.top = "30%";
-    player_bar1.style.bottom = "50%";  
+    playerBar_1.style.left = "1%";
+    playerBar_1.style.right = "2%";
+    playerBar_1.style.top = "30%";
+    playerBar_1.style.bottom = "50%";  
 
-    com_bar1.style.left = "98%";
-    com_bar1.style.right = "99%";
-    com_bar1.style.top = "30%";
-    com_bar1.style.bottom = "55%";
-
-    end_count = 0;
-    control_direction = ob_dir_cond.LEFT;
-    game_mutex = game_mutex_cond.EXECUTE;
-    ball_pos[0] = ob_dir_cond.LEFT;
-    ball_pos[1] = ob_dir_cond.HOLD;
-    ob2_pos[0] = ob_dir_cond.HOLD;
-    ob2_pos[1] = ob_dir_cond.DOWN;
+    comBar_1.style.left = "98%";
+    comBar_1.style.right = "99%";
+    comBar_1.style.top = "30%";
+    comBar_1.style.bottom = "55%";
+    comBarCenter = getObCenterPos(comBar_1);
+    ballCenter = getObCenterPos(ball_1);
+    playerBarCenter = getObCenterPos(playerBar_1);
+    endCount = 0;
+    mouseSpeed = 0;
+    ballVelocity = 0.1;
+    comSpeed = ballVelocity;
+    controlDirection = obDirCond.LEFT;
+    gameMutex = gameMutexCond.EXECUTE;
+    ballPos[0] = obDirCond.LEFT;
+    ballPos[1] = obDirCond.HOLD;
+    obPos_2[0] = obDirCond.HOLD;
+    obPos_2[1] = obDirCond.DOWN;
     for (var i = 0; i < 2; i++) {
-        mouse_pos[i] = 0;
-        mouse_pos_init[i] = 0;
+        mousePos[i] = 0;
+        mousePosInit[i] = 0;
     }
 }
 
+function getObCenterPos(obStyle) {
+    return (parseFloat(obStyle.style.bottom) + parseFloat(obStyle.style.top)) / 2
+}
+
 function gameStart(pName) {
-    if ( game_mutex == game_mutex_cond.WAIT ) {
+    if ( gameMutex == gameMutexCond.WAIT ) {
         if (typeof(pName.value) === "string" && pName.value.length !== 0) {
             gameInit(pName);
         } else {
@@ -143,36 +161,50 @@ function gameInit(pName) {
     userName = pName.value;
     userScore = 0;
     window.addEventListener('mousemove', mousemove);
-    mouse_pos_init[1] = 0;
+    mousePosInit[1] = 0;
     requestAnimationFrame(run);
 }
 
 function run() {
     userScore += 1;
     
-    if (end_count > 50 || game_mutex == game_mutex_cond.WAIT) {
+    if (endCount > 50 || gameMutex == gameMutexCond.WAIT) {
         return;
     }
-    count = 5;
-    player_movement(player_bar1, mouse_pos);
-    ball_movement(ball_1, count, ball_pos);
-    ob_judge(ball_1, player_bar1, com_bar1, ob_top, ob_bottom, ball_pos);
-    
+    ballSpeed = 5;
+    playerMovement(playerBar_1, mousePos);
+    ballMovement(ball_1, ballSpeed, ballPos);
+    comMovement(comBar_1, ball_1, comBarCenter, ballCenter);
+    obJudge(ball_1, playerBar_1, comBar_1, obTop, obBottom, ballPos);
     requestAnimationFrame(run);
 }
 
 function gameReset() {
-    gameEnd(game_end_cond.RESET);
+    gameEnd(gameEndCond.RESET);
     gameInitCondition_ver2();
 }
 
 function gameStop() {
-    gameEnd(game_end_cond.STOP);
+    gameEnd(gameEndCond.STOP);
     gameInitCondition_ver2();
 }
 
-function gameEnd(end_cond) {
-    game_mutex = game_mutex_cond.WAIT;
+function gameFinish(winner) {
+    gameEnd(gameEndCond.STOP, winner);
+    gameInitCondition_ver2();
+    if ( winner == gameWinner.COMPUTER ) {
+        //TODO:
+        //COMPUTER 승리 정보 DB
+        //COMPUTER 승리, 시간: xxxx-xx-xx xx:xx:xx, 점수: xxxxx
+    } else {
+        //TODO:
+        //플레이어 승리 정보 DB
+        //플레이어 승리, 시간: xxxx-xx-xx xx:xx:xx, 점수: xxxxx
+    }
+}
+
+function gameEnd(end_cond, winner) {
+    gameMutex = gameMutexCond.WAIT;
     console.log("Game Finish");
     var xhr = new XMLHttpRequest();
     var ur = 'http://localhost:8080/my-home/game/result';
@@ -181,9 +213,9 @@ function gameEnd(end_cond) {
             if (xhr.status === 200 || xhr.status === 201) {
                 console.log(xhr.responseText);
                 //window.location.replace('');
-                if (end_cond == game_end_cond.STOP) {
+                if (end_cond == gameEndCond.STOP) {
                     alert("game End write ok");
-                } else if (end_cond == game_end_cond.RESET) {
+                } else if (end_cond == gameEndCond.RESET) {
                     alert("game Reset write ok");
                 }
                 
@@ -195,90 +227,132 @@ function gameEnd(end_cond) {
         }
     };
     //var tt = "테스트입니다."
-    var eF_Data = "name=" + encodeURIComponent(userName) + "&score=" + encodeURIComponent(userScore);
+    var winnerName = ''
+    if ( winner == gameWinner.COMPUTER ) {
+        winnerName = "컴퓨터 승리";
+        userName = winnerName;
+    } else {
+        winnerName = "플레이어: ";
+        userName = winnerName + userName;
+    }
+    
+    var efData = "name=" + encodeURIComponent(userName) + "&score=" + encodeURIComponent(userScore);
 
     xhr.open('POST', ur, true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send(eF_Data);
+    xhr.send(efData);
     
     return;
 }
 
-function left_direction_movement(control_ob, speed_ob) {
-    control_ob.style.left = parseInt(control_ob.style.left) - speed_ob + "px";
-    control_ob.style.right = parseInt(control_ob.style.left) + 100 + "px";
-    return;
-}
-
-function right_direction_movement(control_ob, speed_ob) {
-    control_ob.style.left = parseInt(control_ob.style.left) + speed_ob + "px";
-    control_ob.style.right = parseInt(control_ob.style.left) + 100 + "px";
-    return;
-}
-
-function ball_movement(control_ob, speed_ob, pos) {
-    control_ob.style.left = parseFloat(control_ob.style.left) + ( speed_ob * pos[0] * ball_velocity ) + "%";
-    control_ob.style.right = parseFloat(control_ob.style.right) + ( speed_ob * pos[0] * ball_velocity ) + "%";
-    control_ob.style.bottom = parseFloat(control_ob.style.bottom) + ( speed_ob * pos[1] * ball_velocity ) + "%";
-    control_ob.style.top = parseFloat(control_ob.style.top) + ( speed_ob * pos[1] * ball_velocity ) + "%";
-    return;
-}
-
-function ob_judge(control_ob, player_bar, com_bar, ob1, ob2, b_pos) {
-    if ( parseFloat(control_ob.style.left) < parseFloat(player_bar.style.right) ) {
-        let c_ob = control_ob.getBoundingClientRect();
-        let p_ob = player_bar.getBoundingClientRect();
-        if ( parseFloat(c_ob.y) > parseFloat(p_ob.y)
-            && parseFloat(c_ob.y + ( 10 * this_screen_y_percent )) < parseFloat(p_ob.y + ( 20 * this_screen_y_percent ))) {
-            b_pos[0] = ob_dir_cond.RIGHT;
-            b_pos[1] = pbar_direct_up_down * mouse_speed;
+function obJudge(controlOb, playerBar, com_bar, ob1, ob2, b_pos) {
+    if ( parseFloat(controlOb.style.left) < parseFloat(playerBar.style.right) ) {
+        let cOb = controlOb.getBoundingClientRect();
+        let pOb = playerBar.getBoundingClientRect();
+        if ( parseFloat(cOb.y) > parseFloat(pOb.y)
+            && parseFloat(cOb.y + ( 10 * thisScreenYpercent )) < parseFloat(pOb.y + ( 20 * thisScreenYpercent ))) {
+            b_pos[0] = obDirCond.RIGHT;
+            b_pos[1] = pBarDirectUpDown * mouseSpeed;
+            comSpeed = mouseSpeed;
         }
     }
-    else if ( parseFloat(control_ob.style.right) > parseFloat(com_bar.style.left) ) {
-        let ball_ob = control_ob.getBoundingClientRect();
+    else if ( parseFloat(controlOb.style.right) > parseFloat(com_bar.style.left) ) {
+        let ball_ob = controlOb.getBoundingClientRect();
         let com_bar_ob = com_bar.getBoundingClientRect();
         if ( parseFloat(ball_ob.y) > parseFloat(com_bar_ob.y)
-            && parseFloat(ball_ob.y + ( 10 * this_screen_y_percent )) < parseFloat(com_bar_ob.y + ( 25 * this_screen_y_percent ))) {
-            b_pos[0] = ob_dir_cond.LEFT;
-            //b_pos[1] = pbar_direct_up_down * mouse_speed;
+            && parseFloat(ball_ob.y + ( 10 * thisScreenYpercent )) < parseFloat(com_bar_ob.y + ( 25 * thisScreenYpercent ))) {
+            b_pos[0] = obDirCond.LEFT;
+            //b_pos[1] = pBarDirectUpDown * mouseSpeed;
         }
     }
-    else if ( parseFloat(control_ob.style.top) < parseFloat(ob1.style.bottom) ) {
+    else if ( parseFloat(controlOb.style.top) < parseFloat(ob1.style.bottom) ) {
         b_pos[1] = b_pos[1] * -1;
     }
 
-    else if ( parseFloat(control_ob.style.bottom) > parseFloat(ob2.style.top) ) {
+    else if ( parseFloat(controlOb.style.bottom) > parseFloat(ob2.style.top) ) {
         b_pos[1] = b_pos[1] * -1;
     }
 
     return;
 }
 
-function player_movement(player_bar, mouse_pos) {
-    player_bar.style.top = (( mouse_pos[1] + top_wall_pos ) / this_screen_y_percent) + "%";
-    player_bar.style.bottom = ( parseFloat(player_bar.style.top) + player_bar_screen_y ) + "%";
+function left_direction_movement(controlOb, speedOb) {
+    controlOb.style.left = parseInt(controlOb.style.left) - speedOb + "px";
+    controlOb.style.right = parseInt(controlOb.style.left) + 100 + "px";
+    return;
+}
+
+function right_direction_movement(controlOb, speedOb) {
+    controlOb.style.left = parseInt(controlOb.style.left) + speedOb + "px";
+    controlOb.style.right = parseInt(controlOb.style.left) + 100 + "px";
+    return;
+}
+
+function ballMovement(controlOb, speedOb, pos) {
+    controlOb.style.left = parseFloat(controlOb.style.left) + ( speedOb * pos[0] * ballVelocity ) + "%";
+    controlOb.style.right = parseFloat(controlOb.style.right) + ( speedOb * pos[0] * ballVelocity ) + "%";
+    controlOb.style.bottom = parseFloat(controlOb.style.bottom) + ( speedOb * pos[1] * ballVelocity ) + "%";
+    controlOb.style.top = parseFloat(controlOb.style.top) + ( speedOb * pos[1] * ballVelocity ) + "%";    
+    ballCenter = getObCenterPos(controlOb);
+
+    if ( parseFloat(controlOb.style.right) < 0.1 ) {
+        gameFinish(gameWinner.COMPUTER);
+        return;
+    }
+    if ( parseFloat(controlOb.style.left) > 99.9 ) {
+        gameFinish(gameWinner.PLAYER);
+        return
+    }
+
+    return;
+}
+
+function playerMovement(playerBar, mousePos) {
+    playerBar.style.top = (( mousePos[1] + topWallPos ) / thisScreenYpercent) + "%";
+    playerBar.style.bottom = ( parseFloat(playerBar.style.top) + playerBarScreenY ) + "%";
+    playerBarCenter = getObCenterPos(playerBar);
+    return;
+}
+
+function comMovement(comBar, moveOb, comBarCenter, ballCenter) {
+    //TODO:
+    // Ball의 움직임을 따라서 위, 아래로 이동
+    // Ball의 속도를 가져와야하는데 이거 운동량???
+    // 속도는 우선.. 플레이어 벽이랑 공이랑 부딪히는 순간의 속도를 가져옴
+    // 지금 공의 속도는 그 부딪히는 순간의 속도로 입력했음.
+    // 그러니깐, 컴퓨터 바의 속도도 똑같이했다.
+    comBarCenter = getObCenterPos(comBar);
+    let comBarDirect = obDirCond.DOWN;
+    
+    // 컴퓨터바가 위로 올라가야함
+    if ( ballCenter < comBarCenter ) {
+        comBarDirect = obDirCond.UP;
+    }
+    comBar.style.top = (parseFloat(comBar.style.top) + (( comBarDirect * comSpeed ) / thisScreenYpercent)) + "%";
+    comBar.style.bottom = (parseFloat(comBar.style.top) + 25) + "%";
+    
     return;
 }
 
 function mousemove(event) {
-    var now_time = Date.now();
-    var time_dt = now_time - now_time_timestamp;
-    var distance = Math.abs( mouse_pos[1] - event.pageY );
-    mouse_speed = (distance / time_dt).toFixed(2);
+    var nowTime = Date.now();
+    var timeDt = nowTime - nowTimeStamp;
+    var distance = Math.abs( mousePos[1] - event.pageY );
+    mouseSpeed = (distance / timeDt).toFixed(2);
 
-    now_time_timestamp = now_time;
-    pbar_direct_up_down = mouse_pos[1] - event.pageY; //Up:+ Down:-
+    nowTimeStamp = nowTime;
+    pBarDirectUpDown = mousePos[1] - event.pageY; //Up:+ Down:-
     
-    if ( pbar_direct_up_down > 0 ) {
-        pbar_direct_up_down = ob_dir_cond.UP;
+    if ( pBarDirectUpDown > 0 ) {
+        pBarDirectUpDown = obDirCond.UP;
     } else {
-        pbar_direct_up_down = ob_dir_cond.DOWN;
+        pBarDirectUpDown = obDirCond.DOWN;
     }
 
-    if ( event.pageY < top_wall_pos) {
-        mouse_pos[1] = top_wall_pos;
+    if ( event.pageY < topWallPos) {
+        mousePos[1] = topWallPos;
     } else {
-        mouse_pos[1] = event.pageY;    
+        mousePos[1] = event.pageY;    
     }
     
     return;
@@ -291,8 +365,8 @@ function get_angle(x1, y1, x2, y2) {
 }
 
 function set_ball_angle(ob, x1, y1) {
-    let ob_pos = ob.getBoundingClientRect();
-    ball_angle = get_angle( x1, y1, ob_pos.x, ob_pos.y );
+    let obPos = ob.getBoundingClientRect();
+    ballAngle = get_angle( x1, y1, obPos.x, obPos.y );
     return;
 }
 

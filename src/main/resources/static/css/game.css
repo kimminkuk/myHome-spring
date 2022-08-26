@@ -86,7 +86,7 @@ footer {
     bottom : 50%;
 }
 
-#obstacle1 {
+#obstacle1_no {
     position: absolute;
     background-color: black;
     width: 1%;
@@ -96,7 +96,7 @@ footer {
     top : 60px;
 }
 
-#obstacle2 {
+#obstacle2_no {
     position: absolute;
     background-color: RED;
     width: 1%;
