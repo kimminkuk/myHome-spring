@@ -24,6 +24,8 @@ public class RedisMemberRepository implements RedisRepository {
         return;
     }
 
+
+
     @Override
     public List<String> findAll() {
         return null;
