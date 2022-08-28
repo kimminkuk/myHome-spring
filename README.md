@@ -7,6 +7,11 @@
    원인은 잘 모르겠다. 흠; 처음에는 public void 로 선언하고 했었는데 계속 500 error가 발생해서 (DB로 저장은 가능하나, ajax 통신에서 200, 201 신호를 발생하지 못함).<br>
    수정함 왜지지ㅣㅣㅣㅣㅣ.<br>
 
+2.  Redis로 LocalDateTime 을 String으로 Value 처리하니, 직렬화/역직렬화 처럼 보이는 문제가 발생해서 아래처럼 일단 해결함
+    근데 이거는 내가 매번 생성해줘야하잖아 여러 패턴을.. 자동화로 만드는 방법없나? 클래스 생성 등등 
+    @DateTimeFormat(pattern = "yyyy-MM-dd kk:mm:ss")
+    private LocalDateTime myTime;
+
 # TODO
 1. 게임페이지의 상호작용 처리 중.. 벽 튕기는거 코딩 중 (물리는 가속도만 적용시키자)
     - game html에서 이름 입력 후, enter 입력하면 post로 전송되는 문제
