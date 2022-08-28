@@ -9,8 +9,8 @@
 
 2.  Redis로 LocalDateTime 을 String으로 Value 처리하니, 직렬화/역직렬화 처럼 보이는 문제가 발생해서 아래처럼 일단 해결함
     근데 이거는 내가 매번 생성해줘야하잖아 여러 패턴을.. 자동화로 만드는 방법없나? 클래스 생성 등등 
-    @DateTimeFormat(pattern = "yyyy-MM-dd kk:mm:ss")
-    private LocalDateTime myTime;
+    - @DateTimeFormat(pattern = "yyyy-MM-dd kk:mm:ss")<br>
+      private LocalDateTime myTime;
 
 # TODO
 1. 게임페이지의 상호작용 처리 중.. 벽 튕기는거 코딩 중 (물리는 가속도만 적용시키자)
