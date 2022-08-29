@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 
 public class RedisMemberRepository implements RedisRepository {
 
@@ -24,10 +24,21 @@ public class RedisMemberRepository implements RedisRepository {
         return;
     }
 
+    @Override
+    public Map<String, String> findAllVer2() throws IOException {
 
+        return null;
+    }
 
     @Override
     public List<String> findAll() {
-        return null;
+        Set<String> redisKeys = redisTemplate.keys("컴퓨터 승리*");
+        List<String> keysList = new ArrayList<>();
+        Iterator<String> it = redisKeys.iterator();
+        while (it.hasNext()) {
+            String data = it.next();
+            keysList.add(data);
+        }
+        return new ArrayList<>(keysList);
     }
 }

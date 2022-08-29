@@ -25,4 +25,9 @@ public class RedisMemberService {
     public List<String> findMembers(String key) {
         return redisRepository.findAll();
     }
+
+    public List<String> findAll() {
+        return redisRepository.findAll();
+    }
+
 }

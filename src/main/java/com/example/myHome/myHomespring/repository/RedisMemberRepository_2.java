@@ -1,4 +1,5 @@
 package com.example.myHome.myHomespring.repository;
+import java.io.IOException;
 import java.util.*;
 
 public class RedisMemberRepository_2 implements RedisRepository {
@@ -20,5 +21,9 @@ public class RedisMemberRepository_2 implements RedisRepository {
     @Override
     public List<String> findAll() {
         return new ArrayList<>(store.values());
+    }
+    @Override
+    public Map<String, String> findAllVer2() throws IOException {
+        return null;
     }
 }
