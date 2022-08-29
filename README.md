@@ -12,6 +12,12 @@
     - @DateTimeFormat(pattern = "yyyy-MM-dd kk:mm:ss")<br>
       private LocalDateTime myTime;
 
+3. Test Code 작성하는거 지금 많이 이상함
+    - 메모리에 못쓰고 Redis 에다가 바로 Write해서 확인 중.. 인프런 다시 빠르게 보자 이번주 동안
+    - Redis get All, get One 이거 스터디.. 지금은 뭔가 굉장히 별로임 모든걸 가져오는걸 못하고 특정 key의 패턴으로만 가져옴<br>
+      redisTemplate.keys("패턴*") => 패턴1, 패턴2, 패턴, 패턴1231 이런식의 Key값만 가져와짐
+      
+
 # TODO
 1. 게임페이지의 상호작용 처리 중.. 벽 튕기는거 코딩 중 (물리는 가속도만 적용시키자)
     - game html에서 이름 입력 후, enter 입력하면 post로 전송되는 문제
