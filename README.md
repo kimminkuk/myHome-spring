@@ -1,5 +1,12 @@
 # myHome-spring
 
+# 계획 일정 ~10/E
+1. github 내용 겹치는거 삭제 -> 현재 myHome-Spring에 전부 페이지화 할 예정 (아래 목록들만 해도 10개는 지울듯)<br>
+   - 1.0 버튼 이쁘게 만들기 및 css 로 위에 설정 조정 ( 아주 힘든 과정일거 같음 )
+   - 1.1 콴트 조사한 페이지 ( https://github.com/kimminkuk/220501_ver1)
+   - 1.2 상품 올리는 페이지 구현하던거 (https://github.com/kimminkuk/item-service 여기거 옮기기)
+   - 1.3 예약페이지 만들던거 ( 부스트캠프 하다가 실패, https://github.com/kimminkuk/boostcourse )
+   - 1.4 게시판 글쓰기 만들던거 ( 부스트캠프에서 하던거 리팩토링, https://github.com/kimminkuk/boostcourse )
 
 # 현재 막힌 부분 및 진행 상황
 1. game.html -> form 입력(이름) -> 게임 끝 -> 점수 Post 전송 -> PostMapping으로 Redis DB에 저장 확인.<br>
@@ -11,6 +18,12 @@
     근데 이거는 내가 매번 생성해줘야하잖아 여러 패턴을.. 자동화로 만드는 방법없나? 클래스 생성 등등 
     - @DateTimeFormat(pattern = "yyyy-MM-dd kk:mm:ss")<br>
       private LocalDateTime myTime;
+
+3. Test Code 작성하는거 지금 많이 이상함
+    - 메모리에 못쓰고 Redis 에다가 바로 Write해서 확인 중.. 인프런 다시 빠르게 보자 이번주 동안
+    - Redis get All, get One 이거 스터디.. 지금은 뭔가 굉장히 별로임 모든걸 가져오는걸 못하고 특정 key의 패턴으로만 가져옴<br>
+      redisTemplate.keys("패턴*") => 패턴1, 패턴2, 패턴, 패턴1231 이런식의 Key값만 가져와짐
+      
 
 # TODO
 1. 게임페이지의 상호작용 처리 중.. 벽 튕기는거 코딩 중 (물리는 가속도만 적용시키자)
