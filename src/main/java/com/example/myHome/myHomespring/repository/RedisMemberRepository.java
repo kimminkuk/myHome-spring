@@ -1,44 +1,20 @@
 package com.example.myHome.myHomespring.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import com.example.myHome.myHomespring.domain.RedisMember;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-public class RedisMemberRepository implements RedisRepository {
+public interface RedisMemberRepository {
+    //save
+    RedisMember save(RedisMember member);
 
-    @Autowired
-    RedisTemplate<String, String> redisTemplate;
+    // redis 에서는 키가 있냐 없냐만 구분
+    Optional<Boolean> findByKey(String key);
 
-    @Override
-    public Optional<String> findByRedisKey(String key) {
-        return Optional.empty();
-    }
+    //findAll
+    List<RedisMember> findAll();
 
-    @Override
-    public void saveByRedisKey(String key, String data) {
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set(key, data);
-        return;
-    }
-
-    @Override
-    public Map<String, String> findAllVer2() throws IOException {
-
-        return null;
-    }
-
-    @Override
-    public List<String> findAll() {
-        Set<String> redisKeys = redisTemplate.keys("컴퓨터 승리*");
-        List<String> keysList = new ArrayList<>();
-        Iterator<String> it = redisKeys.iterator();
-        while (it.hasNext()) {
-            String data = it.next();
-            keysList.add(data);
-        }
-        return new ArrayList<>(keysList);
-    }
+    //getValue
+    Optional<String> getValue(String key);
 }

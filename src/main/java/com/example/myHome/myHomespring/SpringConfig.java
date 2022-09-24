@@ -1,13 +1,22 @@
 package com.example.myHome.myHomespring;
 
+import com.example.myHome.myHomespring.repository.JdbcTemplateMemberRepository;
 import com.example.myHome.myHomespring.repository.MemberRepository;
-import com.example.myHome.myHomespring.repository.MemoryMemberRepository;
 import com.example.myHome.myHomespring.service.MemberService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+
+import javax.sql.DataSource;
+
 
 @Configuration
+@EnableRedisRepositories
 public class SpringConfig {
+    private final DataSource dataSource;
+    public SpringConfig(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     @Bean
     public MemberService memberService() {
@@ -16,8 +25,8 @@ public class SpringConfig {
 
     @Bean
     public MemberRepository memberRepository() {
-        return new MemoryMemberRepository();
-        //return new RedisMemberRepository();
+        //return new MemoryMemberRepository();
+        return new JdbcTemplateMemberRepository(dataSource);
     }
 
 }

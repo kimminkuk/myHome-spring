@@ -1,15 +1,13 @@
 package com.example.myHome.myHomespring.controller;
 
+import com.example.myHome.myHomespring.domain.RedisMember;
 import com.example.myHome.myHomespring.service.RedisMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -48,8 +46,35 @@ public class myHomeController {
 
         String nowTime = getNowTime() + '@' + score;
         System.out.println(nowTime + "?????");
-        redisMemberService.join(name, nowTime);
+        RedisMember resultMember = new RedisMember(name, nowTime);
+        redisMemberService.join(resultMember);
         return "basic/game";
+    }
+
+
+    @GetMapping("hello-string")
+    @ResponseBody
+    public String helloString(@RequestParam("name") String name) {
+        return "hello " + name;
+    }
+
+    @GetMapping("hello-api")
+    @ResponseBody
+    public Hello helloApi(@RequestParam("name") String name) {
+        Hello hello = new Hello();
+        hello.setName(name);
+        return hello;
+    }
+    static class Hello {
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 
     public String getNowTime() {
