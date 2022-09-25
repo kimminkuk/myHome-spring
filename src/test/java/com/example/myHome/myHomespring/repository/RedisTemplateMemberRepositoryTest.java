@@ -44,14 +44,15 @@ class RedisTemplateMemberRepositoryTest {
     @Test
     public void 회원_데이터_획득() throws Exception {
         //given
-        String value1 = redisMemberService.getValueOfKey("rlaal567").get();
+        String inputRedisKey1 = "rlaal888";
+        String value1 = redisMemberService.getValueOfKey(inputRedisKey1).get();
         String value2 = redisMemberService.getValueOfKey("ansdj123").get();
 
         //when
-        System.out.println("value1 = " + value1);
+        System.out.println("key: " + inputRedisKey1 + " value: " + value1);
         System.out.println("value2 = " + value2);
         //then
-        assertEquals(value1, "음11");
+        //assertEquals(value1, "음11");
         assertEquals(value2, "음22");
     }
 }

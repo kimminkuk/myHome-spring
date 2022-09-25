@@ -1,0 +1,27 @@
+<!--  thymeleaf 기초 화면 만들어줘  -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>랭킹페이지</title>
+</head>
+<body>
+    <h1>랭킹 페이지 입니다.</h1>
+    {% comment %} <!-- 이름, value 반복문 -->
+    <div class="container">
+        <div>
+            <table>
+                <tr>
+                    <th>순위</th>
+                    <th>이름</th>
+                    <th>점수</th>
+                </tr>
+                <tr th:each="member : ${members}">
+                    <td th:text="${members.key}"></td>
+                    <td th:text="${members.value}"></td>
+                </tr>    
+            </table>
+        </div>
+    </div> {% endcomment %}
+</body>
+</html>

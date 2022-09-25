@@ -203,11 +203,39 @@ function gameFinish(winner) {
     }
 }
 
+function gameEndPostTest(userName) {
+    gameMutex = gameMutexCond.WAIT;
+    var xhr = new XMLHttpRequest();
+    var ur = 'http://localhost:8080/game/result';
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === xhr.DONE && xhr.status === 200) {
+            console.log(xhr.responseText);
+        }
+        else {
+            console.log("error");
+            errorList.errorCode01();
+        }
+    };
+    var userScore = 100;
+    var postRedisData = "name=" + encodeURIComponent(userName) + "&score=" + encodeURIComponent(userScore);
+    xhr.open('POST', ur);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.send(postRedisData);
+    return;
+}
+
 function gameEnd(end_cond, winner) {
+    if ( winner == gameWinner.COMPUTER ) {
+        //TODO:
+        //Computer가 승리할때는 DB 저장하지 말자.
+        //Computer의 승리는 저장하지 않는것으로 한다.
+        return;
+    }
     gameMutex = gameMutexCond.WAIT;
     console.log("Game Finish");
     var xhr = new XMLHttpRequest();
-    var ur = 'http://localhost:8080/my-home/game/result';
+    var ur = 'http://localhost:8080/game/result';
     xhr.onreadystatechange = function () {
         if (xhr.readyState === xhr.DONE) {
             if (xhr.status === 200 || xhr.status === 201) {
@@ -226,16 +254,9 @@ function gameEnd(end_cond, winner) {
             }
         }
     };
-    //var tt = "테스트입니다."
-    var winnerName = ''
-    if ( winner == gameWinner.COMPUTER ) {
-        winnerName = "컴퓨터 승리";
-        userName = winnerName;
-    } else {
-        winnerName = "플레이어: ";
-        userName = winnerName + userName;
-    }
-    
+
+    var winnerName = "플레이어: ";
+    userName = winnerName + userName;
     var efData = "name=" + encodeURIComponent(userName) + "&score=" + encodeURIComponent(userScore);
 
     xhr.open('POST', ur, true);

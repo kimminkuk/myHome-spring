@@ -138,3 +138,10 @@ footer {
     padding: 2px;
     top: 0px;
 }
+
+#userNameDiv2 {
+    position: absolute;
+    padding: 2px;
+    top: 0px;
+    left: 600px;
+}

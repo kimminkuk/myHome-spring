@@ -3,7 +3,7 @@
 <head>
     <title>GAME</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" href="../css/game.css?ver=13">
+    <link rel="stylesheet" href="/css/game/game.css?ver=5">
     
 </head>
 <body>
@@ -22,11 +22,19 @@
                 <input class = "input-text" id ="userNameInput1" type="text" name="userName1" required maxlength="48" size="48"/>
 
                 <div id="container">    
-                    <img id="startImg1" src="../img/start_img2.png" alt="startBtn1" onclick="gameStart(userName1)" style="cursor:pointer;">
+                    <img id="startImg1" src="/img/start_img2.png" alt="startBtn1" onclick="gameStart(userName1)" style="cursor:pointer;">
                 </div>  
 
             </div>      
-        </form>        
+        </form>
+        <!-- post 폼으로 이름과 벨류를 전송하는 코드 -->
+        <form action="post" name="gameUserPost2" enctype="UTF-8">
+            <div id="userNameDiv2">
+                테스트입력 부분.<br>
+                <input class = "input-text" id ="userNameInput2" type="text" name="userName2" required maxlength="48" size="48"/>
+                <!-- 전송 버튼 코드 -->
+                <input type="submit" value="전송" onclick="gameEndPostTest(userName2)" id="submitBtn" style="cursor:pointer;">
+            </div>
     </div>
     <div id="ball_1">
                 
@@ -36,14 +44,14 @@
     <div id="obstacle1"></div>
     <div id="obstacle2"></div>
 
-    <img id="stopImg1" src="../img/stop_img1.png" alt="stopBtn1" onclick="gameStop()" style="cursor:pointer;">
-    <img id="resetImg1" src="../img/reset_img1.png" alt="resetBtn1" onclick="gameReset()" style="cursor:pointer;">
+    <img id="stopImg1" src="/img/stop_img1.png" alt="stopBtn1" onclick="gameStop()" style="cursor:pointer;">
+    <img id="resetImg1" src="/img/reset_img1.png" alt="resetBtn1" onclick="gameReset()" style="cursor:pointer;">
     
     
     <div id="obstacle_bottom1">
     
     </div>
 </body>
-<script type="text/javascript" src="../js/game.js?ver=75"></script>
-<script type="text/javascript" src="../js/common.js?ver=1"></script>
+<script type="text/javascript" src="../js/game/game.js?ver=2"></script>
+<script type="text/javascript" src="../js/common.js?ver=2"></script>
 </html>

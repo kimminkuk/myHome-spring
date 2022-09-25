@@ -34,24 +34,6 @@ public class myHomeController {
         return "basic/home";
     }
 
-    @GetMapping("/my-home/game")
-    public String myHomeGame(Model model) {
-        return "basic/game";
-    }
-
-    @PostMapping("/my-home/game/result")
-    public String myHomeGameResult(Model model,
-                                   @RequestParam("name") String name,
-                                   @RequestParam("score") String score) {
-
-        String nowTime = getNowTime() + '@' + score;
-        System.out.println(nowTime + "?????");
-        RedisMember resultMember = new RedisMember(name, nowTime);
-        redisMemberService.join(resultMember);
-        return "basic/game";
-    }
-
-
     @GetMapping("hello-string")
     @ResponseBody
     public String helloString(@RequestParam("name") String name) {
