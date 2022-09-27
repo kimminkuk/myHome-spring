@@ -1,4 +1,4 @@
-package com.example.myHome.myHomespring.controller;
+package com.example.myHome.myHomespring.controller.game;
 
 import com.example.myHome.myHomespring.domain.RedisMember;
 import com.example.myHome.myHomespring.service.RedisMemberService;

@@ -4,27 +4,50 @@
 <head>
     <meta charset="UTF-8">
     <title>랭킹페이지</title>
+    <!-- css 경로 추가해줘-->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="/css/game/game-rank.css">
+    <link rel="stylesheet" href="../css/v1.css">
 </head>
 <body>
-    <h1>랭킹 페이지 입니다.</h1>
-    <!-- 이름, value 반복문 -->
-    <div class="container">
-        <div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>이름</th>
-                        <th>점수</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="member : ${members}">
-                        <td th:text="${member.key}"></td>
-                        <td th:text="${member.value}"></td>
-                    </tr>
-                </tbody>
-            </table>
+    <div id="header">
+        <div class="HomeMenu">
+            <button class="ButtonManual1" id="btHome" type="button" onclick="goHomeHtml()" style="cursor:pointer;"> HOME </button>
+            <button class="ButtonManual1" id="btStudy" type="button" th:onclick="" style="cursor:pointer;"> STUDY </button>
+            <button class="ButtonManual1" id="btShop" type="button" th:onclick="" style="cursor:pointer;"> SHOP </button>
+            <button class="ButtonManual1" id="btGame" type="button" onclick="goGameHtml()" style="cursor:pointer;"> GAME </button>
+            <button class="ButtonManual1" id="btRankPage" type="button" onclick="goRankPageHtml()" style="cursor:pointer;"> RANK PAGE </button>
+        </div>    
+        <h1>랭킹 페이지 입니다.</h1>
+        <!-- 이름, value 반복문 -->
+        <div class="container">
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>이름</th>
+                            <th>점수</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="member : ${members}">
+                            <td th:text="${member.key}"></td>
+                            <td th:text="${member.value}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+        <!-- form get 이름을 검색하는 코드 -->
+        <form action="/game/rank-search" method="get">
+            <input type="text" name="userName" placeholder="이름을 입력하세요">
+            <button type="submit" onclick="gameRankSearch(userName)">검색</button>
+        </form>
+        <!-- myRank를 attribute로 받아서 출력해줘 -->
+        <div th:if="${myRank != null}">
+            <p th:text="${myRank}"></p>
     </div>
 </body>
+<script type="text/javascript" src="../js/game/game-rank.js?ver=2"></script>
+<script type="text/javascript" src="../js/common.js?ver=2"></script>
 </html>
