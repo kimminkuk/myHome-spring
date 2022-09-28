@@ -2,10 +2,12 @@ package com.example.myHome.myHomespring.service;
 
 import com.example.myHome.myHomespring.domain.RedisMember;
 import com.example.myHome.myHomespring.repository.RedisMemberRepository;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class RedisMemberService {
     private final RedisMemberRepository redisMemberRepository;
@@ -47,5 +49,21 @@ public class RedisMemberService {
             throw new IllegalStateException("이미 존재하는 회원입니다.");
         }
     }
+    /**
+     *  랭킹 페이지에 입력되는 정보
+     */
+    public void saveRanking(RedisMember member) {
+        redisMemberRepository.saveRanking(member);
+    }
 
+    /**
+     *  랭킹 페이지에 출력되는 정보
+     */
+    public Set<String> getRankingMembers() {
+        return redisMemberRepository.getRankingMembers();
+    }
+
+    public Set<ZSetOperations.TypedTuple<String>> getRankingMembersWithScore() {
+        return redisMemberRepository.getRankingMembersWithScore();
+    }
 }

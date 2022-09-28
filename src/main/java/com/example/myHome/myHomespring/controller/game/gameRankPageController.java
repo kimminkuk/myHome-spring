@@ -3,12 +3,14 @@ package com.example.myHome.myHomespring.controller.game;
 import com.example.myHome.myHomespring.domain.RedisMember;
 import com.example.myHome.myHomespring.service.RedisMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class gameRankPageController {
@@ -20,7 +22,7 @@ public class gameRankPageController {
     }
 
     //전체 랭킹 조회
-    @GetMapping(value = "/game/rank-page")
+    @GetMapping(value = "/game/rank-page-old")
     public String myHomeGameRankPage(Model model) {
         // TODO:
         // 랭킹은 1000위까지 보여주는걸로 redisService를 추가 코딩할거임
@@ -45,7 +47,7 @@ public class gameRankPageController {
     }
 
     // 내 랭킹 검색하는 부분
-    @GetMapping("/game/rank-search")
+    @GetMapping("/game/rank-search-old")
     public String searchMyRank(Model model,
                                @RequestParam("userName") String userName) {
         if (redisRankPageService.findOne(userName).get()) {
@@ -62,6 +64,28 @@ public class gameRankPageController {
         List<RedisMember> members = redisRankPageService.findMembers();
         model.addAttribute("members", members);
         members.sort((o1, o2) -> Integer.valueOf(o2.getValue()).compareTo(Integer.valueOf(o1.getValue())));
+        return "game/rank-page.html";
+    }
+
+    // 랭킹 정렬 하는 부분
+    @GetMapping(value = "/game/rank-page")
+    public String sortRank(Model model) {
+        Set<ZSetOperations.TypedTuple<String>> rankingMembersWithScore = redisRankPageService.getRankingMembersWithScore();
+        model.addAttribute("rankingMembersWithScore", rankingMembersWithScore);
+        return "game/rank-page.html";
+    }
+
+    @GetMapping("/game/rank-search")
+    public String searchMyRankVer2(Model model,
+                               @RequestParam("userName") String userName) {
+        if (redisRankPageService.findOne(userName).get()) {
+            model.addAttribute("myRank", redisRankPageService.getValueOfKey(userName).get());
+        } else {
+            model.addAttribute("myRank", "랭킹에 없습니다.");
+        }
+
+        Set<String> rankingMembers = redisRankPageService.getRankingMembers();
+        model.addAttribute("rankingMembers", rankingMembers);
         return "game/rank-page.html";
     }
 }

@@ -6,7 +6,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,5 +57,32 @@ class RedisTemplateMemberRepositoryTest {
         //then
         //assertEquals(value1, "음11");
         assertEquals(value2, "음22");
+    }
+
+    @Test
+    public void 랭킹_등록() throws Exception {
+        //given
+        RedisMember redisMember = new RedisMember("요다11", "123");
+        RedisMember redisMember2 = new RedisMember("요다12", "124");
+        RedisMember redisMember3 = new RedisMember("요다13", "222");
+        RedisMember redisMember4 = new RedisMember("요다14", "512");
+        RedisMember redisMember5 = new RedisMember("요다15", "12");
+        redisMemberService.saveRanking(redisMember);
+        redisMemberService.saveRanking(redisMember2);
+        redisMemberService.saveRanking(redisMember3);
+        redisMemberService.saveRanking(redisMember4);
+        redisMemberService.saveRanking(redisMember5);
+
+        //when
+//        Set<String> rankingMembers = redisMemberService.getRankingMembers();
+//        for (String rankingMember : rankingMembers) {
+//            System.out.println("rankingMember = " + rankingMember);
+//        }
+        Set<ZSetOperations.TypedTuple<String>> rankingMembersWithScore = redisMemberService.getRankingMembersWithScore();
+        for (ZSetOperations.TypedTuple<String> stringTypedTuple : rankingMembersWithScore) {
+            System.out.println("stringTypedTuple = " + stringTypedTuple.getValue() + " " + stringTypedTuple.getScore());
+        }
+        //then
+        assertThat(rankingMembersWithScore.size()).isEqualTo(5);
     }
 }

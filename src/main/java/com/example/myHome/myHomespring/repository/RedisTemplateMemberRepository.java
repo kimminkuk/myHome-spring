@@ -2,8 +2,10 @@ package com.example.myHome.myHomespring.repository;
 
 import com.example.myHome.myHomespring.domain.RedisMember;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisZSetCommands;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.ZSetOperations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,5 +44,26 @@ public class RedisTemplateMemberRepository implements RedisMemberRepository {
     public Optional<String> getValue(String key) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         return Optional.ofNullable(valueOperations.get(key));
+    }
+
+    @Override
+    public void saveRanking(RedisMember member) {
+        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
+        zSetOperations.add("ranking", member.getKey(), Double.parseDouble(member.getValue()));
+        return;
+    }
+
+    @Override
+    public Set<String> getRankingMembers() {
+        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
+        Set<String> rankingMembers = zSetOperations.range("ranking", 0, -1);
+        return rankingMembers;
+    }
+
+    @Override
+    public Set<ZSetOperations.TypedTuple<String>> getRankingMembersWithScore() {
+        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
+        Set<ZSetOperations.TypedTuple<String>> rankingMembers = zSetOperations.rangeWithScores("ranking", 0, -1);
+        return rankingMembers;
     }
 }

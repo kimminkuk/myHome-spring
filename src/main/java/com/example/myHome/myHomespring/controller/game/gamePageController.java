@@ -43,7 +43,10 @@ public class gamePageController {
         //RedisMember resultMember = new RedisMember(name, nowTime);
         RedisMember resultMember = new RedisMember(name, score);
 
-        redisGameResultDataService.join(resultMember);
+        //redisGameResultDataService.join(resultMember);
+
+        //랭킹페이지에 넣을거임 (게임 페이지의 경우)
+        redisGameResultDataService.saveRanking(resultMember);
         return "game/game.html";
     }
 

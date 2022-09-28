@@ -30,9 +30,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="member : ${members}">
-                            <td th:text="${member.key}"></td>
-                            <td th:text="${member.value}"></td>
+                        <tr th:each="rankingMember : ${rankingMembersWithScore}">
+                            <td th:text="${rankingMember.value}"></td>
+                            <td th:text="${rankingMember.score}"></td>
                         </tr>
                     </tbody>
                 </table>
