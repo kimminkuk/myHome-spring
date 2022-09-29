@@ -11,8 +11,11 @@ function gameRankSearch(userName) {
             }
         }
     };
-    xhr.open('GET', ur + '?userName=' + userName, true);
+    //The valid characters are defined in RFC 7230 and RFC 3986
+    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+    var data = 'userName=' + encodeURIComponent(userName);
+    xhr.open('POST', ur, true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send();
+    xhr.send(data);
     return;
 }

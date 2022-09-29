@@ -1,6 +1,7 @@
 package com.example.myHome.myHomespring.repository;
 
 import com.example.myHome.myHomespring.domain.RedisMember;
+import io.lettuce.core.api.async.RedisAsyncCommands;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisZSetCommands;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -61,9 +62,15 @@ public class RedisTemplateMemberRepository implements RedisMemberRepository {
     }
 
     @Override
-    public Set<ZSetOperations.TypedTuple<String>> getRankingMembersWithScore() {
+    public Set<ZSetOperations.TypedTuple<String>> getRankingMembersWithScore(int searchMin, int searchMax) {
+        if (searchMin == 0 && searchMax == 0) {
+            searchMin = 0;
+            searchMax = -1;
+        }
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
-        Set<ZSetOperations.TypedTuple<String>> rankingMembers = zSetOperations.rangeWithScores("ranking", 0, -1);
+        Set<ZSetOperations.TypedTuple<String>> rankingMembers = zSetOperations.rangeWithScores("ranking", searchMin, searchMax);
         return rankingMembers;
     }
+
+
 }

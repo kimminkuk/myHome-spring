@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -70,22 +71,42 @@ public class gameRankPageController {
     // 랭킹 정렬 하는 부분
     @GetMapping(value = "/game/rank-page")
     public String sortRank(Model model) {
-        Set<ZSetOperations.TypedTuple<String>> rankingMembersWithScore = redisRankPageService.getRankingMembersWithScore();
+        Set<ZSetOperations.TypedTuple<String>> rankingMembersWithScore = redisRankPageService.getRankingMembersWithScore(0, 999);
         model.addAttribute("rankingMembersWithScore", rankingMembersWithScore);
         return "game/rank-page.html";
     }
 
-    @GetMapping("/game/rank-search")
+    @PostMapping("/game/rank-search")
     public String searchMyRankVer2(Model model,
                                @RequestParam("userName") String userName) {
-        if (redisRankPageService.findOne(userName).get()) {
-            model.addAttribute("myRank", redisRankPageService.getValueOfKey(userName).get());
+        Set<ZSetOperations.TypedTuple<String>> rankingMembers = redisRankPageService.getRankingMembersWithScore(0, 999);
+        int rank = 0, score = 0;
+        String findMember = "";
+        for (ZSetOperations.TypedTuple<String> rankingMember : rankingMembers) {
+            rank++;
+            // String 비교 코드
+            if (rankingMember.getValue().equals(userName)) {
+                findMember = rankingMember.getValue();
+                score = rankingMember.getScore().intValue();
+                break;
+            }
+        }
+        if ( findMember.equals("") ) {
+            model.addAttribute("myRank", "순위 밖");
+            //model.addAttribute("myRankName", userName);
+            //model.addAttribute("myRankValue", 0)
         } else {
-            model.addAttribute("myRank", "랭킹에 없습니다.");
+            model.addAttribute("myRank", rank);
+            model.addAttribute("myRankName", findMember);
+            model.addAttribute("myRankValue", score);
         }
 
-        Set<String> rankingMembers = redisRankPageService.getRankingMembers();
-        model.addAttribute("rankingMembers", rankingMembers);
-        return "game/rank-page.html";
+        //Version2
+//        ZSetOperations.TypedTuple<String> findMember = rankingMembers.stream()
+//                                                    .filter(rankingMember -> rankingMember.getValue().equals(userName))
+//                                                    .findAny().get();
+
+        System.out.println("findMember = " + findMember);
+        return "game/rank-page-search.html";
     }
 }

@@ -26,5 +26,5 @@ public interface RedisMemberRepository {
      */
      void saveRanking(RedisMember member);
      Set<String> getRankingMembers();
-     Set<ZSetOperations.TypedTuple<String>> getRankingMembersWithScore();
+     Set<ZSetOperations.TypedTuple<String>> getRankingMembersWithScore(int searchMin, int searchMax);
 }

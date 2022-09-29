@@ -2,14 +2,26 @@ package com.example.myHome.myHomespring.repository;
 
 import com.example.myHome.myHomespring.domain.RedisMember;
 import com.example.myHome.myHomespring.service.RedisMemberService;
+import io.lettuce.core.LettuceFutures;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisFuture;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.async.RedisAsyncCommands;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.connection.RedisZSetCommands;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -62,27 +74,66 @@ class RedisTemplateMemberRepositoryTest {
     @Test
     public void 랭킹_등록() throws Exception {
         //given
-        RedisMember redisMember = new RedisMember("요다11", "123");
-        RedisMember redisMember2 = new RedisMember("요다12", "124");
-        RedisMember redisMember3 = new RedisMember("요다13", "222");
-        RedisMember redisMember4 = new RedisMember("요다14", "512");
-        RedisMember redisMember5 = new RedisMember("요다15", "12");
-        redisMemberService.saveRanking(redisMember);
-        redisMemberService.saveRanking(redisMember2);
-        redisMemberService.saveRanking(redisMember3);
-        redisMemberService.saveRanking(redisMember4);
-        redisMemberService.saveRanking(redisMember5);
+        long startTime = System.currentTimeMillis();
+        랭킹_대량_등록();
+        long endTime = System.currentTimeMillis();
+        랭킹_대량_등록_버전2();
+        long endTimeVer2 = System.currentTimeMillis();
+        System.out.println("[랭킹_대량_등록]실행 시간 : " + (endTime - startTime) / 1000.0 + "초");
+        System.out.println("[랭킹_대량_등록_버전2]실행 시간 : " + (endTimeVer2 - endTime) / 1000.0 + "초");
 
         //when
-//        Set<String> rankingMembers = redisMemberService.getRankingMembers();
-//        for (String rankingMember : rankingMembers) {
-//            System.out.println("rankingMember = " + rankingMember);
-//        }
-        Set<ZSetOperations.TypedTuple<String>> rankingMembersWithScore = redisMemberService.getRankingMembersWithScore();
+        Set<ZSetOperations.TypedTuple<String>> rankingMembersWithScore = redisMemberService.getRankingMembersWithScore(0, 999);
         for (ZSetOperations.TypedTuple<String> stringTypedTuple : rankingMembersWithScore) {
             System.out.println("stringTypedTuple = " + stringTypedTuple.getValue() + " " + stringTypedTuple.getScore());
         }
         //then
-        assertThat(rankingMembersWithScore.size()).isEqualTo(5);
+        assertThat(rankingMembersWithScore.size()).isEqualTo(1000);
+    }
+
+    @Test
+    public void 랭킹_대량_등록() throws Exception {
+
+        //StatefulRedisConnection connect code
+        RedisClient client = RedisClient.create("redis://localhost");
+
+        // Redis Asynchronous Pipeline
+        StatefulRedisConnection<String, String> connection = client.connect();
+        RedisAsyncCommands<String, String> commands = connection.async();
+
+        //disable auto-flushing
+        commands.setAutoFlushCommands(false);
+
+        // perform a series of independent calls
+        ArrayList<RedisFuture<?>> futures = Lists.newArrayList();
+
+        for (int i = 0; i < 100000; i++) {
+            //1~100000 랜덤 숫자 생성 코드
+            int randomValue = (int) (Math.random() * 100000 + 1);
+
+            futures.add(commands.zadd("ranking", (double)randomValue, "요다" + i));
+            futures.add(commands.expire("ranking", 3600));
+            //futures.add(commands.set("yoda-" + String.valueOf(i + 1), String.valueOf(randomValue)));
+            //futures.add(commands.expire("yoda-" + String.valueOf(i + 1), 3600));
+        }
+
+        //write all commands to the transport layer
+        commands.flushCommands();
+
+        // synchronization example: Wait until all futures complete
+        LettuceFutures.awaitAll(5, TimeUnit.SECONDS, futures.toArray(new RedisFuture[futures.size()]));
+
+        //later
+        connection.close();
+    }
+
+    @Test
+    public void 랭킹_대량_등록_버전2() throws Exception {
+        //given
+        for (int i = 0; i < 100000; i++) {
+            RedisMember redisMember = new RedisMember("[ver2]yoda" + String.valueOf(i + 1), String.valueOf((int) (Math.random() * 100000 + 1)));
+            redisMemberService.saveRanking(redisMember);
+        }
+        return;
     }
 }

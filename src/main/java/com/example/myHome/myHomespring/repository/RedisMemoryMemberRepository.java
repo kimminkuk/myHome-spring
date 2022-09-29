@@ -50,7 +50,7 @@ public class RedisMemoryMemberRepository implements RedisMemberRepository{
     }
 
     @Override
-    public Set<ZSetOperations.TypedTuple<String>> getRankingMembersWithScore() {
+    public Set<ZSetOperations.TypedTuple<String>> getRankingMembersWithScore(int searchMin, int searchMax) {
         //TODO:
         //Hash, Tree?로 구현 예정
         return null;

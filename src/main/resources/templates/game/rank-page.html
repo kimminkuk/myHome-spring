@@ -25,12 +25,17 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>순위</th>
                             <th>이름</th>
                             <th>점수</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="rankingMember : ${rankingMembersWithScore}">
+                        <!--thymeleaf iter-->
+                        
+                        
+                        <tr th:each="rankingMember, iter : ${rankingMembersWithScore}">
+                            <td th:text="${iter.index + 1}"></td>
                             <td th:text="${rankingMember.value}"></td>
                             <td th:text="${rankingMember.score}"></td>
                         </tr>
@@ -38,16 +43,21 @@
                 </table>
             </div>
         </div>
-        <!-- form get 이름을 검색하는 코드 -->
-        <form action="/game/rank-search" method="get">
+        <!-- form 이름을 검색하는 코드 -->
+        <form action="/game/rank-search" method="post">
             <input type="text" name="userName" placeholder="이름을 입력하세요">
             <button type="submit" onclick="gameRankSearch(userName)">검색</button>
         </form>
+
+        <!-- form post 랭킹 이름을 검색하는 코드-->
+
+
+
         <!-- myRank를 attribute로 받아서 출력해줘 -->
         <div th:if="${myRank != null}">
             <p th:text="${myRank}"></p>
     </div>
 </body>
-<script type="text/javascript" src="../js/game/game-rank.js?ver=2"></script>
+<script type="text/javascript" src="../js/game/game-rank.js?ver=3"></script>
 <script type="text/javascript" src="../js/common.js?ver=2"></script>
 </html>

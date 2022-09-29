@@ -1,0 +1,24 @@
+<!--thymeleaf init 코드-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>랭킹 Search 페이지</title>
+</head>
+<body>
+    <h1>랭킹 Search 결과입니다.</h1>
+    <!-- thymeleaf table code -->
+    <table>
+        <thead>
+            <tr>
+                <!-- 타임리프 th 코드 -->
+                
+                <th th:text="${myRank}"></th>
+                <th th:text="${myRankName}"></th>
+                <th th:text="${myRankValue}"></th>
+                
+            </tr>
+        </thead>
+    </table>
+</body>
+</html>

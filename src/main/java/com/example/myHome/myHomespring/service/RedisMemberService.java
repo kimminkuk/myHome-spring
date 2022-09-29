@@ -63,7 +63,7 @@ public class RedisMemberService {
         return redisMemberRepository.getRankingMembers();
     }
 
-    public Set<ZSetOperations.TypedTuple<String>> getRankingMembersWithScore() {
-        return redisMemberRepository.getRankingMembersWithScore();
+    public Set<ZSetOperations.TypedTuple<String>> getRankingMembersWithScore(int searchMin, int searchMax) {
+        return redisMemberRepository.getRankingMembersWithScore(searchMin, searchMax);
     }
 }
