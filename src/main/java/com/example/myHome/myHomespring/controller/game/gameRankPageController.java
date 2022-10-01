@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Controller
@@ -92,20 +93,18 @@ public class gameRankPageController {
             }
         }
         if ( findMember.equals("") ) {
-            model.addAttribute("myRank", "순위 밖");
-            //model.addAttribute("myRankName", userName);
-            //model.addAttribute("myRankValue", 0)
+            if ( redisRankPageService.findOne(userName).get() ) {
+                model.addAttribute("myRank", "순위 밖");
+            } else {
+                model.addAttribute("myRank", "등록되지 않은 유저입니다.");
+            }
         } else {
             model.addAttribute("myRank", rank);
             model.addAttribute("myRankName", findMember);
             model.addAttribute("myRankValue", score);
         }
 
-        //Version2
-//        ZSetOperations.TypedTuple<String> findMember = rankingMembers.stream()
-//                                                    .filter(rankingMember -> rankingMember.getValue().equals(userName))
-//                                                    .findAny().get();
-
+        //Debug
         System.out.println("findMember = " + findMember);
         return "game/rank-page-search.html";
     }

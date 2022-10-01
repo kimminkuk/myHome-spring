@@ -72,5 +72,8 @@ public class RedisTemplateMemberRepository implements RedisMemberRepository {
         return rankingMembers;
     }
 
+    public void DebugOnlyUse() {
 
+        return;
+    }
 }

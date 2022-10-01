@@ -6,7 +6,7 @@
     <title>랭킹페이지</title>
     <!-- css 경로 추가해줘-->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" href="/css/game/game-rank.css">
+    <link rel="stylesheet" href="/css/game/game-rank.css?ver=1">
     <link rel="stylesheet" href="../css/v1.css">
 </head>
 <body>
@@ -44,15 +44,13 @@
             </div>
         </div>
         <!-- form 이름을 검색하는 코드 -->
-        <form action="/game/rank-search" method="post">
-            <input type="text" name="userName" placeholder="이름을 입력하세요">
-            <button type="submit" onclick="gameRankSearch(userName)">검색</button>
-        </form>
+        <div class="rankPageContainer1">
+            <form action="/game/rank-search" method="post" enctype="UTF-8">
 
-        <!-- form post 랭킹 이름을 검색하는 코드-->
-
-
-
+                <input type="text" name="userName" placeholder="이름을 입력하세요">
+                <button type="submit" onclick="gameRankSearch(userName)">검색</button>
+            </form>
+        </div>
         <!-- myRank를 attribute로 받아서 출력해줘 -->
         <div th:if="${myRank != null}">
             <p th:text="${myRank}"></p>

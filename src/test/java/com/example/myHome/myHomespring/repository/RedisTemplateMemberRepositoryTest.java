@@ -107,9 +107,9 @@ class RedisTemplateMemberRepositoryTest {
         // perform a series of independent calls
         ArrayList<RedisFuture<?>> futures = Lists.newArrayList();
 
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 200000; i++) {
             //1~100000 랜덤 숫자 생성 코드
-            int randomValue = (int) (Math.random() * 100000 + 1);
+            int randomValue = (int) (Math.random() * 200000 + 1);
 
             futures.add(commands.zadd("ranking", (double)randomValue, "요다" + i));
             futures.add(commands.expire("ranking", 3600));
@@ -130,8 +130,8 @@ class RedisTemplateMemberRepositoryTest {
     @Test
     public void 랭킹_대량_등록_버전2() throws Exception {
         //given
-        for (int i = 0; i < 100000; i++) {
-            RedisMember redisMember = new RedisMember("[ver2]yoda" + String.valueOf(i + 1), String.valueOf((int) (Math.random() * 100000 + 1)));
+        for (int i = 0; i < 200000; i++) {
+            RedisMember redisMember = new RedisMember("[ver2]yoda" + String.valueOf(i + 1), String.valueOf((int) (Math.random() * 200000 + 1)));
             redisMemberService.saveRanking(redisMember);
         }
         return;
