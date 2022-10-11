@@ -112,7 +112,7 @@ class RedisTemplateMemberRepositoryTest {
             int randomValue = (int) (Math.random() * 200000 + 1);
 
             futures.add(commands.zadd("ranking", (double)randomValue, "요다" + i));
-            futures.add(commands.expire("ranking", 3600));
+            //futures.add(commands.expire("ranking", 3600));
             //futures.add(commands.set("yoda-" + String.valueOf(i + 1), String.valueOf(randomValue)));
             //futures.add(commands.expire("yoda-" + String.valueOf(i + 1), 3600));
         }

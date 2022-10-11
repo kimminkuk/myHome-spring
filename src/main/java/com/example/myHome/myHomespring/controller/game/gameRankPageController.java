@@ -105,7 +105,7 @@ public class gameRankPageController {
         }
 
         //Debug
-        System.out.println("findMember = " + findMember);
+        System.out.println("[DEBUG]findMember = " + findMember);
         return "game/rank-page-search.html";
     }
 }

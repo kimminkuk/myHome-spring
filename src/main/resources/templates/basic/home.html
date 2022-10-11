@@ -3,9 +3,17 @@
 <head>
     <title>Hello My Home</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" href="../css/v1.css">
+    <link rel="stylesheet" href="../css/v1.css?ver=1">
 </head>
 <body>
+    <div id="group_nav">
+        <ul>
+            <li onclick="goHomeHtml()" >HOME</li>
+            <li onclick="goStudyHtml()">STUDY</li>
+            <li onclick="goShopHtml()">SHOP</li>
+            <li onclick="goGameHtml()">GAME</li>
+        </ul>
+    </div>
     <div id="header">
         <div class="HomeMenu">
             <button class="ButtonManual1" id="btHome" type="button" onclick="goHomeHtml()" style="cursor:pointer;"> HOME </button>

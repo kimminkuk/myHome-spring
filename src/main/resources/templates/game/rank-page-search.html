@@ -2,27 +2,40 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>랭킹 Search 페이지</title>
     <!--rank-page-search css 경로 추가해줘-->
-    <link rel="stylesheet" href="/css/game/rank-page-search.css">
+    <link rel="stylesheet" href="/css/game/rank-page-search.css?ver=2">
+    <link rel="stylesheet" href="/css/v1.css?ver=1">
 </head>
 <body>
-    <h1>랭킹 Search 결과입니다.</h1>
-    <!-- thymeleaf table code -->
-    <table>
-        <thead>
-            <tr>
-                <th>순위</th>
-                <th>이름</th>
-                <th>점수</th>
-            <tr>
-                <!-- 타임리프 th 코드 -->
-                <th th:text="${myRank}"></th>
-                <th th:text="${myRankName}"></th>
-                <th th:text="${myRankValue}"></th>
-            </tr>
-        </thead>
-    </table>
+    <div id="header">
+        <div class="HomeMenu">
+            <button class="ButtonManual1" id="btHome" type="button" onclick="goHomeHtml()" style="cursor:pointer;"> HOME </button>
+            <button class="ButtonManual1" id="btStudy" type="button" th:onclick="" style="cursor:pointer;"> STUDY </button>
+            <button class="ButtonManual1" id="btShop" type="button" th:onclick="" style="cursor:pointer;"> SHOP </button>
+            <button class="ButtonManual1" id="btGame" type="button" onclick="goGameHtml()" style="cursor:pointer;"> GAME </button>
+            <button class="ButtonManual1" id="btRankPage" type="button" onclick="goRankPageHtml()" style="cursor:pointer;"> RANK PAGE </button>
+        </div> 
+        <h1>랭킹 Search 결과입니다.</h1>
+    </div>   
+    <div id="container-rank-serach">
+        <!-- thymeleaf table code -->
+        <table>
+            <thead>
+                <tr>
+                    <th>순위</th>
+                    <th>이름</th>
+                    <th>점수</th>
+                <tr>
+                    <!-- 타임리프 th 코드 -->
+                    <th th:text="${myRank}"></th>
+                    <th th:text="${myRankName}"></th>
+                    <th th:text="${myRankValue}"></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
 </body>
+<script type="text/javascript" src="../js/common.js?ver=2"></script>
 </html>

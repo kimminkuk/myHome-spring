@@ -6,8 +6,8 @@
     <title>랭킹페이지</title>
     <!-- css 경로 추가해줘-->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" href="/css/game/game-rank.css?ver=1">
-    <link rel="stylesheet" href="../css/v1.css">
+    <link rel="stylesheet" href="/css/game/game-rank.css?ver=6">
+    <link rel="stylesheet" href="../css/v1.css?ver=3">
 </head>
 <body>
     <div id="header">
@@ -20,7 +20,7 @@
         </div>    
         <h1>랭킹 페이지 입니다.</h1>
         <!-- 이름, value 반복문 -->
-        <div class="container">
+        <div class="container-rank-page">
             <div>
                 <table>
                     <thead>
@@ -47,8 +47,8 @@
         <div class="rankPageContainer1">
             <form action="/game/rank-search" method="post" enctype="UTF-8">
 
-                <input type="text" name="userName" placeholder="이름을 입력하세요">
-                <button type="submit" onclick="gameRankSearch(userName)">검색</button>
+                <input type="text" id=rank-page-input1 name="userName" placeholder="이름을 입력하세요">
+                <button type="submit" id="btn-toss-model" onclick="gameRankSearch(userName)">검색</button>
             </form>
         </div>
         <!-- myRank를 attribute로 받아서 출력해줘 -->
