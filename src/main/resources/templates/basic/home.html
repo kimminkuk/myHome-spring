@@ -3,41 +3,37 @@
 <head>
     <title>Hello My Home</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" href="../css/v1.css?ver=1">
+    <link rel="stylesheet" href="../css/v1.css?ver=40">
 </head>
 <body>
-    <div id="group_nav">
-        <ul>
-            <li onclick="goHomeHtml()" >HOME</li>
-            <li onclick="goStudyHtml()">STUDY</li>
-            <li onclick="goShopHtml()">SHOP</li>
-            <li onclick="goGameHtml()">GAME</li>
-        </ul>
-    </div>
     <div id="header">
-        <div class="HomeMenu">
-            <button class="ButtonManual1" id="btHome" type="button" onclick="goHomeHtml()" style="cursor:pointer;"> HOME </button>
-            <button class="ButtonManual1" id="btStudy" type="button" th:onclick="" style="cursor:pointer;"> STUDY </button>
-            <button class="ButtonManual1" id="btShop" type="button" th:onclick="" style="cursor:pointer;"> SHOP </button>
-            <button class="ButtonManual1" id="btGame" type="button" onclick="goGameHtml()" style="cursor:pointer;"> GAME </button>
-            <button class="ButtonManual1" id="btRankPage" type="button" onclick="goRankPageHtml()" style="cursor:pointer;"> RANK PAGE </button>
+        <div id="group_nav">
+            <ul>
+                <li class="li-menu-btn" onclick="goHomeHtml()"  onmouseover="btnLight()" >HOME</li>
+                <li class="li-menu-btn" onclick="goStudyHtml()" onmouseover="btnLight()" >STUDY</li>
+                <li class="li-menu-btn" onclick="goShopHtml()"  onmouseover="btnLight()">SHOP</li>
+                <li class="li-menu-btn" onclick="goGameHtml()"  onmouseover="btnLight()">GAME</li>
+                <li class="li-menu-btn" onclick="gamePageMoreList()"  onmouseover="btnLight()">GAME TEST</li>
+            </ul>
         </div>
+        <div class="btn-more">
+            <ul class="ul-more">
+                <li class="li-memu-btn" id="" onclick="goGameHtml()" onmouseover="btnLight()">GAME</li>
+                <li class="li-memu-btn" id="" onclick="goRankPageHtml()" onmouseover="btnLight()">RANK PAGE</li>                
+            </ul>
+        </div>
+        <!-- li를 style.display = none 해줘 -->
+
+
     </div>
+    
     <div id="container">
         <hr id="lane1">
         <nav>
             <h1>Main Home</h1>
         </nav>
-
-        <div id="dbMember">
-            <p>회원 기능</p>
-            <p>
-                <a href="/members/new">회원가입</a>
-                <a href="/members">회원목록</a>
-            </p>
-        </div>
-
     </div>
+
     <div id="footer">
         <hr class="lane2">
         <span id="last1">rlaal567@gmail.com<br></span>
@@ -48,5 +44,5 @@
         </span>
     </div>
 </body>
-<script type="text/javascript" src="../js/common.js?ver=3"></script>
+<script type="text/javascript" src="../js/common.js?ver=60"></script>
 </html>

@@ -8,14 +8,22 @@
 </head>
 <body>
     <div id="header">
-        <div class="HomeMenu">
-            <button class="ButtonManual1" id="btHome" type="button" onclick="goHomeHtml()" style="cursor:pointer;"> HOME </button>
-            <button class="ButtonManual1" id="btStudy" type="button" th:onclick="" style="cursor:pointer;"> STUDY </button>
-            <button class="ButtonManual1" id="btShop" type="button" th:onclick="" style="cursor:pointer;"> SHOP </button>
-            <button class="ButtonManual1" id="btGame" type="button" onclick="goGameHtml()" style="cursor:pointer;"> GAME </button>
-            <button class="ButtonManual1" id="btRankPage" type="button" onclick="goRankPageHtml()" style="cursor:pointer;"> RANK PAGE </button>
+        <div id="group_nav">
+            <ul>
+                <li class="li-menu-btn" onclick="goHomeHtml()"  onmouseover="btnLight()" >HOME</li>
+                <li class="li-menu-btn" onclick="goStudyHtml()" onmouseover="btnLight()" >STUDY</li>
+                <li class="li-menu-btn" onclick="goShopHtml()"  onmouseover="btnLight()">SHOP</li>
+                <li class="li-menu-btn" onclick="goGameHtml()"  onmouseover="btnLight()">GAME</li>
+                <li class="li-menu-btn" onclick="goGameHtml()"  onmouseover="btnLight()">RANK PAGE</li>
+            </ul>
         </div>
         
+        <!-- html 더보기 칸 만들어줘 -->
+        
+
+
+
+
         <div id="obstacle_top1"></div>
         <form action="post" name="gameUserPost1" enctype="UTF-8">
             <div id="userNameDiv1">

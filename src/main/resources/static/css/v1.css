@@ -21,8 +21,35 @@
     font-weight: 700;
     color: #333;
     cursor: pointer;
+    
+    /* li 간 간격 만들어줘 */
+    margin-right: 10px;
+
+    border: 1px;
+    border-style: solid;
+    /* border code */
+    
+    /* mouseover */
+      
+
 }
 
+/* #btn-more 안의 li를 세로로 일렬로 정렬해줘 */
+#btn-more li {
+    display: block;
+    float: none;
+    width: 100%;
+    height: 40px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    
+    /* li 간 간격 만들어줘 */
+    margin-right: 0;
+    margin-bottom: 10px;
+}
 
 #header {
     color : black;
