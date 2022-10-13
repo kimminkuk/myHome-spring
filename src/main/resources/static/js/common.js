@@ -83,22 +83,16 @@ function gamePageMoreList() {
     let btnMore = document.querySelector(".btn-more");
     let ulMore = document.querySelector(".ul-more");
     btnMore.addEventListener("click", function(){
-        if (ulMore.style.display === "none") {
-            ulMore.style.display = "block";
-        } else {
-            ulMore.style.display = "none";
-        }
+        //ulMore style display 가 none 이면 block 으로 바꿔줘
     });
-    //liMore 변수에 class 이름은 btn-more > ul > li 설정해줘
-    // let liMore = document.querySelectorAll(".btn-more > ul > li");
+
+    if (ulMore.style.display === "none") {
+        ulMore.style.display = "block";
+    } else {
+        ulMore.style.display = "none";
+
+    }
     
-    // btnMore.addEventListener("click", function() {
-    //     if (liMore.style.display === "none") {
-    //         liMore.style.display = "block";
-    //     } else {
-    //         liMore.style.display = "none";
-    //     }
-    // });
     return;
 }
 
