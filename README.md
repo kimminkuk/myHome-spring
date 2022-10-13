@@ -22,6 +22,8 @@
       
 3. Spring Redis는 SQL처럼 테스트코드에서 트렌젝션 사용할 수 없나?
 
+4. javascript를 사용해서 element의 x,y 좌표를 못가져오나? 그니깐 style.left 이런식으로 바로 element요소 컨트롤 가능한 좌표
+
 # TODO
 1. 게임페이지의 상호작용 처리 중.. 벽 튕기는거 코딩 중 (물리는 가속도만 적용시키자)
     - game html에서 이름 입력 후, enter 입력하면 post로 전송되는 문제
