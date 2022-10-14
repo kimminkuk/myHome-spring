@@ -80,24 +80,40 @@ function btnLight() {
 
 // 더보기 버튼을 누르면 추가 메뉴가 나오게 해줘
 function gamePageMoreList() {
-    let btnMore = document.querySelector(".btn-more");
     let ulMore = document.querySelector(".ul-more");
-    btnMore.addEventListener("click", function(){
-        //ulMore style display 가 none 이면 block 으로 바꿔줘
-    });
+    let homeBtnMore = document.querySelector("#home-btn-more");
+    let downDirectHtml = "&#9661";
+    let upDirectHtml = "&#9651";
 
     if (ulMore.style.display === "none") {
         ulMore.style.display = "block";
+        homeBtnMore.innerHTML = "접기" + upDirectHtml;
+        homeBtnMore.style.color = "#00cc00";        
     } else {
         ulMore.style.display = "none";
-
+        homeBtnMore.innerHTML = "더보기"+ downDirectHtml;
+        homeBtnMore.style.color = "#000000";
     }
-    
+
     return;
 }
 
-// 서버가 실행하면 바로 실행하게 해줘
+function moreBtnUnderLine() {
+    let btnMore = document.querySelectorAll(".li-memu-btn");
+    let btnMoreLen = btnMore.length;
+    for (let i = 0; i < btnMoreLen; i++) {
+        btnMore[i].addEventListener("mouseover", function() {
+            btnMore[i].style.textDecoration = "underline";
+        });
+        btnMore[i].addEventListener("mouseout", function() {
+            btnMore[i].style.textDecoration = "none";
+        });
+    }
+    return;
+}
 
+
+// 서버가 실행하면 바로 실행하게 해줘
 var ulMore = document.querySelector(".btn-more > ul");
 ulMore.style.display = "none";
     // var liMore = document.querySelectorAll(".btn-more > ul >li");
@@ -105,3 +121,5 @@ ulMore.style.display = "none";
     // for (let i = 0; i < liMoreLen; i++) {
     //     liMore[i].style.display = "none";
     // }
+
+
