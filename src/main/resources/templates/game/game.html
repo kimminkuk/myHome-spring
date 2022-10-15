@@ -2,27 +2,23 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>GAME</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" href="/css/game/game.css?ver=5">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />     
+    
+    <link rel="stylesheet" href="../css/v1.css?ver=120">
+    <link rel="stylesheet" href="/css/game/game.css?ver=7">
+    
     
 </head>
 <body>
     <div id="header">
-        <div id="group_nav">
+        <div id="group_nav_game">
             <ul>
-                <li class="li-menu-btn" onclick="goHomeHtml()"  onmouseover="btnLight()" >HOME</li>
-                <li class="li-menu-btn" onclick="goStudyHtml()" onmouseover="btnLight()" >STUDY</li>
-                <li class="li-menu-btn" onclick="goShopHtml()"  onmouseover="btnLight()">SHOP</li>
-                <li class="li-menu-btn" onclick="goGameHtml()"  onmouseover="btnLight()">GAME</li>
-                <li class="li-menu-btn" onclick="goGameHtml()"  onmouseover="btnLight()">RANK PAGE</li>
+                <li class="li-menu-btn" onclick="goRankPageHtml()"  onmouseover="btnLight()">RANK PAGE</li>
+                <li class="li-menu-btn" onclick="goHomeHtml()"      onmouseover="btnLight()">HOME</li>
             </ul>
         </div>
         
         <!-- html 더보기 칸 만들어줘 -->
-        
-
-
-
 
         <div id="obstacle_top1"></div>
         <form action="post" name="gameUserPost1" enctype="UTF-8">
@@ -62,5 +58,5 @@
     </div>
 </body>
 <script type="text/javascript" src="../js/game/game.js?ver=2"></script>
-<script type="text/javascript" src="../js/common.js?ver=2"></script>
+<script type="text/javascript" src="../js/common.js?ver=210"></script>
 </html>

@@ -114,8 +114,8 @@ function moreBtnUnderLine() {
 
 
 // 서버가 실행하면 바로 실행하게 해줘
-var ulMore = document.querySelector(".btn-more > ul");
-ulMore.style.display = "none";
+//var ulMore = document.querySelector(".btn-more > ul");
+//ulMore.style.display = "none";
     // var liMore = document.querySelectorAll(".btn-more > ul >li");
     // var liMoreLen = liMore.length;
     // for (let i = 0; i < liMoreLen; i++) {

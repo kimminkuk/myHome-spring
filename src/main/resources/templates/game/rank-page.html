@@ -6,56 +6,55 @@
     <title>랭킹페이지</title>
     <!-- css 경로 추가해줘-->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" href="/css/game/game-rank.css?ver=6">
+    <link rel="stylesheet" href="/css/game/game-rank.css?ver=50">
     <link rel="stylesheet" href="../css/v1.css?ver=3">
 </head>
 <body>
     <div id="header">
-                <div id="group_nav">
+        <div id="group_nav_rank_page">
             <ul>
-                <li class="li-menu-btn" onclick="goHomeHtml()"  onmouseover="btnLight()" >HOME</li>
-                <li class="li-menu-btn" onclick="goStudyHtml()" onmouseover="btnLight()" >STUDY</li>
-                <li class="li-menu-btn" onclick="goShopHtml()"  onmouseover="btnLight()">SHOP</li>
                 <li class="li-menu-btn" onclick="goGameHtml()"  onmouseover="btnLight()">GAME</li>
+                <li class="li-menu-btn" onclick="goHomeHtml()"  onmouseover="btnLight()" >HOME</li>
             </ul>
         </div>
-        <h1>랭킹 페이지 입니다.</h1>
-        <!-- 이름, value 반복문 -->
-        <div class="container-rank-page">
-            <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>순위</th>
-                            <th>이름</th>
-                            <th>점수</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!--thymeleaf iter-->
-                        
-                        
-                        <tr th:each="rankingMember, iter : ${rankingMembersWithScore}">
-                            <td th:text="${iter.index + 1}"></td>
-                            <td th:text="${rankingMember.value}"></td>
-                            <td th:text="${rankingMember.score}"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <!-- form 이름을 검색하는 코드 -->
-        <div class="rankPageContainer1">
-            <form action="/game/rank-search" method="post" enctype="UTF-8">
-
-                <input type="text" id=rank-page-input1 name="userName" placeholder="이름을 입력하세요">
-                <button type="submit" id="btn-toss-model" onclick="gameRankSearch(userName)">검색</button>
-            </form>
-        </div>
-        <!-- myRank를 attribute로 받아서 출력해줘 -->
-        <div th:if="${myRank != null}">
-            <p th:text="${myRank}"></p>
     </div>
+    <!-- 이름, value 반복문 -->
+    <div class="container-rank-page">
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>이름</th>
+                        <th>점수</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--thymeleaf iter-->
+                    <tr th:each="rankingMember, iter : ${rankingMembersWithScore}">
+                        <td th:text="${iter.index + 1}"></td>
+                        <td th:text="${rankingMember.value}"></td>
+                        <td th:text="${rankingMember.score}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- form 이름을 검색하는 코드 -->
+    <div class="container-rank-page-search">
+        <form action="/game/rank-search" method="post" enctype="UTF-8">
+         <input type="text" id=rank-page-input1 name="userName" placeholder="이름을 입력하세요">
+            <button type="submit" id="btn-toss-model" onclick="gameRankSearch(userName)">검색</button>
+        </form>
+    </div>
+
+    <div class="container-rank-page-mid">
+        <h1>랭킹페이지 입니다.</h1>
+    </div>
+
+     <!-- myRank를 attribute로 받아서 출력해줘 -->
+    <div th:if="${myRank != null}">
+        <p th:text="${myRank}"></p>
 </body>
 <script type="text/javascript" src="../js/game/game-rank.js?ver=3"></script>
 <script type="text/javascript" src="../js/common.js?ver=2"></script>

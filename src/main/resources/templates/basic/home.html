@@ -3,6 +3,8 @@
 <head>
     <title>Hello My Home</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!--캐시 설정해줘-->
+    <meta http-equiv="Cache-Control" content="no-cache">
     <link rel="stylesheet" href="../css/v1.css?ver=120">
 </head>
 <body>
@@ -13,13 +15,13 @@
                 <li class="li-menu-btn" onclick="goStudyHtml()" onmouseover="btnLight()" >STUDY</li>
                 <li class="li-menu-btn" onclick="goShopHtml()"  onmouseover="btnLight()">SHOP</li>
                 <li class="li-menu-btn" onclick="goGameHtml()"  onmouseover="btnLight()">GAME</li>
-                <li class="li-menu-btn" id="home-btn-more" onclick="gamePageMoreList()"  onmouseover="btnLight()">더보기&#9661</li>
+                <li class="li-menu-btn" id="home-btn-more" onclick="gamePageMoreList()" onmouseover="btnLight()">더보기&#9661</li>
             </ul>
         </div>
-
     </div>
+
     <div class="btn-more">
-        <ul class="ul-more">
+        <ul class="ul-more" style="display:none;">
             <li class="li-memu-btn" onclick="goGameHtml()" onmouseover="moreBtnUnderLine()">GAME</li>
             <li class="li-memu-btn" onclick="goRankPageHtml()" onmouseover="moreBtnUnderLine()">RANK PAGE</li>                
         </ul>
@@ -41,5 +43,5 @@
         </span>
     </div>
 </body>
-<script type="text/javascript" src="../js/common.js?ver=200"></script>
+<script type="text/javascript" src="../js/common.js?ver=210"></script>
 </html>
