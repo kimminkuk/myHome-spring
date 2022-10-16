@@ -248,7 +248,6 @@ function gameEnd(end_cond, winner) {
                 }
                 
             } else {
-
                 console.error(xhr.responseText);
                 alert('write 문제발생');
             }

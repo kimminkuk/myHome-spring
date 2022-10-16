@@ -47,6 +47,11 @@ public class gamePageController {
 
         //랭킹페이지에 넣을거임 (게임 페이지의 경우)
         redisGameResultDataService.saveRanking(resultMember);
+        //logger 코드
+        System.out.println("resultMember = " + resultMember);
+        System.out.println("name = " + name + " score = " + score);
+        System.out.println("resultMember name: " + resultMember.getKey() + " resultMember score: " + resultMember.getValue());
+
         return "game/game.html";
     }
 

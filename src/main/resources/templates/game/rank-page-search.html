@@ -5,22 +5,19 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>랭킹 Search 페이지</title>
     <!--rank-page-search css 경로 추가해줘-->
-    <link rel="stylesheet" href="/css/game/rank-page-search.css?ver=2">
+    <link rel="stylesheet" href="/css/game/rank-page-search.css?ver=20">
     <link rel="stylesheet" href="/css/v1.css?ver=1">
 </head>
 <body>
     <div id="header">
-        <div id="group_nav">
+        <div id="group_nav_rank_page_search">
             <ul>
-                <li class="li-menu-btn" th:onclick="goHomeHtml()"  onmouseover="btnLight()" >HOME</li>
-                <li class="li-menu-btn" th:onclick="goStudyHtml()" onmouseover="btnLight()" >STUDY</li>
-                <li class="li-menu-btn" th:onclick="goShopHtml()"  onmouseover="btnLight()">SHOP</li>
-                <li class="li-menu-btn" th:onclick="goGameHtml()"  onmouseover="btnLight()">GAME</li>
+                <li class="li-menu-btn" onclick="goRankPageHtml()"  onmouseover="btnLight()">RANK PAGE</li>
+                <li class="li-menu-btn" onclick="goHomeHtml()"  onmouseover="btnLight()">HOME</li>
             </ul>
         </div>
-        <h1>랭킹 Search 결과입니다.</h1>
-    </div>   
-    <div id="container-rank-serach">
+    </div>
+    <div class="container_rank_page_serach_table">
         <!-- thymeleaf table code -->
         <table>
             <thead>
@@ -37,6 +34,9 @@
             </thead>
         </table>
     </div>
+    <div class="container_rank_page_seaerch_mid">
+        <h1>랭킹 Search 결과입니다.</h1>   
+    </div>    
 </body>
-<script type="text/javascript" src="../js/common.js?ver=2"></script>
+<script type="text/javascript" src="../js/common.js?ver=210"></script>
 </html>

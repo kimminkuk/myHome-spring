@@ -105,7 +105,44 @@ public class gameRankPageController {
         }
 
         //Debug
-        System.out.println("[DEBUG]findMember = " + findMember);
+        System.out.println("[DEBUG]userName = " + userName);
+        return "game/rank-page-search.html";
+    }
+
+
+    @GetMapping("/game/rank-search")
+    public String searchMyRankGetVer(Model model,
+                                   @RequestParam("userName") String userName) {
+        Set<ZSetOperations.TypedTuple<String>> rankingMembers = redisRankPageService.getRankingMembersWithScore(0, 999);
+        int rank = 0, score = 0;
+        String findMember = "";
+        //Required request parameter 'userName' for method parameter type String is not present
+
+        for (ZSetOperations.TypedTuple<String> rankingMember : rankingMembers) {
+            rank++;
+            // String 비교 코드
+            if (rankingMember.getValue().equals(userName)) {
+                findMember = rankingMember.getValue();
+                score = rankingMember.getScore().intValue();
+                break;
+            }
+        }
+        if ( findMember.equals("") ) {
+            if ( redisRankPageService.findOne(userName).get() ) {
+                model.addAttribute("myRank", "순위 밖");
+            } else {
+                model.addAttribute("myRank", "등록되지 않은 유저입니다.");
+            }
+        } else {
+            model.addAttribute("myRank", rank);
+            model.addAttribute("myRankName", findMember);
+            model.addAttribute("myRankValue", score);
+        }
+
+        //경고 회피용
+        model.addAttribute("userName", userName);
+        //Debug
+        System.out.println("[DEBUG GET VERSION]userName = " + userName);
         return "game/rank-page-search.html";
     }
 }

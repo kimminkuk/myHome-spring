@@ -1,4 +1,4 @@
-.container-rank-page-search {
+.container-rank-page-find {
     position: absolute;
     width: 30%;
     height: 10%;
@@ -48,7 +48,7 @@
     background: linear-gradient(to right, #43cea2, #18999d); /* Standard syntax */
 }
 
-#rank-page-input1 {
+#rank-page-input {
     width: 100%;
 }
 

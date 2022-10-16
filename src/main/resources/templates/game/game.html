@@ -19,7 +19,6 @@
         </div>
         
         <!-- html 더보기 칸 만들어줘 -->
-
         <div id="obstacle_top1"></div>
         <form action="post" name="gameUserPost1" enctype="UTF-8">
             <div id="userNameDiv1">
@@ -33,13 +32,16 @@
             </div>      
         </form>
         <!-- post 폼으로 이름과 벨류를 전송하는 코드 -->
+        <!--여긴 form, submit 둘다 썻는데 왜 2번 get안하지??? post라서 그런가..-->
         <form action="post" name="gameUserPost2" enctype="UTF-8">
             <div id="userNameDiv2">
                 테스트입력 부분.<br>
                 <input class = "input-text" id ="userNameInput2" type="text" name="userName2" required maxlength="48" size="48"/>
                 <!-- 전송 버튼 코드 -->
-                <input type="submit" value="전송" onclick="gameEndPostTest(userName2)" id="submitBtn" style="cursor:pointer;">
+                <input type="submit" value="전송" onclick="gameEndPostTest(userName2)" id="submitBtn" 
+                style="cursor:pointer; display:none;"/>
             </div>
+        </form>
     </div>
     <div id="ball_1">
                 
