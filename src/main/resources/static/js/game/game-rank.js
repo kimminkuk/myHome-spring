@@ -1,27 +1,5 @@
 function gameRankSearch() {
-    var xhr = new XMLHttpRequest();
     var ur = 'http://localhost:8080/game/rank-search';
-    xhr.onreadystatechange = function() {
-        if(xhr.readyState === xhr.DONE) {
-            if (xhr.status === 200 || xhr.status === 201) {
-                //xhr 정상 처리 코드
-                //TODO:
-                // game/rank-search 페이지로 이동하는 코드
-                // 1. form 형식으로 보내니, 이동이 안됨
-                // 2. post -> game/rank-search 데이터가 2번간다.
-                // 이 부분은 html에서 form action 부분을 없애서 해결한 줄 알았는데
-                // form action을 없애니, 화면 전환을 못하겠음..
-                // 이것저것 해보다가 일단 window.location.replace()로 작성하기로 함
-                //window.location을 post로 보내줘
-                
-                //window.location = "http://localhost:8080/game/rank-search";
-            } else {
-                console.error(xhr.responseText);
-                alert("gameRankSearch() Error");
-            }
-        }
-    };
-
     let rank_page_input = document.querySelector("#rank-page-input");
     let userName = rank_page_input.value;
     if ( userName == null || userName == "" ) {
@@ -33,11 +11,11 @@ function gameRankSearch() {
         alert("검색할 유저명은 문자열이어야 합니다.");
         return;
     }
-    
+
     var data = '?userName=' + encodeURIComponent(userName);
-    xhr.open('GET', ur, true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send(data);
+    ur = ur + data;
+    
+    window.location.replace(ur);
     
     return;
 }

@@ -31,7 +31,9 @@ public class myHomeController {
     @GetMapping("/my-home")
     public String myHomeIndex(Model model) {
         model.addAttribute("myHome", "hello");
-        return "basic/home";
+        System.out.println("[DEBUG] my-home Call");
+        return "basic/home.html";
+        //return "resources/templates/basic/home.html";
     }
 
     @GetMapping("hello-string")

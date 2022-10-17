@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -109,10 +110,10 @@ public class gameRankPageController {
         return "game/rank-page-search.html";
     }
 
-
     @GetMapping("/game/rank-search")
     public String searchMyRankGetVer(Model model,
                                    @RequestParam("userName") String userName) {
+
         Set<ZSetOperations.TypedTuple<String>> rankingMembers = redisRankPageService.getRankingMembersWithScore(0, 999);
         int rank = 0, score = 0;
         String findMember = "";
@@ -139,8 +140,6 @@ public class gameRankPageController {
             model.addAttribute("myRankValue", score);
         }
 
-        //경고 회피용
-        model.addAttribute("userName", userName);
         //Debug
         System.out.println("[DEBUG GET VERSION]userName = " + userName);
         return "game/rank-page-search.html";

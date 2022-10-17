@@ -5,14 +5,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <!--캐시 설정해줘-->
     <meta http-equiv="Cache-Control" content="no-cache">
-    <link rel="stylesheet" href="../css/v1.css?ver=120">
+    <link rel="stylesheet" href="../css/v1.css?ver=221017">
 </head>
 <body>
     <div id="header">
         <div id="group_nav">
             <ul>
                 <li class="li-menu-btn" onclick="goHomeHtml()"  onmouseover="btnLight()" >HOME</li>
-                <li class="li-menu-btn" onclick="goStudyHtml()" onmouseover="btnLight()" >STUDY</li>
+                <li class="li-menu-btn" id="more-btn-study" onclick="studyPageMoreList()" onmouseover="btnLight()" >STUDY</li>
                 <li class="li-menu-btn" onclick="goShopHtml()"  onmouseover="btnLight()">SHOP</li>
                 <li class="li-menu-btn" onclick="goGameHtml()"  onmouseover="btnLight()">GAME</li>
                 <li class="li-menu-btn" id="home-btn-more" onclick="gamePageMoreList()" onmouseover="btnLight()">더보기&#9661</li>
@@ -26,6 +26,13 @@
             <li class="li-memu-btn" onclick="goRankPageHtml()" onmouseover="moreBtnUnderLine()">RANK PAGE</li>                
         </ul>
     </div>
+    
+    <div class="btn-more-study">
+        <ul class="ul-more-study" style="display:none;">
+            <li class="li-memu-btn" onclick="goReservePageHtml()" onmouseover="moreBtnUnderLine()">설비 예약</li>
+        </ul>
+    </div>    
+    
     <div id="container">
         <hr id="lane1">
         <nav>
@@ -43,5 +50,5 @@
         </span>
     </div>
 </body>
-<script type="text/javascript" src="../js/common.js?ver=210"></script>
+<script type="text/javascript" src="../js/common.js?ver=221017-1"></script>
 </html>

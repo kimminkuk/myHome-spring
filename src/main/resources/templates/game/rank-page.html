@@ -43,15 +43,15 @@
     <!-- form 이름을 검색하는 코드 -->
     <div class="container-rank-page-find">
         
-        <!--
-            <input type="text" id=rank-page-input name="userName" placeholder="이름을 입력하세요">
-            <button type="submit" id="btn-toss-model" onclick="gameRankSearch()">검색</button>        
-        -->
         
-        <form action="/game/rank-search" method="get" enctype="UTF-8">
+        <input type="text" id=rank-page-input name="userName" placeholder="이름을 입력하세요">
+        <button type="submit" id="btn-toss-model" onclick="gameRankSearch()">검색</button>        
+        
+        
+        <!-- <form action="/game/rank-search" method="get" enctype="UTF-8">
             <input type="text" id=rank-page-input name="userName" placeholder="이름을 입력하세요">
             <button type="submit" id="btn-toss-model" onclick="gameRankSearch()">검색</button>        
-        </form>
+        </form> -->
     </div>
 
     <div class="container-rank-page-mid">
@@ -62,6 +62,6 @@
     <div th:if="${myRank != null}">
         <p th:text="${myRank}"></p>
 </body>
-<script type="text/javascript" src="../js/game/game-rank.js?ver=130"></script>
-<script type="text/javascript" src="../js/common.js?ver=2"></script>
+<script type="text/javascript" src="../js/game/game-rank.js?ver=221017"></script>
+<script type="text/javascript" src="../js/common.js?ver=221017-1"></script>
 </html>

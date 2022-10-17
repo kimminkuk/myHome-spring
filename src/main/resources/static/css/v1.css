@@ -1,4 +1,7 @@
-/*naver group_nav 만들어줘*/
+/*naver group_nav를 html 맨 왼쪽에서 시작해줘*/
+
+
+
 #group_nav {
     display: inline;
     position: relative;
@@ -41,6 +44,36 @@
 
 /* #btn-more 안의 li를 세로로 일렬로 정렬해줘 */
 .btn-more li {
+    display: block;
+    float: none;
+    width: 100%;
+    height: 20px;
+    left: 0px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    
+    /* li 간 간격 만들어줘 */
+    margin-bottom: 10px;
+}
+
+/* 언제까지 left를 하드코딩할수는 없는데 흠.. */
+.btn-more-study ul {
+    display: none;
+    position: absolute;
+    left : 160px;
+    width: 250px;
+    height: 150px;
+    padding: 1px;
+    /*연한 회색으로*/
+    background-color: #f2f2f2;
+    border: 1px solid #333;
+    z-index: 100;
+}
+
+.btn-more-study li {
     display: block;
     float: none;
     width: 100%;

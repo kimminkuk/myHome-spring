@@ -1,61 +1,23 @@
 function goHomeHtml() {
-    var xhr = new XMLHttpRequest();
-    var ur = 'http://localhost:8080/my-home';
-    xhr.onreadystatechange = function() {
-        if(xhr.readyState === xhr.DONE) {
-            if (xhr.status === 200 || xhr.status === 201) {
-                console.log(xhr.responseText);
-                window.location.replace('http://localhost:8080/my-home');
-            } else {
-                console.error(xhr.responseText);
-                alert("goHomeHtml() Error");
-            }
-        }
-    };
-    xhr.open('GET', ur, true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send();    
+    window.location.replace('http://localhost:8080/my-home');
     return;
 }
 
 function goGameHtml() {
-    var xhr = new XMLHttpRequest();
     var ur = 'http://localhost:8080/game/game-home';
-    xhr.onreadystatechange = function() {
-        if(xhr.readyState === xhr.DONE) {
-            if (xhr.status === 200 || xhr.status === 201) {
-                console.log(xhr.responseText);
-                window.location.replace('http://localhost:8080/game/game-home');
-            } else {
-                console.error(xhr.responseText);
-                alert("goGameHtml() Error");
-            }
-        }
-    };
-    xhr.open('GET', ur, true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send();
+    window.location.replace(ur);
     return;
 }
 
 function goRankPageHtml() {
-    // XMLHttpRequest 객체 생성
-    var xhr = new XMLHttpRequest();
     var ur = 'http://localhost:8080/game/rank-page';
-    xhr.onreadystatechange = function() {
-        if(xhr.readyState === xhr.DONE) {
-            if (xhr.status === 200 || xhr.status === 201) {
-                console.log(xhr.responseText);
-                window.location.replace('http://localhost:8080/game/rank-page');
-            } else {
-                console.error(xhr.responseText);
-                alert("goRankPageHtml() Error");
-            }
-        }
-    };
-    xhr.open('GET', ur, true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send();
+    window.location.replace(ur);
+    return;
+}
+
+function goReservePageHtml() {
+    var ur = 'http://localhost:8080/reserve/reserve-main';
+    window.location.replace(ur);
     return;
 }
 
@@ -75,6 +37,24 @@ function btnLight() {
             liBtnList[i].style.backgroundColor = "#ffffff";
         });        
     }
+    return;
+}
+
+function studyPageMoreList() {
+    let ulMoreStudy = document.querySelector(".ul-more-study");
+    let moreBtnStudy = document.querySelector("#more-btn-study");
+    let downDirectHtml = "&#9661";
+    let upDirectHtml = "&#9651";
+
+    if (ulMoreStudy.style.display === "none") {
+        ulMoreStudy.style.display = "block";
+        moreBtnStudy.innerHTML = "접기" + upDirectHtml;
+        moreBtnStudy.style.color = "#00cc00";        
+    } else {
+        ulMore.style.display = "none";
+        moreBtnStudy.innerHTML = "더보기"+ downDirectHtml;
+        moreBtnStudy.style.color = "#000000";
+    }    
     return;
 }
 
@@ -111,15 +91,3 @@ function moreBtnUnderLine() {
     }
     return;
 }
-
-
-// 서버가 실행하면 바로 실행하게 해줘
-//var ulMore = document.querySelector(".btn-more > ul");
-//ulMore.style.display = "none";
-    // var liMore = document.querySelectorAll(".btn-more > ul >li");
-    // var liMoreLen = liMore.length;
-    // for (let i = 0; i < liMoreLen; i++) {
-    //     liMore[i].style.display = "none";
-    // }
-
-
