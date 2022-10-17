@@ -2,11 +2,11 @@
 
 # 계획 일정 ~10/E
 1. github 내용 겹치는거 삭제 -> 현재 myHome-Spring에 전부 페이지화 할 예정 (아래 목록들만 해도 10개는 지울듯)<br>
-   - 1.0 버튼 이쁘게 만들기 및 css 로 위에 설정 조정 ( 아주 힘든 과정일거 같음 )
-   - 1.1 콴트 조사한 페이지 ( https://github.com/kimminkuk/220501_ver1)
+   - 1.0 버튼 이쁘게 만들기 및 css 로 위에 설정 조정 (1차 완료)
+   - 1.1 예약페이지 만들던거 ( 부스트캠프 하다가 실패, https://github.com/kimminkuk/boostcourse ) (todolist 이쁘게 만들기)
    - 1.2 상품 올리는 페이지 구현하던거 (https://github.com/kimminkuk/item-service 여기거 옮기기)
-   - 1.3 예약페이지 만들던거 ( 부스트캠프 하다가 실패, https://github.com/kimminkuk/boostcourse )
-   - 1.4 게시판 글쓰기 만들던거 ( 부스트캠프에서 하던거 리팩토링, https://github.com/kimminkuk/boostcourse )
+   - 1.3 게시판 글쓰기 만들던거 ( 부스트캠프에서 하던거 리팩토링, https://github.com/kimminkuk/boostcourse )
+   - 1.4 콴트 조사한 페이지 ( https://github.com/kimminkuk/220501_ver1)   
    - 1.5 동영상 
 
 # 현재 막힌 부분 및 진행 상황
