@@ -5,14 +5,72 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
+    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221018-5">
 </head>
 <body>
     <div id="header">
-        <div id="group_nav_reserve_main">
+        <div class="group-nav-reserve-main">
             <ul>
-                <li class="li-menu-btn" onclick="goHomeHtml()"  onmouseover="btnLight()" >HOME</li>
+                <div class="li-original">
+                    <li class="li-menu-btn" onclick="goHomeHtml()"  onmouseover="btnLight()" >HOME</li>
+                </div>
+            </ul>
+
+            <ul>
+                <div class="li-reserve-menu">
+                    <li class="li-menu-btn" id="reserveItemMakeBtn" onclick="reserveItemMake()"  onmouseover="btnLight()" >항목만들기</li>
+                </div>                
             </ul>
         </div>
+    </div>
+    <div class="reserve-item-make-body" style="display:none;">
+            <div class="reserve-item-title">
+                <input type="text" id="reserveItemTitle" placeholder="예약 항목을 만들어주세요.">
+            </div>
+            <div class="reserve-item-username">
+                <input type="text" id="reserveItemUserName" placeholder="이름을 입력해주세요.">
+            </div>
+            <div class="reserve-item-time">
+                <input type="text" id="reserveItemTime" placeholder="예약시간을 설정해주세요.">
+            </div>
+            <!-- 시간 스크롤 -->
+            <div class="reserve-item-time-scroll">
+                <select id="reserveItemTimeScroll">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                    <option value="24">24</option>                    
+                </select>
+            </div>
+            <div class="reserve-item-minute-scroll">
+                <select id="reserveItemMinuteScroll">
+                    <option value="00">00</option>
+                    <option value="30">30</option>
+                </select>
+            </div>                 
+            <div class="reserve-item-make-body-btn">
+                <input type="submit" value="만들기" id="reserveItemMakeBodyBtn" onclick="reserveItemMakeBodyBtn()">
+            </div>
     </div>
     <h1>
         예약페이지입니다.<br>
@@ -20,5 +78,6 @@
         아주 어려울듯
     </h1>
 </body>
-<script type="text/javascript" src="../js/common.js?ver=221017-1"></script>
+<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221018-2"></script>
+<script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
 </html>

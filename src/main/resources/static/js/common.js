@@ -51,7 +51,7 @@ function studyPageMoreList() {
         moreBtnStudy.innerHTML = "접기" + upDirectHtml;
         moreBtnStudy.style.color = "#00cc00";        
     } else {
-        ulMore.style.display = "none";
+        ulMoreStudy.style.display = "none";
         moreBtnStudy.innerHTML = "더보기"+ downDirectHtml;
         moreBtnStudy.style.color = "#000000";
     }    
