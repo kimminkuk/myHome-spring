@@ -17,7 +17,7 @@ public class ReserveFacilityService {
      *  설비 예약 타이틀 생성
      */
     public Long join(ReserveFacilityTitle reserveFacilityTitle) {
-        //validateDuplicateFacilityTitle(reserveFacilityTitle);
+        validateDuplicateFacilityTitle(reserveFacilityTitle);
         reserveFacilityRepository.save(reserveFacilityTitle);
         return reserveFacilityTitle.getId();
     }

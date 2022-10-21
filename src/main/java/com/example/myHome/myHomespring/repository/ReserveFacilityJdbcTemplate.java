@@ -37,7 +37,9 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
 
     @Override
     public Optional<ReserveFacilityTitle> findByTitle(String title) {
-        return Optional.empty();
+        String sql = "select * from FACILITY_TITLE_V1 where title = ?";
+        List<ReserveFacilityTitle> result = jdbcTemplate.query(sql, reserveFacilityTitleRowMapper(), title);
+        return result.stream().findAny();
     }
 
     @Override

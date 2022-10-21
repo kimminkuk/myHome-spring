@@ -18,6 +18,9 @@ function reserveMainItemMakeBtn() {
             } else {
                 console.error(xhr.responseText);
                 alert("[ERR-005] 예약 항목 만들기 실패! 통신 오류입니다.");
+                
+                //TODO: 이건 자바스크립트에서 어떻게 처리하지?? 데이터를 어떻게 받아오지 흠.
+                alert("[ERR-006] 예약 항목 만들기 실패! 같은 이름의 설비가 존재합니다.");
             }
         }
     };

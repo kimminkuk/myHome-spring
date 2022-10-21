@@ -23,6 +23,27 @@
             </ul>
         </div>
     </div>
+    <h1>
+        예약페이지입니다.<br>
+        oasis에 있는 페이지처럼 만들어 보고 싶습니다.
+        아주 어려울듯
+    </h1>
+    <div class="reserve-main-facility-table">
+        <!-- thymeleaf table code -->
+        <table>
+            <thead>
+                <tr>
+                    <th>순서:</th>
+                    <th>설비명:</th>
+                <tr>
+                <!-- thymeleaf iter -->
+                <tr th:each="facility, iter : ${reserveFacilityTitles}">
+                    <th th:text="${iter.index + 1}"></th>
+                    <th th:text="${facility.title}"></th>
+                </tr>       
+            </thead>
+        </table>
+    </div>    
     <div class="reserve-main-item-make" style="display:none;">
         <div class="reserve-main-item-make-title">
             <input type="text" id="reserveMainItemTitle" placeholder="예약 항목을 입력해주세요.">
@@ -74,11 +95,6 @@
                 <input type="submit" value="만들기" id="reserveItemMakeBodyBtn" onclick="reserveItemMakeBodyBtn()">
             </div>
     </div>
-    <h1>
-        예약페이지입니다.<br>
-        oasis에 있는 페이지처럼 만들어 보고 싶습니다.
-        아주 어려울듯
-    </h1>
 </body>
 <script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221018-2"></script>
 <script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
