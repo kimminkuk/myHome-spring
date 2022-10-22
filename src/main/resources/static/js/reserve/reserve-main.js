@@ -39,3 +39,14 @@ function reserveMainItemMakeBtn() {
     xhr.send();
     return;
 }
+
+var reserveTitlesTimes = document.querySelectorAll(".reserve-iter-list-time");
+var reserveTitlesTimeLength = reserveTitlesTimes.length;
+var reserveTitlesTimeChild = new Array(reserveTitlesTimeLength);
+for (var i = 0; i < reserveTitlesTimeLength; i++) {
+    reserveTitlesTimes[i].style.display = "grid";
+    reserveTitlesTimes[i].style.gridTemplateColumns = "repeat(48, 1fr)";
+    reserveTitlesTimes[i].style.gridTemplateRows = "1fr";
+    reserveTitlesTimes[i].style.border = "1px solid black";
+    reserveTitlesTimes[i].style.gridGap = "1px";
+}

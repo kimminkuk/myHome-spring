@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
-    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221018-5">
+    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221022-7">
 </head>
 <body>
     <div id="header">
@@ -23,23 +23,20 @@
             </ul>
         </div>
     </div>
-    <h1>
-        예약페이지입니다.<br>
-        oasis에 있는 페이지처럼 만들어 보고 싶습니다.
-        아주 어려울듯
-    </h1>
     <div class="reserve-main-facility-table">
         <!-- thymeleaf table code -->
         <table>
             <thead>
                 <tr>
-                    <th>순서:</th>
-                    <th>설비명:</th>
+                    <th>순서</th>
+                    <th>설비명</th>
+                    <th style="width:100%; height:30px;">예약시간</th>
                 <tr>
                 <!-- thymeleaf iter -->
                 <tr th:each="facility, iter : ${reserveFacilityTitles}">
-                    <th th:text="${iter.index + 1}"></th>
-                    <th th:text="${facility.title}"></th>
+                    <th class="reserve-iter-list-number" th:text="${iter.index + 1}"></th>
+                    <th class="reserve-iter-list-title" th:text="${facility.title}"></th>
+                    <th class="reserve-iter-list-time"></th>
                 </tr>       
             </thead>
         </table>
@@ -96,6 +93,6 @@
             </div>
     </div>
 </body>
-<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221018-2"></script>
+<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221022-11"></script>
 <script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
 </html>

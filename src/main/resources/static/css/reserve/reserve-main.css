@@ -50,3 +50,47 @@
     border: 1px solid #333;
     z-index: 100;
 }
+
+.reserve-iter-list-title {
+    border: 1px solid #333;
+    left: 0px;
+    margin: 0px;
+    width: 20%;
+    height: 10%;
+}
+
+.reserve-iter-list-title-child {
+    border: 1px solid #333;
+    left: 400px;
+}
+
+.reserve-iter-list-time {
+    
+    left: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 50px;
+    background-color: #1212;
+
+    /* html grid 간격 표시 */
+    
+
+}
+
+.reserve-iter-list-title2 {
+    /* border 1px 검은색 */
+    border: 1px solid #333;
+    
+    /* 위, 아래 간격 없애줘 */
+    margin-top: 0px;
+    margin-bottom: 0px;
+
+    /* 가로로 20개의 작은 배열로 나눠줘 그리고 칸을 구분해줘*/
+    display: grid;
+    
+    grid-template-columns: repeat(20, 1fr);
+    grid-template-rows: 1fr;
+    
+    /* grid 칸을 나눠줘 */
+    grid-gap: 1px;
+}
