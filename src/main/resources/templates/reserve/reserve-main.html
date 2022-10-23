@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
-    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221022-7">
+    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221022-36">
 </head>
 <body>
     <div id="header">
@@ -19,6 +19,7 @@
             <ul>
                 <div class="li-reserve-menu">
                     <li class="li-menu-btn" id="reserveItemMakeBtn" onclick="reserveItemMake()"  onmouseover="btnLight()" >항목만들기</li>
+                    <li class="li-menu-btn" id="reserveItemDeleteBtn" onclick="reserveDelVisible()"  onmouseover="btnLight()" >항목 지우기</li>
                 </div>                
             </ul>
         </div>
@@ -32,6 +33,21 @@
                     <th>설비명</th>
                     <th style="width:100%; height:30px;">예약시간</th>
                 <tr>
+
+                <!-- [시간1] 맨 위에 헤더 개념으로 하나 더 생성 -->
+                <tr class="th-header-time1">
+                    <th class="reserve-iter-list-number-header-1"></th>
+                    <th class="reserve-iter-list-title-header-1"></th>
+                    <th class="reserve-iter-list-time-header-1"></th>
+                </tr>                
+                
+                <!-- [시간2] 맨 위에 헤더 개념으로 하나 더 생성 -->
+                <tr class="th-header-time2">
+                    <th class="reserve-iter-list-number-header-2"></th>
+                    <th class="reserve-iter-list-title-header-2"></th>
+                    <th class="reserve-iter-list-time-header-2"></th>
+                </tr>
+
                 <!-- thymeleaf iter -->
                 <tr th:each="facility, iter : ${reserveFacilityTitles}">
                     <th class="reserve-iter-list-number" th:text="${iter.index + 1}"></th>
@@ -93,6 +109,6 @@
             </div>
     </div>
 </body>
-<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221022-11"></script>
+<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221022-36"></script>
 <script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
 </html>

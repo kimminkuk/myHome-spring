@@ -48,6 +48,21 @@ public class reserveMainController {
         reserveFacilityTitle.setTitle(facilityTitle);
         reserveFacilityService.join(reserveFacilityTitle);
         System.out.println("[DEBUG END] /reserve/reserve-main/make/facilityTitle: " + facilityTitle + " Call");
-        return "reserve/reserve-main";
+
+        return "redirect:/reserve/reserve-main";
+    }
+
+    @GetMapping("/reserve/reserve-main/delete")
+    public String reserveMainDelete(Model model,
+                                    @RequestParam("delFacTitle") String delFacTitle) {
+
+        System.out.println("[DEBUG START] /reserve/reserve-main/delete/delTitle " + delFacTitle + " Call");
+        model.addAttribute("delFacTitle", delFacTitle);
+        reserveFacilityService.delFacility(delFacTitle);
+        System.out.println("[DEBUG END] /reserve/reserve-main/delete/delTitle: " + delFacTitle + " Call");
+
+
+        //redirect code
+        return "redirect:/reserve/reserve-main";
     }
 }

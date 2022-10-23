@@ -32,6 +32,13 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
                 .findAny();
     }
 
+    @Override
+    public Optional<ReserveFacilityTitle> delFacility(String delTitle) {
+        findByTitle(delTitle)
+                .ifPresent(findReserveFacilityTitle -> store.remove(findReserveFacilityTitle.getId()));
+        return Optional.empty();
+    }
+
     public void clearStore() {
         store.clear();
     }

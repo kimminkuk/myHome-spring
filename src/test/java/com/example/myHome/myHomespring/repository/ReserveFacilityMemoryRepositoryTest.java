@@ -56,4 +56,32 @@ class ReserveFacilityMemoryRepositoryTest {
         assertThat(findFacility1).isEqualTo(reserveFacilityTitle);
         assertThat(findFacility2).isEqualTo(reserveFacilityTitle1);
     }
+
+    @Test
+    void delFacility() {
+        String delTitle = "MT8311_ASAN_BMT#2";
+        //given
+        ReserveFacilityTitle reserveFacilityTitle = new ReserveFacilityTitle();
+        reserveFacilityTitle.setTitle("MT8311_ASAN_BMT#1");
+
+        ReserveFacilityTitle reserveFacilityTitle1 = new ReserveFacilityTitle();
+        reserveFacilityTitle1.setTitle(delTitle);
+
+        ReserveFacilityTitle reserveFacilityTitle2 = new ReserveFacilityTitle();
+        reserveFacilityTitle2.setTitle("MT8311_ASAN_BMT#3");
+
+        ReserveFacilityTitle reserveFacilityTitle3 = new ReserveFacilityTitle();
+        reserveFacilityTitle3.setTitle("MT8311_ASAN_BMT#6");
+
+        //when
+        reserveFacilityRepository.save(reserveFacilityTitle);
+        reserveFacilityRepository.save(reserveFacilityTitle1);
+        reserveFacilityRepository.save(reserveFacilityTitle2);
+
+        //then
+        assertThat(reserveFacilityRepository.findAll().size()).isEqualTo(3);
+
+        reserveFacilityRepository.delFacility(delTitle);
+        assertThat(reserveFacilityRepository.findAll().size()).isEqualTo(2);
+    }
 }

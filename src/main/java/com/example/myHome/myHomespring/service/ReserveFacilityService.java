@@ -36,6 +36,12 @@ public class ReserveFacilityService {
         return reserveFacilityRepository.findById(reserveFacilityTitleId);
     }
 
+    /**
+     * 설비 예약 타이틀 삭제
+     */
+     public Optional<ReserveFacilityTitle> delFacility(String delTitle) {
+        return reserveFacilityRepository.delFacility(delTitle);
+     }
 
     private void validateDuplicateFacilityTitle(ReserveFacilityTitle reserveFacilityTitle) {
         reserveFacilityRepository.findByTitle(reserveFacilityTitle.getTitle())

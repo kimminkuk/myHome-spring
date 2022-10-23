@@ -10,4 +10,6 @@ public interface ReserveFacilityRepository {
     Optional<ReserveFacilityTitle> findById(Long id);
     Optional<ReserveFacilityTitle> findByTitle(String title);
     List<ReserveFacilityTitle> findAll();
+
+    Optional<ReserveFacilityTitle> delFacility(String delTitle);
 }

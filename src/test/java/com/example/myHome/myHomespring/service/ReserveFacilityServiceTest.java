@@ -68,4 +68,55 @@ class ReserveFacilityServiceTest {
 //        assertEquals(facilityReserveErrorCode.getMessage(), "이미 존재하는 설비 예약 타이틀입니다.");
 
     }
+
+    @Test
+    public void 설비_삭제() throws Exception {
+        //given
+        List<ReserveFacilityTitle> reserveFacilityTitles = reserveFacilityService.findReserveFacilityTitles();
+        int size = reserveFacilityTitles.size();
+        String title = "MT8311_ASAN_BMT#11";
+        String title1 = "MT8311_ASAN_BMT#22";
+        String title2 = "MT8311_ASAN_BMT#33";
+        String title3 = "MT8311_ASAN_BMT#44";
+        String inDbTitle1 = "테스트입니다.";
+        String inDbTitle2 = "MT6133_ASAN";
+        ReserveFacilityTitle reserveFacilityTitle = new ReserveFacilityTitle();
+        ReserveFacilityTitle reserveFacilityTitle1 = new ReserveFacilityTitle();
+        ReserveFacilityTitle reserveFacilityTitle2 = new ReserveFacilityTitle();
+        ReserveFacilityTitle reserveFacilityTitle3 = new ReserveFacilityTitle();
+        reserveFacilityTitle.setTitle(title);
+        reserveFacilityTitle1.setTitle(title1);
+        reserveFacilityTitle2.setTitle(title2);
+        reserveFacilityTitle3.setTitle(title3);
+
+        //when
+        reserveFacilityService.join(reserveFacilityTitle);
+        reserveFacilityService.join(reserveFacilityTitle1);
+        reserveFacilityService.join(reserveFacilityTitle2);
+
+        //then
+        reserveFacilityTitles = reserveFacilityService.findReserveFacilityTitles();
+        Assertions.assertThat(reserveFacilityTitles.size()).isEqualTo(3 + size);
+
+        reserveFacilityService.delFacility(title3);
+        reserveFacilityTitles = reserveFacilityService.findReserveFacilityTitles();
+        Assertions.assertThat(reserveFacilityTitles.size()).isEqualTo(3 + size);
+    }
+
+    @Test
+    public void 기존_설비_삭제() {
+        //given
+        List<ReserveFacilityTitle> reserveFacilityTitles = reserveFacilityService.findReserveFacilityTitles();
+        int size = reserveFacilityTitles.size();
+        String inDbTitle1 = "테스트입니다.";
+        String inDbTitle2 = "MT6133_ASAN";
+
+        //when
+        reserveFacilityService.delFacility(inDbTitle1);
+        reserveFacilityTitles = reserveFacilityService.findReserveFacilityTitles();
+
+        //then
+
+        Assertions.assertThat(reserveFacilityTitles.size()).isEqualTo(size - 1);
+    }
 }

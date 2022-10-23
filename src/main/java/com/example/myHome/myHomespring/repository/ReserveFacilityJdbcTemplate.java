@@ -48,6 +48,14 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
         return jdbcTemplate.query(sql, reserveFacilityTitleRowMapper());
     }
 
+    @Override
+    public Optional<ReserveFacilityTitle> delFacility(String delTitle) {
+        // 삭제 sql query
+        String sql = "delete from FACILITY_TITLE_V1 where title = ?";
+        jdbcTemplate.update(sql, delTitle);
+        return Optional.empty();
+    }
+
     private RowMapper<ReserveFacilityTitle> reserveFacilityTitleRowMapper() {
         return (rs, rowNum) -> {
             ReserveFacilityTitle reserveFacilityTitle = new ReserveFacilityTitle();
