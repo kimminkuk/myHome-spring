@@ -116,10 +116,12 @@ function deleteFacilityTitleBtn(delTitle) {
  */
 
 function reserveTimeGridInit() {
+    var facTitles = document.querySelectorAll(".reserve-iter-list-title");
     var reserveTitlesTimes = document.querySelectorAll(".reserve-iter-list-time");
     var reserveTitlesTimeLength = reserveTitlesTimes.length;
-
+    
     for (var titleIdx = 0; titleIdx < reserveTitlesTimeLength; titleIdx++) {
+        let curFacTitle = facTitles[titleIdx].innerHTML;
         reserveTitlesTimes[titleIdx].style.display = "grid";
         reserveTitlesTimes[titleIdx].style.gridTemplateColumns = "repeat(48, 1fr)";
         reserveTitlesTimes[titleIdx].style.gridTemplateRows = "1fr";
@@ -134,11 +136,70 @@ function reserveTimeGridInit() {
                 this.addEventListener("mouseout", function() {
                     this.style.backgroundColor = "white";
                 });
-                this.addEventListener("click", reserveTimeGridDivClick);
+                //addEventListner로 클릭하면 reserveTimeGridClick(title) 실행
+                this.addEventListener("click", function() {
+                    // let reservePopup = document.createElement("div");
+                    // reservePopup.style.position = "abssolute";
+                    // reservePopup.style.className = "reserve-popup-main";
+                    // reservePopup.style.width = "300px";
+                    // reservePopup.style.height = "150px";
+                    // reservePopup.style.backgroundColor = "#e0e0e0";
+                    // reservePopup.style.border = "1px solid black";
+                    // reservePopup.style.zIndex = "100";
+                    // this.appendChild(reservePopup);
+                    //reserveTimeGridClick(curFacTitle, gridIdx);
+                });
             })
             reserveTitlesTimes[titleIdx].appendChild(div);
         }
     }
+    return;
+}
+
+function reserveTimeGridClick(curFacTitle, curIdx) {
+    // 작은 예약 창 만들기
+    // 작은 예약 창에는 예약 시간, 예약 내용, 예약 버튼이 있어야함
+    // 예약 시간은 현재 클릭한 시간으로 설정되어야함
+    // 예약 내용은 예약 시간에 따라서 자동으로 설정되어야함
+    // 예약 버튼은 예약 시간에 따라서 자동으로 설정되어야함
+    // 예약 버튼을 누르면 예약이 되어야함
+    // 예약 버튼을 누르면 예약 창이 닫혀야함
+    // 예약 창을 닫을 때는 예약 창을 닫는 버튼이 있어야함
+
+    var reservePopup = document.createElement("div");
+    reservePopup.style.position = "abssolute";
+    reservePopup.style.className = "reserve-popup-main";
+    reservePopup.style.width = "300px";
+    reservePopup.style.height = "150px";
+    //backgroundColor를 연한 회색으로
+    reservePopup.style.backgroundColor = "#e0e0e0";
+    reservePopup.style.border = "1px solid black";
+    reservePopup.style.zIndex = "100";
+    
+    var reservePopupTitle = document.createElement("div");
+    reservePopupTitle.style.textContent = curFacTitle;
+
+    // reservePopupTitle을 form 형식으로 만들어야함
+    var reservePopupContent = document.createElement("div");
+    reservePopupContent.style.className = "reserve-popup-title"
+    reservePopupContent.style.textContent = "제목";
+    
+    var reservePopupContentInput = document.createElement("input");
+    reservePopupContentInput.style.position = "relative";
+    reservePopupContentInput.style.className = "reserve-popup-title";
+    reservePopupContentInput.style.width = "80%";
+    reservePopupContentInput.style.height = "30px";
+    reservePopupContentInput.style.backgroundColor = "white";
+    reservePopupContentInput.style.border = "1px solid black";
+    reservePopupContentInput.style.textAlign = "center";
+    reservePopupContentInput.type = "text";
+    reservePopupContentInput.placeholder = "회의실 예약";
+    reservePopupContentInput.maxLength = "48";
+
+    this.appendChild(reservePopup);
+    reservePopup.appendChild(reservePopupTitle);
+    reservePopupContent.appendChild(reservePopupContentInput);
+    reservePopup.appendChild(reservePopupContent);
     return;
 }
 
