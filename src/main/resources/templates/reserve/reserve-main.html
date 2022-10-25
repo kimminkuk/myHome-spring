@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
-    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221022-37">
+    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221023-11">
 </head>
 <body>
     <div id="header">
@@ -56,7 +56,58 @@
                 </tr>       
             </thead>
         </table>
-    </div>    
+    </div>
+    <!-- 예약 창 팝업 -->
+    <div class="reserve-popup-main" style="display:none;">
+        <div class="reserve-popup-main-title">
+            <div class="reserve-popup-main-title-text">설비이름나와야함</div>
+            <div class="reserve-popup-main-title-close" onclick="reservePopupClose()">X</div>
+        </div>
+        <div class="reserve-popup-main-content" >
+            <input type="text" id="reservePopupContent" placeholder="예약 항목을 입력해주세요.">
+
+        </div>
+        <div class="reserve-popup-main-time">
+            <div class="reserve-popup-time-scroll">
+                <select id="reservePopupTimeScroll">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                    <option value="24">24</option>                    
+                </select>
+            </div>
+            <div class="reserve-popup-minute-scroll">
+                <select id="reservePopupMinuteScroll">
+                    <option value="00">00</option>
+                    <option value="30">30</option>
+                </select>
+            </div>    
+        </div>
+        <div class="reserve-popup-main-btn">
+            <input type="submit" class="reserve-popup-btn" value="예약하기" id="reservePopupBtn" onclick="makeFacReserveTimeBtn()">
+        </div>        
+    </div>
+
     <div class="reserve-main-item-make" style="display:none;">
         <div class="reserve-main-item-make-title">
             <input type="text" id="reserveMainItemTitle" placeholder="예약 항목을 입력해주세요.">
@@ -109,6 +160,6 @@
             </div>
     </div>
 </body>
-<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221022-45"></script>
+<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221023-11"></script>
 <script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
 </html>

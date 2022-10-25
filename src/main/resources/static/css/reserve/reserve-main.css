@@ -90,3 +90,64 @@
     /* grid 칸을 나눠줘 */
     grid-gap: 1px;
 }
+
+.reserve-popup-main {
+    display: none;
+    position: absolute;
+    top : 100px;
+    left : 500px;
+    width: 300px;
+    height: 150px;
+    /*연한 회색으로*/
+    background-color: #f2f2f2;
+    border: 1px solid #333;
+    z-index: 100;
+}
+
+.reserve-popup-main .reserve-popup-main-title {
+    display: inline;
+    position: relative;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    /* background-color: #fff; */
+    border-bottom: 1px solid #eee;
+    z-index: 100;
+}
+
+.reserve-popup-main .reserve-popup-main-title .reserve-popup-main-title-text {
+    display: inline;
+    position: relative;
+    width: 80%;
+    left: 0%;
+    height: 40px;
+    line-height: 40px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+    /* 글씨는 굵게 */
+    font-weight: bold;
+}
+
+.reserve-popup-main .reserve-popup-main-title .reserve-popup-main-title-close {
+    display: inline;
+    position: relative;
+    width: 10%;
+    left: 50%;
+    height: 40px;
+    line-height: 40px;
+    background-color: #fff;
+    
+    /* border 1px 검은색 */
+    border: 1px solid #333;
+
+    z-index: 100;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+    /* 글씨는 굵게 */
+    font-weight: bold;
+}

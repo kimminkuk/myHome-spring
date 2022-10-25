@@ -139,20 +139,45 @@ function reserveTimeGridInit() {
                 //addEventListner로 클릭하면 reserveTimeGridClick(title) 실행
                 this.addEventListener("click", function() {
                     // let reservePopup = document.createElement("div");
-                    // reservePopup.style.position = "abssolute";
+                    // reservePopup.style.position = "absolute";
                     // reservePopup.style.className = "reserve-popup-main";
                     // reservePopup.style.width = "300px";
                     // reservePopup.style.height = "150px";
                     // reservePopup.style.backgroundColor = "#e0e0e0";
                     // reservePopup.style.border = "1px solid black";
                     // reservePopup.style.zIndex = "100";
-                    // this.appendChild(reservePopup);
-                    //reserveTimeGridClick(curFacTitle, gridIdx);
+                    // reservePopup.style.top = "100px";
+                    // reservePopup.style.left = "300px"
+                    //body에 reservePopup을 appendChild
+                    //document.body.appendChild(reservePopup);
+                    reserveTimeGridClickVer2(curFacTitle, gridIdx);
+
+                    // 클릭하면 만드는거랑 border에 숨겨두는거랑 뭐가 더 좋으려나 흠;;
                 });
             })
             reserveTitlesTimes[titleIdx].appendChild(div);
         }
     }
+    return;
+}
+
+function reserveTimeGridClickVer2(curFacTitle, curIdx) {
+    // 높이는 부모노드를 찾던지, nextSlibing, 이것저것 등등으로 찾아야할듯
+    let reservePopup = document.querySelector(".reserve-popup-main");
+    let curTitle = document.querySelector(".reserve-popup-main-title-text");
+    curTitle.innerHTML = curFacTitle;
+    if (reservePopup.style.display == "none") {
+        let curLeft = curIdx * 15;
+        let curTop = 3 * 100;
+        reservePopup.style.left = curLeft + "px";
+        reservePopup.style.top = curTop + "px";
+        
+        reservePopup.style.display = "block";
+    } else {
+        //reservePopup.style.display = "none";
+        reservePopupClose();
+    }
+
     return;
 }
 
@@ -243,6 +268,15 @@ function thTimeHeaderInit() {
             thTimeHeaderMin.children[gridIdx].innerHTML = "00";
         }
     }
+    return;
+}
+
+function makeFacReserveTimeBtn() {
+    return;
+}
+
+function reservePopupClose() {
+    document.querySelector(".reserve-popup-main").style.display = "none";
     return;
 }
 
