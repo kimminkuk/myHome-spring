@@ -112,9 +112,11 @@ function deleteFacilityTitleBtn(delTitle) {
 }
 
 /**
- *   예약 시간 grid에 div 속성 추가
+ *    예약 시간 grid에 div 속성 추가
+ * 
+ *    div 속성:
+ *    document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(5) > th.reserve-iter-list-time > div:nth-child(14)")
  */
-
 function reserveTimeGridInit() {
     var facTitles = document.querySelectorAll(".reserve-iter-list-title");
     var reserveTitlesTimes = document.querySelectorAll(".reserve-iter-list-time");
@@ -128,31 +130,18 @@ function reserveTimeGridInit() {
 
         for (let gridIdx = 0; gridIdx < 48; gridIdx++) {
             var div = document.createElement("div");
+            div.style.className = "reserve-time-grid";
             div.style.border = "1px solid black";
             div.style.backgroundColor = "white";
+            div.style.value = "nonReserve";
             div.addEventListener("mouseover", function() {
                 //연한 초록색
                 this.style.backgroundColor = "#e0ffe0";
                 this.addEventListener("mouseout", function() {
                     this.style.backgroundColor = "white";
                 });
-                //addEventListner로 클릭하면 reserveTimeGridClick(title) 실행
                 this.addEventListener("click", function() {
-                    // let reservePopup = document.createElement("div");
-                    // reservePopup.style.position = "absolute";
-                    // reservePopup.style.className = "reserve-popup-main";
-                    // reservePopup.style.width = "300px";
-                    // reservePopup.style.height = "150px";
-                    // reservePopup.style.backgroundColor = "#e0e0e0";
-                    // reservePopup.style.border = "1px solid black";
-                    // reservePopup.style.zIndex = "100";
-                    // reservePopup.style.top = "100px";
-                    // reservePopup.style.left = "300px"
-                    //body에 reservePopup을 appendChild
-                    //document.body.appendChild(reservePopup);
                     reserveTimeGridClickVer2(curFacTitle, gridIdx);
-
-                    // 클릭하면 만드는거랑 border에 숨겨두는거랑 뭐가 더 좋으려나 흠;;
                 });
             })
             reserveTitlesTimes[titleIdx].appendChild(div);
@@ -160,13 +149,49 @@ function reserveTimeGridInit() {
     }
     return;
 }
-
+/**
+ *    아.. 이거 음...왜?
+ *    DB로 연결하는게 아니라 해당 칸이 이미 설정 (true?) 되어있는지 확인하고 설정 해야함.
+ *    DB연결이 아닌가??? 그러면 어떻게 날짜가 기록되어있지??
+ *    날짜는 따로 저장하는건가?????? index에??
+ *    Case 1) DB에 저장한다.
+ *            1. 설비이름을 앞에 붙이면 될거 같다. (이름에)
+ *            2. 시간이 겹치게 저장하면, 해당 설비의 예약 시간을 보고 겹치는지 확인해서 처리가 가능
+ *            3. 단점으로는 DB 설계 복잡함, in-memory에 비해 속도가 느림
+ * 
+ *    Case 2) js In-Memory index에 저장한다.
+ *            1. reserveTitlesTimes의 자식들인 div에 값을 넣어둔다.
+ *            2. div 각각에 판단할 데이터 (true? 등등)으로 할당되어있는지 확인 후, 예약시간 겹치는지 확인 가능
+ *            3. 이건 근데 서버가 항상 켜져있어서 가능한건가?? 
+ * 
+ *    결론: 어차피 혼자 해보는거니깐 Case 1, Case 2 둘다 하자
+ *    먼저 Case 2로 하자. (다른곳에서는 Case2로 하고 서버를 안끌듯?)
+ * 
+ *    div 속성:
+ *    document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(5) > th.reserve-iter-list-time > div:nth-child(14)")
+ */     
 function reserveTimeGridClickVer2(curFacTitle, curIdx) {
     // 높이는 부모노드를 찾던지, nextSlibing, 이것저것 등등으로 찾아야할듯
     let reservePopup = document.querySelector(".reserve-popup-main");
     let curTitle = document.querySelector(".reserve-popup-main-title-text");
+    
+    let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(5) > th.reserve-iter-list-time > ";
+    let curDivChild = "div:nth-child(" + (curIdx + 1) + ")";
+    curDiv += curDivChild;
+    document.querySelector(curDiv).style.value = "reserve";
+
     curTitle.innerHTML = curFacTitle;
+
+    let reserveTimeHour = document.querySelector("#reservePopupTimeScroll");
+    let reserveTimeMin = document.querySelector("#reservePopupMinuteScroll");
+
     if (reservePopup.style.display == "none") {
+        reserveTimeHour.value = String(curIdx >> 1);
+        if (curIdx & 0x1) {
+            reserveTimeMin.value = "30";
+        } else {
+            reserveTimeMin.value = "00";
+        }
         let curLeft = curIdx * 15;
         let curTop = 3 * 100;
         reservePopup.style.left = curLeft + "px";
@@ -271,7 +296,22 @@ function thTimeHeaderInit() {
     return;
 }
 
+/**
+ *    예약시간 저장 
+ */
 function makeFacReserveTimeBtn() {
+    let reserveTimeHourValue = document.querySelector("#reservePopupTimeScroll").value;
+    let reserveTimeMinValue = document.querySelector("#reservePopupMinuteScroll").value;
+    let divHour = parseInt(reserveTimeHourValue) << 1
+    let divMin = 0;
+    if (reserveTimeMinValue == "30") {
+        divMin = 1;
+    } else {
+        divMin = 0;
+    }
+    let divNum = divHour + divMin;
+    alert("div: " + divNum);
+
     return;
 }
 
