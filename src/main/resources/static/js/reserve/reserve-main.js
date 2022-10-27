@@ -169,12 +169,14 @@ function reserveTimeGridInit() {
  * 
  *    div 속성:
  *    document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(5) > th.reserve-iter-list-time > div:nth-child(14)")
+ *    
+ *    parent 속성
+ *    document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(6) > th.reserve-iter-list-time > div:nth-child(15)")
  */     
 function reserveTimeGridClickVer2(curFacTitle, curIdx) {
     // 높이는 부모노드를 찾던지, nextSlibing, 이것저것 등등으로 찾아야할듯
     let reservePopup = document.querySelector(".reserve-popup-main");
     let curTitle = document.querySelector(".reserve-popup-main-title-text");
-    
     let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(5) > th.reserve-iter-list-time > ";
     let curDivChild = "div:nth-child(" + (curIdx + 1) + ")";
     curDiv += curDivChild;
@@ -300,6 +302,8 @@ function thTimeHeaderInit() {
  *    예약시간 저장 
  */
 function makeFacReserveTimeBtn() {
+    var reserveTitles = document.querySelectorAll(".reserve-iter-list-title");
+    let titlesLength = reserveTitles.length;
     let reserveTimeHourValue = document.querySelector("#reservePopupTimeScroll").value;
     let reserveTimeMinValue = document.querySelector("#reservePopupMinuteScroll").value;
     let divHour = parseInt(reserveTimeHourValue) << 1
@@ -312,6 +316,17 @@ function makeFacReserveTimeBtn() {
     let divNum = divHour + divMin;
     alert("div: " + divNum);
 
+
+    let curTitle = document.querySelector(".reserve-popup-main-title-text").innerHTML;
+    for (let titleIdx = 0; titleIdx < titlesLength; titleIdx++) {
+        let reserveTitle = reserveTitles[titleIdx].textContent;
+        reserveTitle = reserveTitle.slice(0, reserveTitle.length - 1);
+        if (reserveTitle == curTitle) {
+            let titleIdxOffset = titleIdx + 5;
+            let reserveDiv = document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + titleIdxOffset + ") > th.reserve-iter-list-time > div:nth-child(" + divNum + ")");
+            reserveDiv.style.backgroundColor = "red";
+        }
+    }
     return;
 }
 
