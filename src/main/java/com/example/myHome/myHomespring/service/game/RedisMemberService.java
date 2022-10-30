@@ -1,9 +1,8 @@
-package com.example.myHome.myHomespring.service;
+package com.example.myHome.myHomespring.service.game;
 
-import com.example.myHome.myHomespring.domain.RedisMember;
-import com.example.myHome.myHomespring.repository.RedisMemberRepository;
+import com.example.myHome.myHomespring.domain.game.RedisMember;
+import com.example.myHome.myHomespring.repository.game.RedisMemberRepository;
 import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;

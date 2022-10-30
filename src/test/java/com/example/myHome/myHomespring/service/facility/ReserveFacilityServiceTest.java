@@ -1,9 +1,10 @@
-package com.example.myHome.myHomespring.service;
+package com.example.myHome.myHomespring.service.facility;
 
-import com.example.myHome.myHomespring.domain.ReserveFacilityTitle;
-import com.example.myHome.myHomespring.repository.ReserveFacilityRepository;
+import com.example.myHome.myHomespring.domain.facility.FacReserveTimeMember;
+import com.example.myHome.myHomespring.domain.facility.ReserveFacilityTitle;
+import com.example.myHome.myHomespring.repository.facility.ReserveFacilityRepository;
+import com.example.myHome.myHomespring.service.facility.ReserveFacilityService;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,6 +44,27 @@ class ReserveFacilityServiceTest {
         Long join1 = reserveFacilityService.join(reserveFacilityTitle2);
         List<ReserveFacilityTitle> reserveFacilityTitles = reserveFacilityService.findReserveFacilityTitles();
         Assertions.assertThat(reserveFacilityTitles.size()).isEqualTo(3);
+    }
+
+    @Test
+    public void 설비예약_시간설정() throws Exception {
+        //given
+        FacReserveTimeMember facReserveTimeMember = new FacReserveTimeMember();
+        ReserveFacilityTitle reserveFacilityTitle = new ReserveFacilityTitle();
+        reserveFacilityTitle.setTitle("MT8311_ASAN_BMT#11");
+
+        String reserveTime1 = "2021-08-01 10:00:00, 2021-08-01 13:00:00";
+        facReserveTimeMember.setUserName("Reas2@nakr.co.kr");
+        facReserveTimeMember.setReserveTime("2021-08-01 10:00:00, 2021-08-01 11:00:00");
+
+        //when
+        Long FacSaveJoin = reserveFacilityService.join(reserveFacilityTitle);
+        Long FacReserveTimeJoin = reserveFacilityService.reserveTime(reserveFacilityTitle, facReserveTimeMember, reserveTime1);
+
+        //then
+
+
+        return;
     }
 
     @Test

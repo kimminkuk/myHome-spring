@@ -1,6 +1,8 @@
-package com.example.myHome.myHomespring.repository;
+package com.example.myHome.myHomespring.repository.facility;
 
-import com.example.myHome.myHomespring.domain.ReserveFacilityTitle;
+import com.example.myHome.myHomespring.domain.facility.FacReserveTimeMember;
+import com.example.myHome.myHomespring.domain.facility.ReserveFacilityTitle;
+import com.example.myHome.myHomespring.repository.facility.ReserveFacilityMemoryRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -83,5 +85,40 @@ class ReserveFacilityMemoryRepositoryTest {
 
         reserveFacilityRepository.delFacility(delTitle);
         assertThat(reserveFacilityRepository.findAll().size()).isEqualTo(2);
+    }
+
+
+    @Test
+    void saveReserveTime() {
+        //given
+        ReserveFacilityTitle reserveFacilityTitle = new ReserveFacilityTitle();
+        reserveFacilityTitle.setTitle("MT8311_ASAN_BMT#1");
+        reserveFacilityRepository.save(reserveFacilityTitle);
+
+        String reserveTime1 = "2022-11-14 10:30~2022-11-14 11:30";
+        FacReserveTimeMember facReserveTimeMember = new FacReserveTimeMember();
+        facReserveTimeMember.setUserName("호요다@kanam.esap.co.kr");
+        facReserveTimeMember.setReserveTime("2022-11-14 11:30~2022-11-14 14:00, 2022-11-14 15:30~2022-11-14 16:00");
+
+        String reserveTime2 = "2022-11-15 14:00~2022-11-15 14:30";
+        FacReserveTimeMember facReserveTimeMember2 = new FacReserveTimeMember();
+        facReserveTimeMember2.setUserName("호요다@kanam.esap.co.kr");
+        facReserveTimeMember2.setReserveTime("2022-11-15 11:30~2022-11-14 14:00, 2022-11-15 17:30~2022-11-14 18:00");
+
+        //when
+        FacReserveTimeMember saveFacReserve = reserveFacilityRepository.saveReserveTime(reserveFacilityTitle, facReserveTimeMember, reserveTime1);
+        FacReserveTimeMember saveFacReserve2 = reserveFacilityRepository.saveReserveTime(reserveFacilityTitle, facReserveTimeMember2, reserveTime2);
+        //then
+        assertThat(saveFacReserve).isEqualTo(facReserveTimeMember);
+        assertThat(saveFacReserve2).isEqualTo(facReserveTimeMember2);
+    }
+
+    @Test
+    void saveFailReserveTime() {
+        //given
+        // 1. 예약시간이 기존시간이랑 오른쪽으로 겹칠때
+        // 2. 예약시간이 기존시간이랑 왼쪽으로 겹칠때
+        //3-1. 예약시간이 기존시간이랑 왼, 외 전부 겹칠 때 ( 기존 시간이 더 큰 경우 )
+        //3-2. 예약시간이 기존시간이랑 왼, 오 전부 겹칠 때 ( 기존 시간이 더 작은 경우 )
     }
 }

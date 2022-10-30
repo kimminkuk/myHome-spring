@@ -1,0 +1,185 @@
+package com.example.myHome.myHomespring.repository.facility;
+
+import com.example.myHome.myHomespring.domain.facility.FacReserveTimeMember;
+import com.example.myHome.myHomespring.domain.facility.ReserveFacilityTitle;
+
+import java.util.*;
+
+public class ReserveFacilityMemoryRepository implements ReserveFacilityRepository {
+    private static Map<Long, ReserveFacilityTitle> store = new HashMap<>();
+    private static Map<Long, FacReserveTimeMember> storeFacReserveTime = new HashMap<>();
+    private static Long sequence = 0L;
+
+    @Override
+    public ReserveFacilityTitle save(ReserveFacilityTitle reserveFacilityTitle) {
+        reserveFacilityTitle.setId(++sequence);
+        store.put(reserveFacilityTitle.getId(), reserveFacilityTitle);
+        return reserveFacilityTitle;
+    }
+
+    @Override
+    public List<ReserveFacilityTitle> findAll() {
+        return new ArrayList<>(store.values());
+    }
+
+    @Override
+    public Optional<ReserveFacilityTitle> findById(Long id) {
+        return Optional.ofNullable(store.get(id));
+    }
+
+    @Override
+    public Optional<ReserveFacilityTitle> findByTitle(String title) {
+        return store.values().stream()
+                .filter(reserveFacilityTitle -> reserveFacilityTitle.getTitle().equals(title))
+                .findAny();
+    }
+
+    @Override
+    public Optional<ReserveFacilityTitle> delFacility(String delTitle) {
+        findByTitle(delTitle)
+                .ifPresent(findReserveFacilityTitle -> store.remove(findReserveFacilityTitle.getId()));
+        return Optional.empty();
+    }
+
+    @Override
+    public FacReserveTimeMember saveReserveTime(ReserveFacilityTitle curFacility, FacReserveTimeMember curFacReserveTime, String reserveTime) {
+        validateFacReserveTime(curFacReserveTime, reserveTime);
+        curFacReserveTime.setReserveFacTitle(curFacility.getTitle());
+        curFacReserveTime.setId(++sequence);
+        storeFacReserveTime.put(curFacReserveTime.getId(), curFacReserveTime);
+        return curFacReserveTime;
+    }
+
+    // 예약시간 겹치는거 확인하는 코드 (카카오1번 문제처럼 풀자)
+    // IllegalStateException
+    public void validateFacReserveTime(FacReserveTimeMember facReserveTimeMember, String reserveTime) {
+        // 예약시간이 겹치는지 확인하는 코드
+        // 예약시간이 겹치면 예외를 던진다.
+        // facReserveTimeMember의 기존 예약 시간하고, 새로운 예약 시간을 비교해서 겹치는지 확인한다.
+        // 저장하는게 쉼표가 아니라..2022-10-14 11:30~2022-11-11 14:00 이런식으로 해야할듯요?
+        // 2022-10-14 11:30@2022-11-11 14:00 골뱅이어떰?
+        // 후보1) @, #, $, %, & 음.. ^ 어떰? or잖아 흠흠흠.. ~는 별로인가?
+        // ex1) facReserveTimeMember2.setReserveTime("2022-10-14 11:30~2022-11-11 14:00,2022-10-14 11:30~2022-11-11 14:00");
+        //      String reserveTime2 = "2022-10-14 11:30~2022-10-14 12:30";
+        //      값을 이런식으로 넣을 예정 그리고 비교
+
+        //  이러면 흠,,,for문 2번돌려야하는데 어차피 저장해주는 알고리즘이니깐 좀 단순하게 하는게 맞을듯 (유지보수 편하게)
+        int[] calendar2022 = new int[]{31,28,31,30,31,30,31,31,30,31,30,31};
+        List<Integer> resStartTimes = new ArrayList<>();
+        List<Integer> resEndTimes = new ArrayList<>();
+        String curFacReserveTime = facReserveTimeMember.getReserveTime();
+        String[] curFacReserveTimeArr = curFacReserveTime.split(",");
+        //split 후에 스페이스바 제거 일단 대기
+
+
+        System.out.println("curFacReserveTimeArr = " + curFacReserveTimeArr);
+
+        for (String curFacResTime : curFacReserveTimeArr) {
+            // step1 ~ 기준으로 나누기 (연속으로 예약한 목록임)
+            // ex) 2022-10-14 11:30~2022-11-11 14:00 -> [2022-10-14 11:30] [2022-11-11 14:00]
+            System.out.println("curFacResTime = " + curFacResTime);
+            String[] curFacResTimeStep1 = curFacResTime.split("~");
+
+            // step2 해당 설비 예약시간을 전부 반복합니다.
+            int cnt = 0;
+            for (String curFacResTimeStep2 : curFacResTimeStep1) {
+                System.out.println("curFacResTimeStep2 = " + curFacResTimeStep2);
+
+                // ex) 2022-10-14 11:30 -> [2022-10-14] [11:30]
+                String[] timeStep3 = curFacResTimeStep2.strip().split(" ");
+
+                for (String s : timeStep3) {
+                    System.out.println("s = " + s);
+                }
+                //step3   예약시작시간과 예약종료시간을 저장합니다.
+                //step3-1 분으로 바꾼 시간을 배열에 넣기
+                //step3-2 curFacResTimeStep1의 짝수 홀수 구분해서 넣기
+                if ((cnt & 1) == 0) { //0, 2
+                    resStartTimes.add(getTimeToMinute(timeStep3[0], timeStep3[1], calendar2022));
+                } else { //1, 3
+                    resEndTimes.add(getTimeToMinute(timeStep3[0], timeStep3[1], calendar2022));
+                }
+                cnt++;
+            }
+        }
+        //step 4 예약하는 시간을 분으로 바꾸기
+        String[] reserveTimeArr = reserveTime.split("~");
+        String[] curStartTime = reserveTimeArr[0].strip().split(" ");
+        System.out.println("[step4] curStartTime[0] = " + curStartTime[0] + " curStartTime[1] = " + curStartTime[1]);
+        String[] curEndTime = reserveTimeArr[1].strip().split(" ");
+
+        System.out.println("[step4] curEndTime[0] = " + curEndTime[0] + " curEndTime[1] = " + curEndTime[1]);
+        int curReserveStartTime = getTimeToMinute(curStartTime[0], curStartTime[1], calendar2022);
+        int curReserveEndTime = getTimeToMinute(curEndTime[0], curEndTime[1], calendar2022);
+
+        //step 4-1 혹시, 예약의 끝시간이 처음시간보다 큰 경우 (있을 수 가 있나?? 하지만 날 믿지마)
+        if (curReserveEndTime <= curReserveStartTime) {
+            throw new IllegalStateException("예약 종료시간이 예약 시작시간보다 작습니다.");
+        }
+
+        // step5 예약할 시간과 기존 설비 예약시간을 비교해서, 중복되는거 있으면 예외 던지기
+        // ex) 가능한 경우 ( 예약하고 싶은 시간이 기존 시간의 끝 부분만 겹치는 경우 혹은 그 이상일 때 )
+        // [기존]    |----|  |---|   |---|  |---|
+        // [신규]         |--|           |-|    |----|  |---|
+        // ex) 불가능한 경우 ( 예약하고 싶은 시간이 기존 시간과 겹치는 경우 )
+        // [기존] |-----| |-----|        |---|
+        // [신규]               |---------|
+        // [신규]   |----| |-----|        |---|
+
+        int resTimeArrLength = resStartTimes.size();
+        int resTimeIdx = 0;
+        for (resTimeIdx = 0; resTimeIdx < resTimeArrLength; resTimeIdx++) {
+            System.out.println("curStart = " + curReserveStartTime + " curEnd = " + curReserveEndTime);
+            System.out.println("[idx: " + reserveTime +   " resStart = " + resStartTimes.get(resTimeIdx) + " resEnd = " + resEndTimes.get(resTimeIdx));
+            // 1. 예약시간이 기존시간이랑 오른쪽으로 겹칠때
+            // [기존]  |------|
+            // [신규]        |------|
+            if (resEndTimes.get(resTimeIdx) > curReserveStartTime && resStartTimes.get(resTimeIdx) > curReserveStartTime
+                    && resEndTimes.get(resTimeIdx) < curReserveEndTime && resEndTimes.get(resTimeIdx) > curReserveStartTime) {
+                throw new IllegalStateException("[1]이미 예약된 시간입니다.");
+            }
+
+            // 2. 예약시간이 기존시간이랑 왼쪽으로 겹칠때
+            // [기존]        |------|          |------|
+            // [신규]  |------|           |------|
+            else if (resStartTimes.get(resTimeIdx) < curReserveEndTime && resEndTimes.get(resTimeIdx) > curReserveEndTime
+                    && resStartTimes.get(resTimeIdx) > curReserveStartTime && resStartTimes.get(resTimeIdx) < curReserveEndTime) {
+                throw new IllegalStateException("[2]이미 예약된 시간입니다.");
+            }
+
+            //3-1. 예약시간이 기존시간이랑 왼, 외 전부 겹칠 때
+            // [기존]  |------------|
+            // [신규]      |------|
+            else if (resStartTimes.get(resTimeIdx) <= curReserveStartTime && resEndTimes.get(resTimeIdx) >= curReserveEndTime) {
+                throw new IllegalStateException("[3-1]이미 예약된 시간입니다.");
+            }
+            //3-2
+            // [기존]  |------------|
+            // [신규] |--------------|
+            else if (resStartTimes.get(resTimeIdx) >= curReserveStartTime && resEndTimes.get(resTimeIdx) <= curReserveEndTime) {
+                throw new IllegalStateException("[3-2]이미 예약된 시간입니다.");
+            }
+        }
+
+        // step6 예외가 안뜨면 저장하기
+        return;
+    }
+
+    int getTimeToMinute(String dayTime, String hourTime, int[] calendar2022) {
+        String[] dayTimeArr = dayTime.split("-");
+        String[] hourTimeArr = hourTime.split(":");
+
+        int dayTimeToMinute = Integer.parseInt(dayTimeArr[0]) * 365 * 24 * 60 +
+                calendar2022[Integer.parseInt(dayTimeArr[1])] * 24 * 60 +
+                Integer.parseInt(dayTimeArr[2]) * 60;
+
+        int hourTimeToMinute = Integer.parseInt(hourTimeArr[0]) * 60 + Integer.parseInt(hourTimeArr[1]);
+
+        int resultTime = dayTimeToMinute + hourTimeToMinute;
+        return resultTime;
+    }
+
+    public void clearStore() {
+        store.clear();
+    }
+}

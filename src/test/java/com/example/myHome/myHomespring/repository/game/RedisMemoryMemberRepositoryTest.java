@@ -1,7 +1,7 @@
-package com.example.myHome.myHomespring.repository;
+package com.example.myHome.myHomespring.repository.game;
 
-import com.example.myHome.myHomespring.domain.RedisMember;
-import org.assertj.core.api.Assertions;
+import com.example.myHome.myHomespring.domain.game.RedisMember;
+import com.example.myHome.myHomespring.repository.game.RedisMemoryMemberRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 

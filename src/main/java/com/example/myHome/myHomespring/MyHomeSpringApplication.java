@@ -1,6 +1,5 @@
 package com.example.myHome.myHomespring;
 
-import com.example.myHome.myHomespring.domain.ReserveFacilityTitle;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

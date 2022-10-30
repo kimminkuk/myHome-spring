@@ -1,9 +1,8 @@
 package com.example.myHome.myHomespring;
 
-import com.example.myHome.myHomespring.repository.RedisMemberRepository;
-import com.example.myHome.myHomespring.repository.RedisMemoryMemberRepository;
-import com.example.myHome.myHomespring.repository.RedisTemplateMemberRepository;
-import com.example.myHome.myHomespring.service.RedisMemberService;
+import com.example.myHome.myHomespring.repository.game.RedisMemberRepository;
+import com.example.myHome.myHomespring.repository.game.RedisTemplateMemberRepository;
+import com.example.myHome.myHomespring.service.game.RedisMemberService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

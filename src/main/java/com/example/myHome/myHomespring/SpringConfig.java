@@ -1,8 +1,10 @@
 package com.example.myHome.myHomespring;
 
 import com.example.myHome.myHomespring.repository.*;
+import com.example.myHome.myHomespring.repository.facility.ReserveFacilityJdbcTemplate;
+import com.example.myHome.myHomespring.repository.facility.ReserveFacilityRepository;
 import com.example.myHome.myHomespring.service.MemberService;
-import com.example.myHome.myHomespring.service.ReserveFacilityService;
+import com.example.myHome.myHomespring.service.facility.ReserveFacilityService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;

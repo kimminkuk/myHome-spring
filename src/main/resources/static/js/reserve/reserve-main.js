@@ -8,7 +8,7 @@ function reserveItemMake() {
     return;
 }
 
-function reserveMainItemMakeBtn() {
+function reserveMainItemMakeBtnFunc() {
     //이거도 그냥 ajax로 하지말고, 리다이렉트로 하자
     let ur = 'http://localhost:8080/reserve/reserve-main/make';
     let reserveMainItemTitleValue = document.querySelector("#reserveMainItemTitle").value;
@@ -329,6 +329,15 @@ function makeFacReserveTimeBtn() {
     }
     return;
 }
+
+/**
+ *    예약시간 선택
+ */
+function makeFacReserveTimeBtnVer2() {
+    //redirect로 해도 그냥 잘 나오네?
+    return;
+}
+
 
 function reservePopupClose() {
     document.querySelector(".reserve-popup-main").style.display = "none";

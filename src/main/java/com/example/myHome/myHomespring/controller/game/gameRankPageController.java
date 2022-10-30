@@ -1,7 +1,7 @@
 package com.example.myHome.myHomespring.controller.game;
 
-import com.example.myHome.myHomespring.domain.RedisMember;
-import com.example.myHome.myHomespring.service.RedisMemberService;
+import com.example.myHome.myHomespring.domain.game.RedisMember;
+import com.example.myHome.myHomespring.service.game.RedisMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Controller;
@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 @Controller

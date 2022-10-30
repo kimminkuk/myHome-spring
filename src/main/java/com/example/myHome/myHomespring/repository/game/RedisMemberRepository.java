@@ -1,7 +1,6 @@
-package com.example.myHome.myHomespring.repository;
+package com.example.myHome.myHomespring.repository.game;
 
-import com.example.myHome.myHomespring.domain.RedisMember;
-import org.springframework.data.redis.connection.RedisZSetCommands;
+import com.example.myHome.myHomespring.domain.game.RedisMember;
 import org.springframework.data.redis.core.ZSetOperations;
 
 import java.util.List;

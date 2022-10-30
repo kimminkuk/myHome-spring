@@ -1,4 +1,4 @@
-package com.example.myHome.myHomespring.domain;
+package com.example.myHome.myHomespring.domain.facility;
 
 public class ReserveFacilityTitle {
     private Long id;

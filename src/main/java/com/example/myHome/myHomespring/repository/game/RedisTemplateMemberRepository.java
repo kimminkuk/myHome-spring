@@ -1,9 +1,7 @@
-package com.example.myHome.myHomespring.repository;
+package com.example.myHome.myHomespring.repository.game;
 
-import com.example.myHome.myHomespring.domain.RedisMember;
-import io.lettuce.core.api.async.RedisAsyncCommands;
+import com.example.myHome.myHomespring.domain.game.RedisMember;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.RedisZSetCommands;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.ZSetOperations;

@@ -1,6 +1,7 @@
-package com.example.myHome.myHomespring.repository;
+package com.example.myHome.myHomespring.repository.facility;
 
-import com.example.myHome.myHomespring.domain.ReserveFacilityTitle;
+import com.example.myHome.myHomespring.domain.facility.FacReserveTimeMember;
+import com.example.myHome.myHomespring.domain.facility.ReserveFacilityTitle;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -54,6 +55,16 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
         String sql = "delete from FACILITY_TITLE_V1 where title = ?";
         jdbcTemplate.update(sql, delTitle);
         return Optional.empty();
+    }
+
+    @Override
+    public FacReserveTimeMember saveReserveTime(ReserveFacilityTitle curFacility, FacReserveTimeMember curFacReserveTime, String reserveTime) {
+        //join sql query
+        // FACILITY_TITLE_V1 테이블과 FACILITY_RESERVE_TIME_V1 테이블을 조인합니다.
+        // FACILITY_TITLE_V1 테이블의 title, FACILITY_RESERVE_TIME_V1 테이블의 reserveFacTitle 조인합니다.
+        String sql = "insert into FACILITY_RESERVE_TIME_V1 (reserveFacTitle, reserveTime) values (?, ?)";
+        jdbcTemplate.update(sql, curFacility.getTitle(), curFacReserveTime.getReserveTime());
+        return curFacReserveTime;
     }
 
     private RowMapper<ReserveFacilityTitle> reserveFacilityTitleRowMapper() {

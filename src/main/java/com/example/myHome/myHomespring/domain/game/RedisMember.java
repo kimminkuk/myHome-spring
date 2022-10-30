@@ -1,4 +1,4 @@
-package com.example.myHome.myHomespring.domain;
+package com.example.myHome.myHomespring.domain.game;
 
 public class RedisMember {
     private String key;

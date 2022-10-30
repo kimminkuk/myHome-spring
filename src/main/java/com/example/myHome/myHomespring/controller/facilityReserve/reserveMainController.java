@@ -1,7 +1,7 @@
-package com.example.myHome.myHomespring.controller.reserve;
+package com.example.myHome.myHomespring.controller.facilityReserve;
 
-import com.example.myHome.myHomespring.domain.ReserveFacilityTitle;
-import com.example.myHome.myHomespring.service.ReserveFacilityService;
+import com.example.myHome.myHomespring.domain.facility.ReserveFacilityTitle;
+import com.example.myHome.myHomespring.service.facility.ReserveFacilityService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,6 +49,19 @@ public class reserveMainController {
         reserveFacilityService.join(reserveFacilityTitle);
         System.out.println("[DEBUG END] /reserve/reserve-main/make/facilityTitle: " + facilityTitle + " Call");
 
+        return "redirect:/reserve/reserve-main";
+    }
+
+    @GetMapping("/reserve/reserve-main/fac-reserve")
+    public String reserveMainFacReserve(Model model,
+                                        @RequestParam("facilityTitle") String facilityTitle,
+                                        @RequestParam("reserveName") String reserveName,
+                                        @RequestParam("reserveDate") String reserveDate) {
+        System.out.println("[DEBUG START] /reserve/reserve-main/fac-reserve/facilityTitle: " + facilityTitle + " Call" + "reserveName: " + reserveName + "reserveDate: " + reserveDate);
+        model.addAttribute("facilityTitle", facilityTitle);
+        model.addAttribute("reserveName", reserveName);
+        model.addAttribute("reserveDate", reserveDate);
+        System.out.println("[DEBUG END] /reserve/reserve-main/fac-reserve/facilityTitle: " + facilityTitle + " Call" + "reserveName: " + reserveName + "reserveDate: " + reserveDate);
         return "redirect:/reserve/reserve-main";
     }
 

@@ -1,24 +1,20 @@
-package com.example.myHome.myHomespring.repository;
+package com.example.myHome.myHomespring.repository.game;
 
-import com.example.myHome.myHomespring.domain.RedisMember;
-import com.example.myHome.myHomespring.service.RedisMemberService;
+import com.example.myHome.myHomespring.domain.game.RedisMember;
+import com.example.myHome.myHomespring.repository.game.RedisMemberRepository;
+import com.example.myHome.myHomespring.service.game.RedisMemberService;
 import io.lettuce.core.LettuceFutures;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisFuture;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisAsyncCommands;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.connection.RedisZSetCommands;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
