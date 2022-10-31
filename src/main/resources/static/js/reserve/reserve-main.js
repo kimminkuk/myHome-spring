@@ -335,6 +335,7 @@ function makeFacReserveTimeBtn() {
  */
 function makeFacReserveTimeBtnVer2() {
     //redirect로 해도 그냥 잘 나오네?
+    
     return;
 }
 

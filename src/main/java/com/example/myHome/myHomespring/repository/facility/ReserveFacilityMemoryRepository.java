@@ -56,12 +56,6 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
         // 예약시간이 겹치는지 확인하는 코드
         // 예약시간이 겹치면 예외를 던진다.
         // facReserveTimeMember의 기존 예약 시간하고, 새로운 예약 시간을 비교해서 겹치는지 확인한다.
-        // 저장하는게 쉼표가 아니라..2022-10-14 11:30~2022-11-11 14:00 이런식으로 해야할듯요?
-        // 2022-10-14 11:30@2022-11-11 14:00 골뱅이어떰?
-        // 후보1) @, #, $, %, & 음.. ^ 어떰? or잖아 흠흠흠.. ~는 별로인가?
-        // ex1) facReserveTimeMember2.setReserveTime("2022-10-14 11:30~2022-11-11 14:00,2022-10-14 11:30~2022-11-11 14:00");
-        //      String reserveTime2 = "2022-10-14 11:30~2022-10-14 12:30";
-        //      값을 이런식으로 넣을 예정 그리고 비교
 
         //  이러면 흠,,,for문 2번돌려야하는데 어차피 저장해주는 알고리즘이니깐 좀 단순하게 하는게 맞을듯 (유지보수 편하게)
         int[] calendar2022 = new int[]{31,28,31,30,31,30,31,31,30,31,30,31};
@@ -69,28 +63,19 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
         List<Integer> resEndTimes = new ArrayList<>();
         String curFacReserveTime = facReserveTimeMember.getReserveTime();
         String[] curFacReserveTimeArr = curFacReserveTime.split(",");
-        //split 후에 스페이스바 제거 일단 대기
-
-
-        System.out.println("curFacReserveTimeArr = " + curFacReserveTimeArr);
 
         for (String curFacResTime : curFacReserveTimeArr) {
             // step1 ~ 기준으로 나누기 (연속으로 예약한 목록임)
             // ex) 2022-10-14 11:30~2022-11-11 14:00 -> [2022-10-14 11:30] [2022-11-11 14:00]
-            System.out.println("curFacResTime = " + curFacResTime);
             String[] curFacResTimeStep1 = curFacResTime.split("~");
 
             // step2 해당 설비 예약시간을 전부 반복합니다.
             int cnt = 0;
             for (String curFacResTimeStep2 : curFacResTimeStep1) {
-                System.out.println("curFacResTimeStep2 = " + curFacResTimeStep2);
 
                 // ex) 2022-10-14 11:30 -> [2022-10-14] [11:30]
                 String[] timeStep3 = curFacResTimeStep2.strip().split(" ");
 
-                for (String s : timeStep3) {
-                    System.out.println("s = " + s);
-                }
                 //step3   예약시작시간과 예약종료시간을 저장합니다.
                 //step3-1 분으로 바꾼 시간을 배열에 넣기
                 //step3-2 curFacResTimeStep1의 짝수 홀수 구분해서 넣기
@@ -105,10 +90,8 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
         //step 4 예약하는 시간을 분으로 바꾸기
         String[] reserveTimeArr = reserveTime.split("~");
         String[] curStartTime = reserveTimeArr[0].strip().split(" ");
-        System.out.println("[step4] curStartTime[0] = " + curStartTime[0] + " curStartTime[1] = " + curStartTime[1]);
         String[] curEndTime = reserveTimeArr[1].strip().split(" ");
 
-        System.out.println("[step4] curEndTime[0] = " + curEndTime[0] + " curEndTime[1] = " + curEndTime[1]);
         int curReserveStartTime = getTimeToMinute(curStartTime[0], curStartTime[1], calendar2022);
         int curReserveEndTime = getTimeToMinute(curEndTime[0], curEndTime[1], calendar2022);
 
@@ -132,21 +115,17 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
             System.out.println("curStart = " + curReserveStartTime + " curEnd = " + curReserveEndTime);
             System.out.println("[idx: " + reserveTime +   " resStart = " + resStartTimes.get(resTimeIdx) + " resEnd = " + resEndTimes.get(resTimeIdx));
             // 1. 예약시간이 기존시간이랑 오른쪽으로 겹칠때
-            // [기존]  |------|
-            // [신규]        |------|
-            if (resEndTimes.get(resTimeIdx) > curReserveStartTime && resStartTimes.get(resTimeIdx) > curReserveStartTime
-                    && resEndTimes.get(resTimeIdx) < curReserveEndTime && resEndTimes.get(resTimeIdx) > curReserveStartTime) {
+            // [기존] |-|  |------|       |---|
+            // [신규]          |------|
+            if (resEndTimes.get(resTimeIdx) > curReserveStartTime && resEndTimes.get(resTimeIdx) <= curReserveEndTime) {
                 throw new IllegalStateException("[1]이미 예약된 시간입니다.");
             }
-
             // 2. 예약시간이 기존시간이랑 왼쪽으로 겹칠때
-            // [기존]        |------|          |------|
-            // [신규]  |------|           |------|
-            else if (resStartTimes.get(resTimeIdx) < curReserveEndTime && resEndTimes.get(resTimeIdx) > curReserveEndTime
-                    && resStartTimes.get(resTimeIdx) > curReserveStartTime && resStartTimes.get(resTimeIdx) < curReserveEndTime) {
+            // [기존]  |--|    |------|   |--|      |------| |--|
+            // [신규]      |------|           |------|
+            else if (resStartTimes.get(resTimeIdx) < curReserveEndTime && resStartTimes.get(resTimeIdx) >= curReserveStartTime) {
                 throw new IllegalStateException("[2]이미 예약된 시간입니다.");
             }
-
             //3-1. 예약시간이 기존시간이랑 왼, 외 전부 겹칠 때
             // [기존]  |------------|
             // [신규]      |------|

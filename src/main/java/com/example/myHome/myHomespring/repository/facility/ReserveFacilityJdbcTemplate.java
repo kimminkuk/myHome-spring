@@ -57,12 +57,14 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
         return Optional.empty();
     }
 
+    //조인을 해야하나????? 그냥 새로 만들면 안될려나??????
+    // 그냥 새로만들어야겠다. 설계가 너무 꼬인다. 이러면
     @Override
     public FacReserveTimeMember saveReserveTime(ReserveFacilityTitle curFacility, FacReserveTimeMember curFacReserveTime, String reserveTime) {
         //join sql query
-        // FACILITY_TITLE_V1 테이블과 FACILITY_RESERVE_TIME_V1 테이블을 조인합니다.
-        // FACILITY_TITLE_V1 테이블의 title, FACILITY_RESERVE_TIME_V1 테이블의 reserveFacTitle 조인합니다.
-        String sql = "insert into FACILITY_RESERVE_TIME_V1 (reserveFacTitle, reserveTime) values (?, ?)";
+        // FACILITY_TITLE_V1 테이블의 title, FACILITY_RESERVE_TIME_V1 테이블의 title 멤버를 사용해서 테이블을 조인합니다.
+        // 조인 테이블 코드
+        String sql = "insert into FACILITY_RESERVE_TIME_V1 (title, title) values (?, ?)";
         jdbcTemplate.update(sql, curFacility.getTitle(), curFacReserveTime.getReserveTime());
         return curFacReserveTime;
     }
