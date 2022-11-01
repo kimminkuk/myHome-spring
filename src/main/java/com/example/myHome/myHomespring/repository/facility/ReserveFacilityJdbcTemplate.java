@@ -69,6 +69,38 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
         return curFacReserveTime;
     }
 
+    @Override
+    public FacReserveTimeMember reserveFacility(FacReserveTimeMember curFacReserveTime, String reserveTime) {
+        // FACILITY_RESERVE_TIME_V2 테이블에 예약시간을 저장합니다.
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        simpleJdbcInsert.withTableName("FACILITY_RESERVE_TIME_V2").usingGeneratedKeyColumns("id");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("fac_title", curFacReserveTime.getReserveFacTitle());
+        parameters.put("reserve_time", curFacReserveTime.getReserveTime());
+        Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
+        curFacReserveTime.setId(key.longValue());
+
+        // FACILITY_RESERVE_TIME_V2 테이블에 예약시간을 저장합니다. (갱신 기능)
+        String sql = "update FACILITY_RESERVE_TIME_V2 set reserve_time = ? where fac_title = ?";
+
+
+        return curFacReserveTime;
+    }
+
+    @Override
+    public FacReserveTimeMember facInitReserveSave(FacReserveTimeMember curFacReserveTime) {
+        // FACILITY_RESERVE_TIME_V2 테이블을 처음 생성 시..
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        simpleJdbcInsert.withTableName("FACILITY_RESERVE_TIME_V2").usingGeneratedKeyColumns("id");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("fac_title", curFacReserveTime.getReserveFacTitle());
+        parameters.put("user_name", curFacReserveTime.getUserName());
+        parameters.put("reserve_time", curFacReserveTime.getReserveTime());
+        Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
+        curFacReserveTime.setId(key.longValue());
+        return curFacReserveTime;
+    }
+
     private RowMapper<ReserveFacilityTitle> reserveFacilityTitleRowMapper() {
         return (rs, rowNum) -> {
             ReserveFacilityTitle reserveFacilityTitle = new ReserveFacilityTitle();

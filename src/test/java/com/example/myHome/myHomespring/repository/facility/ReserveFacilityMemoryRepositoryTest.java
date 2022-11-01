@@ -115,6 +115,45 @@ class ReserveFacilityMemoryRepositoryTest {
     }
 
     @Test
+    void saveReserveTimeVer2() {
+        //given
+
+        String reserveTime1 = "2022-11-14 10:30~2022-11-14 11:30";
+        String facTitle1 = "MT8311_ASAN_BMT#1";
+        FacReserveTimeMember facReserveTimeMember = new FacReserveTimeMember();
+        facReserveTimeMember.setReserveFacTitle(facTitle1);
+        facReserveTimeMember.setUserName("호요다@kanam.esap.co.kr");
+        facReserveTimeMember.setReserveTime("2022-11-14 11:30~2022-11-14 14:00, 2022-11-14 15:30~2022-11-14 16:00");
+
+        String reserveTime2 = "2022-11-15 14:00~2022-11-15 14:30";
+        String facTitle2 = "MT8311_ASAN_BMT#1";
+        FacReserveTimeMember facReserveTimeMember2 = new FacReserveTimeMember();
+        facReserveTimeMember2.setReserveFacTitle(facTitle2);
+        facReserveTimeMember2.setUserName("호요다@kanam.esap.co.kr");
+        facReserveTimeMember2.setReserveTime("2022-11-15 11:30~2022-11-14 14:00, 2022-11-15 17:30~2022-11-14 18:00");
+
+        String reserveTime3 = "2022-11-15 14:00~2022-11-15 14:30";
+        String facTitle3 = "MT8311_ASAN_BMT#3";
+        String tempInitReserveTime = "0000-00-00 00:00~0000-00-00 00:00";
+        FacReserveTimeMember facReserveTimeMember3 = new FacReserveTimeMember();
+        facReserveTimeMember3.setReserveFacTitle(facTitle3);
+        facReserveTimeMember3.setUserName("호요다@kanam.esap.co.kr");
+        facReserveTimeMember3.setReserveTime(tempInitReserveTime); //이거 초기값으로 할까 흠..
+
+
+
+        //when
+        FacReserveTimeMember saveFac1 = reserveFacilityRepository.reserveFacility(facReserveTimeMember, reserveTime1);
+        FacReserveTimeMember saveFac2 = reserveFacilityRepository.reserveFacility(facReserveTimeMember2, reserveTime2);
+        FacReserveTimeMember saveFac3 = reserveFacilityRepository.facInitReserveSave(facReserveTimeMember3);
+        //then
+        assertThat(saveFac1).isEqualTo(facReserveTimeMember);
+        assertThat(saveFac2).isEqualTo(facReserveTimeMember2);
+        assertThat(saveFac3).isEqualTo(facReserveTimeMember3);
+
+    }
+
+    @Test
     void saveFailReserveTime() {
         //given
         ReserveFacilityTitle reserveFacilityTitle = new ReserveFacilityTitle();
@@ -158,6 +197,60 @@ class ReserveFacilityMemoryRepositoryTest {
         IllegalStateException e = Assertions.assertThrows(IllegalStateException.class, () -> reserveFacilityRepository.saveReserveTime(reserveFacilityTitle, facReserveTimeMember1, reserveTime1));
         IllegalStateException e2 = Assertions.assertThrows(IllegalStateException.class, () -> reserveFacilityRepository.saveReserveTime(reserveFacilityTitle, facReserveTimeMember2, reserveTime2));
         IllegalStateException e3 = Assertions.assertThrows(IllegalStateException.class, () -> reserveFacilityRepository.saveReserveTime(reserveFacilityTitle, facReserveTimeMember3, reserveTime3));
+
+        Assertions.assertEquals("[1]이미 예약된 시간입니다.", e.getMessage());
+        Assertions.assertEquals("[2]이미 예약된 시간입니다.", e2.getMessage());
+        Assertions.assertEquals("[3-1]이미 예약된 시간입니다.", e3.getMessage());
+    }
+
+    @Test
+    void saveFailReserveTimeVer2() {
+        //given
+
+        // 1. 예약시간이 기존시간보다 빠른 경우
+        //    expect) [1]이미 예약된 시간입니다.
+        //       |------|
+        //            |------|
+        String reserveTime1 = "2022-11-14 10:30~2022-11-14 11:30";
+        String facTitle1 = "MT8311_ASAN_BMT#1";
+        FacReserveTimeMember facReserveTimeMember1 = new FacReserveTimeMember();
+        facReserveTimeMember1.setReserveFacTitle(facTitle1);
+        facReserveTimeMember1.setUserName("호요다@kanam.esap.co.kr");
+        facReserveTimeMember1.setReserveTime("2022-11-14 10:00~2022-11-14 11:00, 2022-11-14 15:30~2022-11-14 16:00");
+
+
+        // 2. 예약시간이 기존시간이랑 왼쪽으로 겹칠때
+        //    expect) [2]이미 예약된 시간입니다.
+        //       |------|
+        //    |------|
+        String reserveTime2 = "2022-11-14 10:00~2022-11-14 11:00";
+        String facTitle2 = "MT8311_ASAN_BMT#2";
+        FacReserveTimeMember facReserveTimeMember2 = new FacReserveTimeMember();
+        facReserveTimeMember2.setReserveFacTitle(facTitle2);
+        facReserveTimeMember2.setUserName("호요다@kanam.esap.co.kr");
+        facReserveTimeMember2.setReserveTime("2022-11-14 10:30~2022-11-14 11:30, 2022-11-14 15:30~2022-11-14 16:00");
+        //3-1. 예약시간이 기존시간이랑 왼, 외 전부 겹칠 때 ( 기존 시간이 더 큰 경우 )
+        //    expect) [3-1]이미 예약된 시간입니다.
+        //       |------|
+        //         |--|
+        String reserveTime3 = "2022-11-14 11:00~2022-11-14 12:00";
+        String facTitle3 = "MT8311_ASAN_BMT#3";
+        FacReserveTimeMember facReserveTimeMember3 = new FacReserveTimeMember();
+        facReserveTimeMember3.setReserveFacTitle(facTitle3);
+        facReserveTimeMember3.setUserName("호요다@kanam.esap.co.kr");
+        facReserveTimeMember3.setReserveTime("2022-11-14 10:00~2022-11-14 14:30, 2022-11-14 15:30~2022-11-14 16:00");
+
+        //3-2. 예약시간이 기존시간이랑 왼, 오 전부 겹칠 때 ( 기존 시간이 더 작은 경우, 근데 [1]이랑 겹쳐서 완전 똑같은 경우로 다시 검사 )
+        //    지금 보니 이런 경우는 1,2,3 에서 다 잡히네.. 넘기자
+        //    expect) [3-2]이미 예약된 시간입니다.
+        //      |--------|
+        //      |--------|
+
+
+        //then
+        IllegalStateException e = Assertions.assertThrows(IllegalStateException.class, () -> reserveFacilityRepository.reserveFacility(facReserveTimeMember1, reserveTime1));
+        IllegalStateException e2 = Assertions.assertThrows(IllegalStateException.class, () -> reserveFacilityRepository.reserveFacility(facReserveTimeMember2, reserveTime2));
+        IllegalStateException e3 = Assertions.assertThrows(IllegalStateException.class, () -> reserveFacilityRepository.reserveFacility(facReserveTimeMember3, reserveTime3));
 
         Assertions.assertEquals("[1]이미 예약된 시간입니다.", e.getMessage());
         Assertions.assertEquals("[2]이미 예약된 시간입니다.", e2.getMessage());

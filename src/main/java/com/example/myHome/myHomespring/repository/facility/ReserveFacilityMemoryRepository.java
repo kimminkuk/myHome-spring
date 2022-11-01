@@ -50,6 +50,21 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
         return curFacReserveTime;
     }
 
+    @Override
+    public FacReserveTimeMember facInitReserveSave(FacReserveTimeMember curFacReserveTime) {
+        curFacReserveTime.setId(++sequence);
+        storeFacReserveTime.put(curFacReserveTime.getId(), curFacReserveTime);
+        return curFacReserveTime;
+    }
+
+    @Override
+    public FacReserveTimeMember reserveFacility(FacReserveTimeMember curFacReserveTime, String reserveTime) {
+        validateFacReserveTime(curFacReserveTime, reserveTime);
+        curFacReserveTime.setReserveTime(reserveTime);
+        storeFacReserveTime.put(curFacReserveTime.getId(), curFacReserveTime);
+        return curFacReserveTime;
+    }
+
     // 예약시간 겹치는거 확인하는 코드 (카카오1번 문제처럼 풀자)
     // IllegalStateException
     public void validateFacReserveTime(FacReserveTimeMember facReserveTimeMember, String reserveTime) {
@@ -112,8 +127,6 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
         int resTimeArrLength = resStartTimes.size();
         int resTimeIdx = 0;
         for (resTimeIdx = 0; resTimeIdx < resTimeArrLength; resTimeIdx++) {
-            System.out.println("curStart = " + curReserveStartTime + " curEnd = " + curReserveEndTime);
-            System.out.println("[idx: " + reserveTime +   " resStart = " + resStartTimes.get(resTimeIdx) + " resEnd = " + resEndTimes.get(resTimeIdx));
             // 1. 예약시간이 기존시간이랑 오른쪽으로 겹칠때
             // [기존] |-|  |------|       |---|
             // [신규]          |------|

@@ -49,18 +49,7 @@ class ReserveFacilityServiceTest {
     @Test
     public void 설비예약_시간설정() throws Exception {
         //given
-        FacReserveTimeMember facReserveTimeMember = new FacReserveTimeMember();
-        ReserveFacilityTitle reserveFacilityTitle = new ReserveFacilityTitle();
-        reserveFacilityTitle.setTitle("MT8311_ASAN_BMT#11");
-
-        String reserveTime1 = "2021-08-01 10:00:00, 2021-08-01 13:00:00";
-        facReserveTimeMember.setUserName("Reas2@nakr.co.kr");
-        facReserveTimeMember.setReserveTime("2021-08-01 10:00:00, 2021-08-01 11:00:00");
-
-        //when
-        Long FacSaveJoin = reserveFacilityService.join(reserveFacilityTitle);
-        Long FacReserveTimeJoin = reserveFacilityService.reserveTime(reserveFacilityTitle, facReserveTimeMember, reserveTime1);
-
+        String title = "MT8311_ASAN_BMT#11";
         //then
 
 

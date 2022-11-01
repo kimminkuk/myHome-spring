@@ -10,7 +10,8 @@ function reserveItemMake() {
 
 function reserveMainItemMakeBtnFunc() {
     //이거도 그냥 ajax로 하지말고, 리다이렉트로 하자
-    let ur = 'http://localhost:8080/reserve/reserve-main/make';
+    //let ur = 'http://localhost:8080/reserve/reserve-main/make';
+    let ur = 'http://localhost:8080/reserve/reserve-main/make-v2';
     let reserveMainItemTitleValue = document.querySelector("#reserveMainItemTitle").value;
     if (reserveMainItemTitleValue == null || reserveMainItemTitleValue == "") {
         alert("[ERR-902] 아이템 제목을 입력해주세요.");
@@ -20,8 +21,11 @@ function reserveMainItemMakeBtnFunc() {
         alert("[ERR-903] 아이템 제목은 문자열이어야 합니다.");
         return;
     }
-
+    var tempUserName = "mk.yoda@nkrkb.com";
+    var tempReserveTime = "0000-00-00 00:00~0000-00-00 00:00";
     var data = 'facilityTitle=' + encodeURIComponent(reserveMainItemTitleValue);
+    data += '&reserveTime=' + encodeURIComponent(tempReserveTime);
+    data += '&userName=' + encodeURIComponent(tempUserName);
     ur = ur + '?' + data;
     location.href = ur;
     return;

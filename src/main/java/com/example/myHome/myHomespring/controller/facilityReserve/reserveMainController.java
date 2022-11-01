@@ -1,5 +1,6 @@
 package com.example.myHome.myHomespring.controller.facilityReserve;
 
+import com.example.myHome.myHomespring.domain.facility.FacReserveTimeMember;
 import com.example.myHome.myHomespring.domain.facility.ReserveFacilityTitle;
 import com.example.myHome.myHomespring.service.facility.ReserveFacilityService;
 import org.springframework.stereotype.Controller;
@@ -48,6 +49,28 @@ public class reserveMainController {
         reserveFacilityTitle.setTitle(facilityTitle);
         reserveFacilityService.join(reserveFacilityTitle);
         System.out.println("[DEBUG END] /reserve/reserve-main/make/facilityTitle: " + facilityTitle + " Call");
+
+        return "redirect:/reserve/reserve-main";
+    }
+
+    @GetMapping("/reserve/reserve-main/make-v2")
+    public String reserveMainMakeVer2(Model model,
+                                  @RequestParam("facilityTitle") String facilityTitle,
+                                  @RequestParam("reserveTime") String reserveTime,
+                                  @RequestParam("userName") String userName) {
+        System.out.println("[DEBUG START] /reserve/reserve-main/make/facilityTitle: " + ", facilityTitle = "
+                + facilityTitle + ", reserveTime = " + reserveTime + ", userName = " + userName);
+
+        model.addAttribute("facilityTitle", facilityTitle);
+        model.addAttribute("reserveTime", reserveTime);
+        model.addAttribute("userName", userName);
+        FacReserveTimeMember facReserveTimeMember = new FacReserveTimeMember();
+        facReserveTimeMember.setReserveFacTitle(facilityTitle);
+        facReserveTimeMember.setReserveTime(reserveTime);
+        facReserveTimeMember.setUserName(userName);
+        reserveFacilityService.facReserveFirst(facReserveTimeMember);
+        System.out.println("[DEBUG END] /reserve/reserve-main/make/facilityTitle: " + ", facilityTitle = "
+                + facilityTitle + ", reserveTime = " + reserveTime + ", userName = " + userName);
 
         return "redirect:/reserve/reserve-main";
     }

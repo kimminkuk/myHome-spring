@@ -17,4 +17,6 @@ public interface ReserveFacilityRepository {
 
     //예약 시간 추가
     FacReserveTimeMember saveReserveTime(ReserveFacilityTitle curFacility, FacReserveTimeMember curFacReserveTime, String rserveTime);
+    FacReserveTimeMember reserveFacility(FacReserveTimeMember curFacReserveTime, String reserveTime);
+    FacReserveTimeMember facInitReserveSave(FacReserveTimeMember curFacReserveTime);
 }
