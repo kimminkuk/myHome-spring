@@ -49,9 +49,9 @@
                 </tr>
 
                 <!-- thymeleaf iter -->
-                <tr th:each="facility, iter : ${reserveFacilityTitles}">
+                <tr th:each="facility, iter : ${reserveFacAll}">
                     <th class="reserve-iter-list-number" th:text="${iter.index + 1}"></th>
-                    <th class="reserve-iter-list-title" th:text="${facility.title}"></th>
+                    <th class="reserve-iter-list-title" th:text="${facility.reserveFacTitle}"></th>
                     <th class="reserve-iter-list-time"></th>
                 </tr>       
             </thead>
@@ -160,6 +160,6 @@
             </div>
     </div>
 </body>
-<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221101-01"></script>
+<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221102-01"></script>
 <script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
 </html>

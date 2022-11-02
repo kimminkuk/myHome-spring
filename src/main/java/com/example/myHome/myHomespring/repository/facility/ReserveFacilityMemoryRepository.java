@@ -23,6 +23,11 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
     }
 
     @Override
+    public List<FacReserveTimeMember> findReserveFacAll() {
+        return new ArrayList<>(storeFacReserveTime.values());
+    }
+
+    @Override
     public Optional<ReserveFacilityTitle> findById(Long id) {
         return Optional.ofNullable(store.get(id));
     }
@@ -35,9 +40,23 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
     }
 
     @Override
+    public Optional<FacReserveTimeMember> findByReserveFacTitle(String facTitle) {
+        return storeFacReserveTime.values().stream()
+                .filter(facReserveTimeMember -> facReserveTimeMember.getReserveFacTitle().equals(facTitle))
+                .findAny();
+    }
+
+    @Override
     public Optional<ReserveFacilityTitle> delFacility(String delTitle) {
         findByTitle(delTitle)
                 .ifPresent(findReserveFacilityTitle -> store.remove(findReserveFacilityTitle.getId()));
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<FacReserveTimeMember> delReserveFac(String facTitle) {
+        findByReserveFacTitle(facTitle)
+                .ifPresent(findFacTitle -> storeFacReserveTime.remove(findFacTitle.getId()));
         return Optional.empty();
     }
 
@@ -52,6 +71,7 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
 
     @Override
     public FacReserveTimeMember facInitReserveSave(FacReserveTimeMember curFacReserveTime) {
+        curFacReserveTime.setReserveFacTitle(curFacReserveTime.getReserveFacTitle());
         curFacReserveTime.setId(++sequence);
         storeFacReserveTime.put(curFacReserveTime.getId(), curFacReserveTime);
         return curFacReserveTime;

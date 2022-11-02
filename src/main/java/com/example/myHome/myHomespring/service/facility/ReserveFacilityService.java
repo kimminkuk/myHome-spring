@@ -32,6 +32,13 @@ public class ReserveFacilityService {
     }
 
     /**
+     *  예약 가능한 설비 전체 조회 버전2
+     */
+    public List<FacReserveTimeMember> findReserveFacAll() {
+        return reserveFacilityRepository.findReserveFacAll();
+    }
+
+    /**
      *  설비 예약 타이틀 찾기
      */
     public Optional<ReserveFacilityTitle> findOne(Long reserveFacilityTitleId) {
@@ -43,6 +50,13 @@ public class ReserveFacilityService {
      */
     public Optional<ReserveFacilityTitle> delFacility(String delTitle) {
        return reserveFacilityRepository.delFacility(delTitle);
+    }
+
+    /**
+     * 설비 예약 타이틀 삭제 버전2
+     */
+    public Optional<FacReserveTimeMember> delReserveFac(String facTitle) {
+        return reserveFacilityRepository.delReserveFac(facTitle);
     }
 
     /**
@@ -66,6 +80,7 @@ public class ReserveFacilityService {
      * 설비 예약 버전2 처음 만들시
      */
     public Long facReserveFirst(FacReserveTimeMember curFacReserve) {
+        validateDuplicateFacilityTitleVer2(curFacReserve);
         reserveFacilityRepository.facInitReserveSave(curFacReserve);
         return curFacReserve.getId();
     }
@@ -73,6 +88,14 @@ public class ReserveFacilityService {
     private void validateDuplicateFacilityTitle(ReserveFacilityTitle reserveFacilityTitle) {
         reserveFacilityRepository.findByTitle(reserveFacilityTitle.getTitle())
                 .ifPresent( title -> {
+                    throw new IllegalStateException("이미 존재하는 설비 예약 타이틀입니다.");
+                });
+    }
+
+
+    private void validateDuplicateFacilityTitleVer2(FacReserveTimeMember facReserveTimeMember) {
+        reserveFacilityRepository.findByReserveFacTitle(facReserveTimeMember.getReserveFacTitle())
+                .ifPresent( fac_title -> {
                     throw new IllegalStateException("이미 존재하는 설비 예약 타이틀입니다.");
                 });
     }

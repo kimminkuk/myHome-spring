@@ -126,7 +126,7 @@ class ReserveFacilityMemoryRepositoryTest {
         facReserveTimeMember.setReserveTime("2022-11-14 11:30~2022-11-14 14:00, 2022-11-14 15:30~2022-11-14 16:00");
 
         String reserveTime2 = "2022-11-15 14:00~2022-11-15 14:30";
-        String facTitle2 = "MT8311_ASAN_BMT#1";
+        String facTitle2 = "MT8311_ASAN_BMT#2";
         FacReserveTimeMember facReserveTimeMember2 = new FacReserveTimeMember();
         facReserveTimeMember2.setReserveFacTitle(facTitle2);
         facReserveTimeMember2.setUserName("호요다@kanam.esap.co.kr");
@@ -143,14 +143,19 @@ class ReserveFacilityMemoryRepositoryTest {
 
 
         //when
-        FacReserveTimeMember saveFac1 = reserveFacilityRepository.reserveFacility(facReserveTimeMember, reserveTime1);
-        FacReserveTimeMember saveFac2 = reserveFacilityRepository.reserveFacility(facReserveTimeMember2, reserveTime2);
+        FacReserveTimeMember saveFac1 = reserveFacilityRepository.facInitReserveSave(facReserveTimeMember);
+        FacReserveTimeMember saveFac2 = reserveFacilityRepository.facInitReserveSave(facReserveTimeMember2);
         FacReserveTimeMember saveFac3 = reserveFacilityRepository.facInitReserveSave(facReserveTimeMember3);
+
         //then
         assertThat(saveFac1).isEqualTo(facReserveTimeMember);
         assertThat(saveFac2).isEqualTo(facReserveTimeMember2);
         assertThat(saveFac3).isEqualTo(facReserveTimeMember3);
 
+        assertThat(reserveFacilityRepository.findReserveFacAll().size()).isEqualTo(3);
+
+        reserveFacilityRepository.delReserveFac(facTitle1);
+        assertThat(reserveFacilityRepository.findReserveFacAll().size()).isEqualTo(2);
     }
 
     @Test

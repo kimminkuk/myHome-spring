@@ -47,36 +47,101 @@ class ReserveFacilityServiceTest {
     }
 
     @Test
-    public void 설비예약_시간설정() throws Exception {
+    public void 설비예약_버전2() throws Exception {
+        //init
+        List<FacReserveTimeMember> initReserveList = reserveFacilityService.findReserveFacAll();
+        Long initSize = Long.valueOf(initReserveList.size());
+
         //given
-        String title = "MT8311_ASAN_BMT#11";
+        String tempInitReserveTime = "0000-00-00 00:00~0000-00-00 00:00";
+        String tempInitUserName = "mk.Yoda@nklkb.com";
+
+        String title1 = "MT8311_ASAN_BMT#1";
+        FacReserveTimeMember facReserveTimeMember1 = new FacReserveTimeMember();
+        facReserveTimeMember1.setReserveTime(tempInitReserveTime);
+        facReserveTimeMember1.setUserName(tempInitUserName);
+        facReserveTimeMember1.setReserveFacTitle(title1);
+
+        String title2 = "MT8311_ASAN_BMT#2";
+        FacReserveTimeMember facReserveTimeMember2 = new FacReserveTimeMember();
+        facReserveTimeMember2.setReserveTime(tempInitReserveTime);
+        facReserveTimeMember2.setUserName(tempInitUserName);
+        facReserveTimeMember2.setReserveFacTitle(title2);
+
+        String title3 = "MT8311_ASAN_BMT#3";
+        FacReserveTimeMember facReserveTimeMember3 = new FacReserveTimeMember();
+        facReserveTimeMember3.setReserveTime(tempInitReserveTime);
+        facReserveTimeMember3.setUserName(tempInitUserName);
+        facReserveTimeMember3.setReserveFacTitle(title3);
+
+        //when
+        Long reserve1 = reserveFacilityService.facReserveFirst(facReserveTimeMember1);
+        Long reserve2 = reserveFacilityService.facReserveFirst(facReserveTimeMember2);
+        Long reserve3 = reserveFacilityService.facReserveFirst(facReserveTimeMember3);
+
         //then
+        List<FacReserveTimeMember> reserveFacAll = reserveFacilityService.findReserveFacAll();
+        Assertions.assertThat(reserveFacAll.size()).isEqualTo(3 + initSize);
+
+        reserveFacilityService.delReserveFac(title1);
+        List<FacReserveTimeMember> reserveFacAll1 = reserveFacilityService.findReserveFacAll();
+        Assertions.assertThat(reserveFacAll1.size()).isEqualTo(2 + initSize);
+        return;
+    }
+
+    @Test
+    public void 같은설비_추가예약() throws Exception {
+        //init
+        String reserveTime2 = "2022-11-02 23:00~2022-11-02 23:30";
+
+        //given
+        String tempInitReserveTime = "0000-00-00 00:00~0000-00-00 00:00";
+        String tempInitUserName = "mk.Yoda@nklkb.com";
+
+        String title1 = "MT8311_ASAN_BMT#1";
+        FacReserveTimeMember facReserveTimeMember1 = new FacReserveTimeMember();
+        facReserveTimeMember1.setReserveTime(tempInitReserveTime);
+        facReserveTimeMember1.setUserName(tempInitUserName);
+        facReserveTimeMember1.setReserveFacTitle(title1);
+
+        //when
+        Long reserve1 = reserveFacilityService.facReserveFirst(facReserveTimeMember1);
 
 
+        //then
+        reserveFacilityService.facReserve(facReserveTimeMember1, reserveTime2);
+
+        System.out.println("fac1Time: " + facReserveTimeMember1.getReserveTime());
         return;
     }
 
     @Test
     public void 중복_설비_예약() throws Exception {
         //given
-        String title = "MT8311_ASAN_BMT#11";
-        ReserveFacilityTitle reserveFacilityTitle = new ReserveFacilityTitle();
-        ReserveFacilityTitle reserveFacilityTitle1 = new ReserveFacilityTitle();
-        reserveFacilityTitle.setTitle(title);
-        reserveFacilityTitle1.setTitle(title);
+        String tempInitReserveTime = "0000-00-00 00:00~0000-00-00 00:00";
+        String tempInitUserName = "mk.Yoda@nklkb.com";
+
+        String title1 = "MT8311_ASAN_BMT#1";
+        FacReserveTimeMember facReserveTimeMember1 = new FacReserveTimeMember();
+        facReserveTimeMember1.setReserveTime(tempInitReserveTime);
+        facReserveTimeMember1.setUserName(tempInitUserName);
+        facReserveTimeMember1.setReserveFacTitle(title1);
+
+        FacReserveTimeMember facReserveTimeMember2 = new FacReserveTimeMember();
+        facReserveTimeMember2.setReserveTime(tempInitReserveTime);
+        facReserveTimeMember2.setUserName(tempInitUserName);
+        facReserveTimeMember2.setReserveFacTitle(title1);
 
         //when
-        Long join = reserveFacilityService.join(reserveFacilityTitle);
-        //Long join1 = reserveFacilityService.join(reserveFacilityTitle1);
+        Long aLong = reserveFacilityService.facReserveFirst(facReserveTimeMember1);
+
+        System.out.println("1: "+facReserveTimeMember1.getReserveFacTitle() + " 2: " +facReserveTimeMember2.getReserveFacTitle());
         //then
-
-
-        //1. SpringBoot Test로는 안된다. (왜지?, 트랜잭션이라서 그런가?????)
-        //2. In-Memory Test로는 확인 가능
-        IllegalStateException e = assertThrows(IllegalStateException.class, () -> reserveFacilityService.join(reserveFacilityTitle1));
-        assertEquals("이미 존재하는 설비 예약 타이틀입니다.", e.getMessage());
-//        IllegalStateException facilityReserveErrorCode = assertThrows(IllegalStateException.class, () -> reserveFacilityService.join(reserveFacilityTitle1));
-//        assertEquals(facilityReserveErrorCode.getMessage(), "이미 존재하는 설비 예약 타이틀입니다.");
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
+            reserveFacilityService.facReserveFirst(facReserveTimeMember2);
+        });
+        //Assertions.assertThat(e.getMessage()).isEqualTo("이미 예약된 설비입니다.");
+        org.junit.jupiter.api.Assertions.assertEquals("이미 존재하는 설비 예약 타이틀입니다.", e.getMessage());
 
     }
 

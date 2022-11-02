@@ -21,7 +21,7 @@ function reserveMainItemMakeBtnFunc() {
         alert("[ERR-903] 아이템 제목은 문자열이어야 합니다.");
         return;
     }
-    var tempUserName = "mk.yoda@nkrkb.com";
+    var tempUserName = "mk.yoda@nklkb.com";
     var tempReserveTime = "0000-00-00 00:00~0000-00-00 00:00";
     var data = 'facilityTitle=' + encodeURIComponent(reserveMainItemTitleValue);
     data += '&reserveTime=' + encodeURIComponent(tempReserveTime);

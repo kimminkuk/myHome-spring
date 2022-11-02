@@ -53,6 +53,19 @@ public class reserveMainController {
         return "redirect:/reserve/reserve-main";
     }
 
+    @GetMapping("/reserve/reserve-main-v2")
+    public String reserveMainVer2(Model model) {
+        System.out.println("[DEBUG START] /reserve/reserve-main-v2 Call");
+
+        //TODO: STEP1
+        // 예약된 설비들을 보여준다.
+        List<FacReserveTimeMember> reserveFacAll = reserveFacilityService.findReserveFacAll();
+        model.addAttribute("reserveFacAll", reserveFacAll);
+
+        System.out.println("[DEBUG END] /reserve/reserve-main-v2 Call");
+        return "reserve/reserve-main.html";
+    }
+
     @GetMapping("/reserve/reserve-main/make-v2")
     public String reserveMainMakeVer2(Model model,
                                   @RequestParam("facilityTitle") String facilityTitle,

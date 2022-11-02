@@ -16,7 +16,7 @@ function goRankPageHtml() {
 }
 
 function goReservePageHtml() {
-    var ur = 'http://localhost:8080/reserve/reserve-main';
+    var ur = 'http://localhost:8080/reserve/reserve-main-v2';
     window.location.replace(ur);
     return;
 }
