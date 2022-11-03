@@ -93,6 +93,8 @@ class ReserveFacilityServiceTest {
     public void 같은설비_추가예약() throws Exception {
         //init
         String reserveTime2 = "2022-11-02 23:00~2022-11-02 23:30";
+        String reserveTime3 = "2022-11-02 23:30~2022-11-02 24:00";
+        String reserveTime4 = "2022-11-02 08:00~2022-11-02 17:00";
 
         //given
         String tempInitReserveTime = "0000-00-00 00:00~0000-00-00 00:00";
@@ -110,8 +112,14 @@ class ReserveFacilityServiceTest {
 
         //then
         reserveFacilityService.facReserve(facReserveTimeMember1, reserveTime2);
+        System.out.println("[1] curFac1Time: " + facReserveTimeMember1.getReserveTime());
 
-        System.out.println("fac1Time: " + facReserveTimeMember1.getReserveTime());
+        reserveFacilityService.facReserve(facReserveTimeMember1, reserveTime3);
+        System.out.println("[2] curFac1Time: " + facReserveTimeMember1.getReserveTime());
+
+        reserveFacilityService.facReserve(facReserveTimeMember1, reserveTime4);
+        System.out.println("[3] curFac1Time: " + facReserveTimeMember1.getReserveTime());
+
         return;
     }
 

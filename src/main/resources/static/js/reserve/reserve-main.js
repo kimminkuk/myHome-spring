@@ -116,6 +116,20 @@ function deleteFacilityTitleBtn(delTitle) {
 }
 
 /**
+ *    현재 예약되어 있는 정리해서 div에 넣는다.
+ */
+
+function divFacReserveTime() {
+    let facReserveTimes = document.querySelectorAll(".reserve-iter-list-time");
+    let facReserveTimesLength = facReserveTimes.length;
+    for (let i = 0; i < facReserveTimesLength; i++) {
+        let curReserveTime = facReserveTimes[i].getAttribute("value");
+        console.log(curReserveTime);
+    }
+    return;
+}
+
+/**
  *    예약 시간 grid에 div 속성 추가
  * 
  *    div 속성:
@@ -363,3 +377,8 @@ reserveItemDeleteMakeInit();
   *    th-header
   */
 thTimeHeaderInit();
+
+/**
+ *     설비 예약 시간 가져오기
+ */
+ divFacReserveTime();

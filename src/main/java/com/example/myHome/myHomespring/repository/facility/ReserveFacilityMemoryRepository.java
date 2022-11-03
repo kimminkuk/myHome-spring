@@ -80,7 +80,8 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
     @Override
     public FacReserveTimeMember reserveFacility(FacReserveTimeMember curFacReserveTime, String reserveTime) {
         validateFacReserveTime(curFacReserveTime, reserveTime);
-        curFacReserveTime.setReserveTime(reserveTime);
+        String updateReserveTime = curFacReserveTime.getReserveTime() + ", " + reserveTime;
+        curFacReserveTime.setReserveTime(updateReserveTime);
         storeFacReserveTime.put(curFacReserveTime.getId(), curFacReserveTime);
         return curFacReserveTime;
     }

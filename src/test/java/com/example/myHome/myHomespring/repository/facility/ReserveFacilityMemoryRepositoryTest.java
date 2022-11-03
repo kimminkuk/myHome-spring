@@ -117,6 +117,7 @@ class ReserveFacilityMemoryRepositoryTest {
     @Test
     void saveReserveTimeVer2() {
         //given
+        int initSize = reserveFacilityRepository.findReserveFacAll().size();
 
         String reserveTime1 = "2022-11-14 10:30~2022-11-14 11:30";
         String facTitle1 = "MT8311_ASAN_BMT#1";
@@ -152,10 +153,14 @@ class ReserveFacilityMemoryRepositoryTest {
         assertThat(saveFac2).isEqualTo(facReserveTimeMember2);
         assertThat(saveFac3).isEqualTo(facReserveTimeMember3);
 
-        assertThat(reserveFacilityRepository.findReserveFacAll().size()).isEqualTo(3);
+        assertThat(reserveFacilityRepository.findReserveFacAll().size()).isEqualTo(3 + initSize);
 
         reserveFacilityRepository.delReserveFac(facTitle1);
-        assertThat(reserveFacilityRepository.findReserveFacAll().size()).isEqualTo(2);
+        assertThat(reserveFacilityRepository.findReserveFacAll().size()).isEqualTo(2 + initSize);
+
+
+        FacReserveTimeMember temp = reserveFacilityRepository.reserveFacility(facReserveTimeMember2, reserveTime2);
+        System.out.println(temp.getReserveTime());
     }
 
     @Test

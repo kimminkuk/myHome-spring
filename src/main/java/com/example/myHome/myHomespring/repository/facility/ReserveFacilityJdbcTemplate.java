@@ -34,8 +34,9 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
     public FacReserveTimeMember reserveFacility(FacReserveTimeMember curFacReserveTime, String reserveTime) {
         // FACILITY_RESERVE_TIME_V2 테이블에 예약시간을 저장합니다.
         String sql = "update FACILITY_RESERVE_TIME_V2 set reserve_time = ? where fac_title = ?";
-        String reserveTimeResult = curFacReserveTime.getReserveTime() + ", " +reserveTime;
+        String reserveTimeResult = curFacReserveTime.getReserveTime() + ", " + reserveTime;
         jdbcTemplate.update(sql, reserveTimeResult, curFacReserveTime.getReserveFacTitle());
+        curFacReserveTime.setReserveTime(reserveTimeResult);
         return curFacReserveTime;
     }
 

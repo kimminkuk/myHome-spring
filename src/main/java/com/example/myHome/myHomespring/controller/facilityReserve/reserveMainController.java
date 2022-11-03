@@ -85,7 +85,7 @@ public class reserveMainController {
         System.out.println("[DEBUG END] /reserve/reserve-main/make/facilityTitle: " + ", facilityTitle = "
                 + facilityTitle + ", reserveTime = " + reserveTime + ", userName = " + userName);
 
-        return "redirect:/reserve/reserve-main";
+        return "redirect:/reserve/reserve-main-v2";
     }
 
     @GetMapping("/reserve/reserve-main/fac-reserve")
@@ -98,7 +98,7 @@ public class reserveMainController {
         model.addAttribute("reserveName", reserveName);
         model.addAttribute("reserveDate", reserveDate);
         System.out.println("[DEBUG END] /reserve/reserve-main/fac-reserve/facilityTitle: " + facilityTitle + " Call" + "reserveName: " + reserveName + "reserveDate: " + reserveDate);
-        return "redirect:/reserve/reserve-main";
+        return "redirect:/reserve/reserve-main-v2";
     }
 
     @GetMapping("/reserve/reserve-main/delete")
@@ -112,6 +112,6 @@ public class reserveMainController {
 
 
         //redirect code
-        return "redirect:/reserve/reserve-main";
+        return "redirect:/reserve/reserve-main-v2";
     }
 }
