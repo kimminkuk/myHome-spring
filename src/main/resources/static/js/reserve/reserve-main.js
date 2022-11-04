@@ -115,17 +115,88 @@ function deleteFacilityTitleBtn(delTitle) {
     return;
 }
 
-/**
- *    현재 예약되어 있는 정리해서 div에 넣는다.
- */
 
-function divFacReserveTime() {
+/**
+ *    String to hour, minute
+ *    달력 정보는 2022
+ */
+function getTimeToMinute(dayTime, hourTime, calendar2022) {
+    let year = 365, hour = 24, minute = 60;
+    let dayTimeArr = dayTime.split("-");
+    let hourTimeArr = hourTime.split(":");
+    let dayTimeToMinute = parseInt(dayTimeArr[0]) * year * hour * minute +
+        calendar2022[parseInt(dayTimeArr[1])] * hour * minute +
+        parseInt(dayTimeArr[2]) * minute;
+    
+    let hourTimeToMinute = parseInt(hourTimeArr[0]) * minute + parseInt(hourTimeArr[1]);
+    let resultTime = dayTimeToMinute + hourTimeToMinute;
+    return resultTime;
+}
+
+/**
+ *    예약 칸을 나눠주는 함수
+ */
+function getResDivMod(resTime) {
+    let resTimeArr = resTime.split(":");
+    let resHour = parseInt(resTimeArr[0]);
+    let resMinute = parseInt(resTimeArr[1]);
+    let resMod = resHour * 2;
+    if (resMinute == 30) {
+        resMod += 1;
+    }
+    return resMod;
+}
+
+/**
+ *    첫 화면 로드 시, 현재 예약되어 있는 설비 시간을해서 div에 넣는다.
+ */
+function initDispFacReserveTime() {
     let facReserveTimes = document.querySelectorAll(".reserve-iter-list-time");
     let facReserveTimesLength = facReserveTimes.length;
-    for (let i = 0; i < facReserveTimesLength; i++) {
-        let curReserveTime = facReserveTimes[i].getAttribute("value");
-        console.log(curReserveTime);
+    let calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+    let resStartTimes = new Array();
+    let resEndTimes = new Array();
+    let facDispTopOffset = 5;
+    
+    for ( let facIdx = 0; facIdx < facReserveTimesLength; facIdx++ ) {
+        //step1. 현재 설비의 예약된 시간을(String형태) 가져온다.
+        let curReserveTime = facReserveTimes[facIdx].getAttribute("value");
+        let curReserveTimeArr = curReserveTime.split(",");
+        let curResTimeLength = curReserveTimeArr.length;
+        let curResStartTimeDiv = new Array();
+        let curResEndTimeDiv = new Array();
+        
+        //step2. 예약된 시간들을 하나씩 설정해준다.
+        for ( let curTimeArrIdx = 0; curTimeArrIdx < curResTimeLength; curTimeArrIdx++ ) {
+            //step2-1. ~ 표시로 예약 시작과 끝을 구분해준다.
+            let curResStartEndTimes = curReserveTimeArr[curTimeArrIdx].split("~");
+            let curResStartEndTimesLen = curResStartEndTimes.length;
+            //step2-2. 예약 시작과 끝을 구분해준다.
+            for ( let curResIdx = 0; curResIdx < curResStartEndTimesLen; curResIdx++ ) {
+                //let startEndTime = new Array(curResStartEndTimes[curResIdx].trim().split(" "));
+                let startEndTime = curResStartEndTimes[curResIdx].trim().split(" ");
+            
+                if ( (curResIdx & 1) == 0 ) {
+                    resStartTimes.push(getTimeToMinute(startEndTime[0], startEndTime[1], calendar2022));
+                    curResStartTimeDiv.push(startEndTime[1]);
+                } else {
+                    resEndTimes.push(getTimeToMinute(startEndTime[0], startEndTime[1], calendar2022));
+                    curResEndTimeDiv.push(startEndTime[1]);
+                }
+            }            
+        }
+        let resDivLen = curResEndTimeDiv.length;
+        for ( let resDivIdx = 0; resDivIdx < resDivLen; resDivIdx++ ) {
+            let divStart = getResDivMod(curResStartTimeDiv[resDivIdx]);
+            let divEnd = getResDivMod(curResEndTimeDiv[resDivIdx]);
+            for ( let divIdx = divStart; divIdx < divEnd; divIdx++ ) {
+                let divResColor = document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + facIdx + facDispTopOffset + ") > th.reserve-iter-list-time > div:nth-child(" + divIdx + ")");
+                divResColor.style.background = "red";
+            }
+        }
     }
+
+    
     return;
 }
 
@@ -154,10 +225,14 @@ function reserveTimeGridInit() {
             div.style.value = "nonReserve";
             div.addEventListener("mouseover", function() {
                 //연한 초록색
-                this.style.backgroundColor = "#e0ffe0";
-                this.addEventListener("mouseout", function() {
-                    this.style.backgroundColor = "white";
-                });
+                // TODO: DB에서 예약시간을 가져와서 예약된 시간은 빨간색으로 표시해준다.
+                //       그런데, 미리 색을 칠해버리고 mouseout event를 추가해두니
+                //       예상하지 못한 결과들이 발생한다. 그래서 삭제.
+                //this.style.backgroundColor = "#e0ffe0";
+                //this.addEventListener("mouseout", function() {
+                //    this.style.backgroundColor = "white";
+                //});
+
                 this.addEventListener("click", function() {
                     reserveTimeGridClickVer2(curFacTitle, gridIdx);
                 });
@@ -381,4 +456,4 @@ thTimeHeaderInit();
 /**
  *     설비 예약 시간 가져오기
  */
- divFacReserveTime();
+ initDispFacReserveTime();
