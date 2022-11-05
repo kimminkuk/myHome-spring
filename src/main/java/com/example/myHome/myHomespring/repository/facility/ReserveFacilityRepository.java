@@ -26,5 +26,5 @@ public interface ReserveFacilityRepository {
 
     //현재 설비의 예약된 시간들 보기
     //TODO:
-    //Optional<String> curFacReserveTime(String facTitle);
+    Optional<String> findCurFacReserveTime(String facTitle);
 }

@@ -85,6 +85,13 @@ public class ReserveFacilityService {
         return curFacReserve.getId();
     }
 
+    /**
+     * 선택한 설비의 예약시간 확인하기
+     */
+    public Optional<String> getCurFacReserveTime(String facTitle) {
+        return reserveFacilityRepository.findCurFacReserveTime(facTitle);
+    }
+
     private void validateDuplicateFacilityTitle(ReserveFacilityTitle reserveFacilityTitle) {
         reserveFacilityRepository.findByTitle(reserveFacilityTitle.getTitle())
                 .ifPresent( title -> {

@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -87,6 +88,18 @@ class ReserveFacilityServiceTest {
         List<FacReserveTimeMember> reserveFacAll1 = reserveFacilityService.findReserveFacAll();
         Assertions.assertThat(reserveFacAll1.size()).isEqualTo(2 + initSize);
         return;
+    }
+
+    @Test
+    public void 설비예약시간_확인() {
+        //given
+        String title1 = "테스트입니다.";
+
+        //when
+        String curResTime = reserveFacilityService.getCurFacReserveTime(title1).get();
+
+        //then
+        System.out.println("curResTime = " + curResTime);
     }
 
     @Test

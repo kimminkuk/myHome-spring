@@ -37,4 +37,19 @@ public class FacReserveTimeMember {
     public void setReserveTime(String reserveTime) {
         this.reserveTime = reserveTime;
     }
+
+    public FacReserveTimeMember() {
+
+    }
+
+    public FacReserveTimeMember(String reserveFacTitle, String userName, String reserveTime) {
+        this.reserveFacTitle = reserveFacTitle;
+        this.userName = userName;
+        this.reserveTime = reserveTime;
+    }
+
+    public FacReserveTimeMember(String reserveFacTitle, String userName) {
+        this.reserveFacTitle = reserveFacTitle;
+        this.userName = userName;
+    }
 }

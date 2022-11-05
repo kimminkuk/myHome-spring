@@ -164,6 +164,36 @@ class ReserveFacilityMemoryRepositoryTest {
     }
 
     @Test
+    void curReserveTime() {
+        //given
+        String title1 = "MT8311_ASAN_BMT#1";
+        String curReserveTime1 = "2022-11-14 10:30~2022-11-14 11:30";
+        String curReserveTime2 = "2022-11-14 15:30~2022-11-14 18:30";
+        String initReserveTime1 = "0000-00-00 00:00~0000-00-00 00:00";
+        String userName1 = "호요다@kanam.esap.co.kr";
+        FacReserveTimeMember facReserveTimeMember1 = new FacReserveTimeMember(title1, userName1, initReserveTime1);
+
+        //when
+        FacReserveTimeMember curFacMember = reserveFacilityRepository.facInitReserveSave(facReserveTimeMember1);
+
+        //then
+        String curSaveTime = reserveFacilityRepository.findCurFacReserveTime(curFacMember.getReserveFacTitle()).get();
+        System.out.println("[Step1] curSaveTime: " + curSaveTime);
+
+        //when 2
+        reserveFacilityRepository.reserveFacility(curFacMember, curReserveTime1);
+
+        //then 2
+        reserveFacilityRepository.findCurFacReserveTime(curFacMember.getReserveFacTitle()).ifPresent(System.out::println);
+
+        //when 3
+        reserveFacilityRepository.reserveFacility(curFacMember, curReserveTime2);
+
+        //then3
+        reserveFacilityRepository.findCurFacReserveTime(curFacMember.getReserveFacTitle()).ifPresent(System.out::println);
+    }
+
+    @Test
     void saveFailReserveTime() {
         //given
         ReserveFacilityTitle reserveFacilityTitle = new ReserveFacilityTitle();

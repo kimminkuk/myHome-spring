@@ -111,6 +111,14 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
         return curFacReserveTime;
     }
 
+    @Override
+    public Optional<String> findCurFacReserveTime(String facTitle) {
+        String sql = "select * from FACILITY_RESERVE_TIME_V2 where fac_title = ?";
+        List<FacReserveTimeMember> result = jdbcTemplate.query(sql, facReserveTimeMemberRowMapper(), facTitle);
+
+        return result.stream().map(FacReserveTimeMember::getReserveTime).findAny();
+    }
+
     private RowMapper<ReserveFacilityTitle> reserveFacilityTitleRowMapper() {
         return (rs, rowNum) -> {
             ReserveFacilityTitle reserveFacilityTitle = new ReserveFacilityTitle();

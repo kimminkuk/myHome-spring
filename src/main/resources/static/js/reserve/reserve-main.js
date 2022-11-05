@@ -392,7 +392,7 @@ function thTimeHeaderInit() {
 }
 
 /**
- *    예약시간 저장 
+ *    예약시간 저장 -> LocalStorage
  */
 function makeFacReserveTimeBtn() {
     var reserveTitles = document.querySelectorAll(".reserve-iter-list-title");
@@ -422,6 +422,81 @@ function makeFacReserveTimeBtn() {
     }
     return;
 }
+
+/**
+ *    예약시간이 겹치는지 확인
+ */
+function validateDuplicateReserveTime(curFacTitle, curReserveTime) {
+    return;
+}
+
+/**
+ *    선택한 시간을 계산 가능한 숫자로 변환
+ *    return: reserveTimeResult Array (시작시간, 종료시간)
+ */
+function getConvRserveTime(reserveTime) {
+    //init code 달력등을 표시
+    let calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+
+    //step1 날짜, 시간, 분 분리
+    // ex) 2022-10-14 11:30~2022-11-11 14:00
+    //     [2022-10-14 11:30] [2022-11-11 14:00]
+    let timeStep1 = reserveTime.split("~");
+    let timeStep1Len = timeStep1.length;
+
+    //step2 예약 시작 시간, 종료 시간 분리
+    let timeStep2 = timeStep1.trim().split(" ");
+    
+    //step3 시간을 계산할 수 있는 숫자로 변환
+    let timeStep3_1 = getTimeToMinute(timeStep2[0][0], timeStep2[0][1], calendar2022);
+    let timeStep3_2 = getTimeToMinute(timeStep2[1][0], timeStep2[1][1], calendar2022);
+    let reserveTimeResult = new Array(timeStep3_1, timeStep3_2);
+    return reserveTimeResult;
+}
+
+/**
+ *    예약시간 저장 -> DB에 저장
+ */
+function makeFacReserveTimeForDbBtn() {
+    //step1 선택한 설비의 예약 시작 시간, 종료 시간의 정보를 가져온다.
+    //step2 선택한 설비의 기존 예약 시간이 겹치면 경고를 띄우고 취소 시킨다.
+    //      이 부분은, Back-end에서도 처리를 했지만 추가로 Front-end에서도 처리를 해준다.
+    //step3 현재 설비의 예약 시작 시간, 종료 시간의 정보를 DB에 저장한다.
+    //      redirect로 새로고침처럼 행동해서 Display를 갱신한다.
+    //      ex) 2022-10-14 11:30~2022-11-11 14:00
+    //init code
+    let tempToday = "2022-11-05";
+    let reserveUr = 'http://localhost:8080/reserve/reserve-main/fac-reserve';
+    let reserveUserName = "mk.yoda@nklkb.com";
+    let curReserveTime = "";
+
+    //step1 code
+    let curFacTitle = document.querySelector(".reserve-popup-main-title-text").innerHTML;
+    let startTimeHour = document.querySelector("#reservePopupTimeScroll").value;
+    let startTimeMinute = document.querySelector("#reservePopupMinuteScroll").value;
+    
+    let endTimeHour = document.querySelector("#reservePopupTimeScrollEnd").value;
+    let endTimeMinute = document.querySelector("#reservePopupMinuteScrollEnd").value;
+    
+    let startTime = tempToday + " " + String(startTimeHour) + ":" + String(startTimeMinute);
+    let endTime = tempToday + " " + String(endTimeHour) + ":" + String(endTimeMinute);
+    
+    //String 변환 코드
+    curReserveTime = startTime + "~" + endTime;
+    
+    //step2 code
+    //TODO: 예외처리 넣어야함 (일단 패스했다는 가정합니다.)
+    validateDuplicateReserveTime(curFacTitle, curReserveTime);
+
+    //step3 code
+    let data = 'facilityTitle=' + encodeURIComponent(curFacTitle) 
+                + '&reserveTime=' + encodeURIComponent(curReserveTime) 
+                + '&userName=' + encodeURIComponent(reserveUserName);
+    reserveUr = reserveUr + '?' + data;
+    location.href = reserveUr;
+    return;
+}
+
 
 /**
  *    예약시간 선택

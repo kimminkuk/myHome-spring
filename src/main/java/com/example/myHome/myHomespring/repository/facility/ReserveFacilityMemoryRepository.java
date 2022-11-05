@@ -86,6 +86,14 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
         return curFacReserveTime;
     }
 
+    @Override
+    public Optional<String> findCurFacReserveTime(String facTitle) {
+        return storeFacReserveTime.values().stream()
+                .filter(facReserveTimeMember -> facReserveTimeMember.getReserveFacTitle().equals(facTitle))
+                .map(facReserveTimeMember -> facReserveTimeMember.getReserveTime())
+                .findAny();
+    }
+
     // 예약시간 겹치는거 확인하는 코드 (카카오1번 문제처럼 풀자)
     // IllegalStateException
     public void validateFacReserveTime(FacReserveTimeMember facReserveTimeMember, String reserveTime) {

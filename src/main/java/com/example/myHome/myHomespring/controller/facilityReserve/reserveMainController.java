@@ -91,13 +91,20 @@ public class reserveMainController {
     @GetMapping("/reserve/reserve-main/fac-reserve")
     public String reserveMainFacReserve(Model model,
                                         @RequestParam("facilityTitle") String facilityTitle,
-                                        @RequestParam("reserveName") String reserveName,
-                                        @RequestParam("reserveDate") String reserveDate) {
-        System.out.println("[DEBUG START] /reserve/reserve-main/fac-reserve/facilityTitle: " + facilityTitle + " Call" + "reserveName: " + reserveName + "reserveDate: " + reserveDate);
+                                        @RequestParam("reserveTime") String reserveTime,
+                                        @RequestParam("userName") String userName ) {
+        System.out.println("[DEBUG START] /reserve/reserve-main/fac-reserve/facilityTitle: " + facilityTitle + " userName: " + userName + " reserveTime: " + reserveTime);
+
         model.addAttribute("facilityTitle", facilityTitle);
-        model.addAttribute("reserveName", reserveName);
-        model.addAttribute("reserveDate", reserveDate);
-        System.out.println("[DEBUG END] /reserve/reserve-main/fac-reserve/facilityTitle: " + facilityTitle + " Call" + "reserveName: " + reserveName + "reserveDate: " + reserveDate);
+        model.addAttribute("userName", userName);
+        model.addAttribute("reserveTime", reserveTime);
+
+        FacReserveTimeMember facReserveTimeMember = new FacReserveTimeMember(facilityTitle, userName);
+        String curResTime = reserveFacilityService.getCurFacReserveTime(facReserveTimeMember.getReserveFacTitle()).get();
+        facReserveTimeMember.setReserveTime(curResTime);
+        reserveFacilityService.facReserve(facReserveTimeMember, reserveTime);
+
+        System.out.println("[DEBUG END] /reserve/reserve-main/fac-reserve/facilityTitle: " + facilityTitle + " Call" + "userName: " + userName + "reserveTime: " + reserveTime);
         return "redirect:/reserve/reserve-main-v2";
     }
 
