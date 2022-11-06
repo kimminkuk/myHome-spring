@@ -156,6 +156,12 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
         int resTimeArrLength = resStartTimes.size();
         int resTimeIdx = 0;
         for (resTimeIdx = 0; resTimeIdx < resTimeArrLength; resTimeIdx++) {
+            // TODO: 0000-00-00 00:00~0000-00-00 00:00 없애는 코드 구상 중 (후 순위)
+            // front-end에서 확인된 에러 방지 추가
+            // 근본적으로는 0000-00-00 00:00~0000-00-00 00:00 을 없애야 할거같은데 음.. 일단 다른게 더 급하니 나중에 생각하자.
+            if ( (resEndTimes.get(resTimeIdx) + resStartTimes.get(resTimeIdx)) == 0 ) {
+                continue;
+            }
             // 1. 예약시간이 기존시간이랑 오른쪽으로 겹칠때
             // [기존] |-|  |------|       |---|
             // [신규]          |------|

@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
-    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221026-02">
+    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221106-15">
 </head>
 <body>
     <div id="header">
@@ -28,10 +28,11 @@
         <!-- thymeleaf table code -->
         <table>
             <thead>
-                <tr>
-                    <th>순서</th>
-                    <th>설비명</th>
-                    <th style="width:100%; height:30px;">예약시간</th>
+                <tr class="th-header-date">
+                    <th></th>
+                    <th><<<</th>
+                    <th class="reserve-cur-date-list" style="width:100%; height:30px;"> 오늘 날짜 표시 xxxx-xx-xx (xxx) </th>
+                    <th>>>></th>
                 <tr>
 
                 <!-- [시간1] 맨 위에 헤더 개념으로 하나 더 생성 -->
@@ -53,6 +54,7 @@
                     <th class="reserve-iter-list-number" th:text="${iter.index + 1}"></th>
                     <th class="reserve-iter-list-title" th:text="${facility.reserveFacTitle}"></th>
                     <th class="reserve-iter-list-time" th:value="${facility.reserveTime}"></th>
+                    <th class="reserve-iter-list-username" th:value="${facility.userName}"></th>
                 </tr>       
             </thead>
         </table>
@@ -60,9 +62,12 @@
     <!-- 예약 창 팝업 -->
     <div class="reserve-popup-main" style="display:none;">
         <div class="reserve-popup-main-title">
-            <div class="reserve-popup-main-title-text">설비이름나와야함</div>
+            <div class="reserve-popup-main-title-text">설비이름</div>
             <div class="reserve-popup-main-title-close" onclick="reservePopupClose()">X</div>
         </div>
+        
+        <div class="reserve-popup-main-title-username">유저이름</div>
+
         <div class="reserve-popup-main-content" >
             <input type="text" id="reservePopupContent" placeholder="예약 항목을 입력해주세요.">
 
@@ -198,6 +203,6 @@
             </div>
     </div>
 </body>
-<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221105-03"></script>
+<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221106-20"></script>
 <script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
 </html>

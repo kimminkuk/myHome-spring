@@ -104,7 +104,7 @@ public class reserveMainController {
         facReserveTimeMember.setReserveTime(curResTime);
         reserveFacilityService.facReserve(facReserveTimeMember, reserveTime);
 
-        System.out.println("[DEBUG END] /reserve/reserve-main/fac-reserve/facilityTitle: " + facilityTitle + " Call" + "userName: " + userName + "reserveTime: " + reserveTime);
+        System.out.println("[DEBUG END] /reserve/reserve-main/fac-reserve/facilityTitle: " + facilityTitle + " userName: " + userName + " reserveTime: " + reserveTime);
         return "redirect:/reserve/reserve-main-v2";
     }
 

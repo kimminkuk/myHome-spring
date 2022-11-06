@@ -1,3 +1,5 @@
+var G_calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+var G_topOffsetIdx = 5;
 function reserveItemMake() {
     let reserveMainItemMakeBtn = document.querySelector(".reserve-main-item-make");
     if (reserveMainItemMakeBtn.style.display == "none") {
@@ -135,6 +137,7 @@ function getTimeToMinute(dayTime, hourTime, calendar2022) {
 
 /**
  *    예약 칸을 나눠주는 함수
+ *    30분 단위로 나눠줌
  */
 function getResDivMod(resTime) {
     let resTimeArr = resTime.split(":");
@@ -148,6 +151,65 @@ function getResDivMod(resTime) {
 }
 
 /**
+ *    예약 칸을 나눠주는 함수 버전2
+ *    날짜, 30분 단위로 나눠줌
+ */
+function getResDivModVer2(dayTime, resTime) {
+
+}
+
+/**
+ *    설비의 기존 예약 시간(정보, div칸) 을 가져오는 함수
+ */
+function getCurFacReserveInfo(curFacResTime, calendar2022) {
+    //[step 1] : curFacTitle 찾고, 해당 설비예약을 ,로 split 해준다.
+    //       ex) 2022-11-05 09:00~2022-11-05 10:00, 2022-11-05 11:00~2022-11-05 12:00
+    
+    let curReserveTimeArr = curFacResTime.split(",");
+    let curResTimeLength = curReserveTimeArr.length;
+    let curResStartTimeList = new Array();
+    let curResEndTimeList = new Array();
+    let todayResDivStartList = new Array();
+    let todayResDivEndList = new Array();
+
+    //[step 2] 예약된 시간들을 하나씩 가져와서 분리한다.
+    //     ex) 2022-11-05 09:00~2022-11-05 10:00
+    //         2022-11-05 11:00~2022-11-05 12:00
+    for (let curResTimeIdx = 0; curResTimeIdx < curResTimeLength; curResTimeIdx++) {
+        //[step2-1] ~ 표시로 예약 시작과 끝을 구분해준다.
+        //      ex) 2022-11-05 09:00    
+        //          2022-11-05 10:00
+        //          2022-11-05 11:00    
+        //          2022-11-05 12:00
+        let curResTimes = curReserveTimeArr[curResTimeIdx].split("~");
+        let curResTimesLen = curResTimes.length;
+        
+        //[step2-2] 예약 시작과 끝을 구분해준다.
+        for (let curIdx = 0; curIdx < curResTimesLen; curIdx++) {
+            //ex )  2022-11-05 
+            //      09:00
+            //      2022-11-05
+            //      10:00
+            //      ...
+            let startEndTime = curResTimes[curIdx].trim().split(" ");
+            if ((curIdx & 1) == 0) {
+                //[step2-3] 시작시간
+                curResStartTimeList.push(getTimeToMinute(startEndTime[0], startEndTime[1], calendar2022));
+                todayResDivStartList.push(getResDivMod(startEndTime[1]));
+            } else {
+                //[step2-4] 끝시간
+                curResEndTimeList.push(getTimeToMinute(startEndTime[0], startEndTime[1], calendar2022));
+                todayResDivEndList.push(getResDivMod(startEndTime[1]));
+            }
+        }
+    }
+    
+    let resultTime = new Array(todayResDivStartList, todayResDivEndList);
+    return resultTime;
+}
+
+
+/**
  *    첫 화면 로드 시, 현재 예약되어 있는 설비 시간을해서 div에 넣는다.
  */
 function initDispFacReserveTime() {
@@ -156,11 +218,13 @@ function initDispFacReserveTime() {
     let calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
     let resStartTimes = new Array();
     let resEndTimes = new Array();
-    let facDispTopOffset = 5;
     
     for ( let facIdx = 0; facIdx < facReserveTimesLength; facIdx++ ) {
         //step1. 현재 설비의 예약된 시간을(String형태) 가져온다.
         let curReserveTime = facReserveTimes[facIdx].getAttribute("value");
+        
+        let curFacResList = getCurFacReserveInfo(curReserveTime, calendar2022);
+        
         let curReserveTimeArr = curReserveTime.split(",");
         let curResTimeLength = curReserveTimeArr.length;
         let curResStartTimeDiv = new Array();
@@ -190,7 +254,9 @@ function initDispFacReserveTime() {
             let divStart = getResDivMod(curResStartTimeDiv[resDivIdx]);
             let divEnd = getResDivMod(curResEndTimeDiv[resDivIdx]);
             for ( let divIdx = divStart; divIdx < divEnd; divIdx++ ) {
-                let divResColor = document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + facIdx + facDispTopOffset + ") > th.reserve-iter-list-time > div:nth-child(" + divIdx + ")");
+                let curDivIdx = divIdx + 1; //div는 1부터 시작
+                let curTrIdx = facIdx + G_topOffsetIdx;
+                let divResColor = document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + curTrIdx + ") > th.reserve-iter-list-time > div:nth-child(" + curDivIdx + ")");
                 divResColor.style.background = "red";
             }
         }
@@ -210,14 +276,18 @@ function reserveTimeGridInit() {
     var facTitles = document.querySelectorAll(".reserve-iter-list-title");
     var reserveTitlesTimes = document.querySelectorAll(".reserve-iter-list-time");
     var reserveTitlesTimeLength = reserveTitlesTimes.length;
-    
+    var reserveUserNames = document.querySelectorAll(".reserve-iter-list-username");
+    var curTopIdx = 0;
+
     for (var titleIdx = 0; titleIdx < reserveTitlesTimeLength; titleIdx++) {
         let curFacTitle = facTitles[titleIdx].innerHTML;
+        let curUserName = reserveUserNames[titleIdx].getAttribute("value");
         reserveTitlesTimes[titleIdx].style.display = "grid";
         reserveTitlesTimes[titleIdx].style.gridTemplateColumns = "repeat(48, 1fr)";
         reserveTitlesTimes[titleIdx].style.gridTemplateRows = "1fr";
 
         for (let gridIdx = 0; gridIdx < 48; gridIdx++) {
+            curTopIdx = titleIdx + G_topOffsetIdx;
             var div = document.createElement("div");
             div.style.className = "reserve-time-grid";
             div.style.border = "1px solid black";
@@ -234,9 +304,10 @@ function reserveTimeGridInit() {
                 //});
 
                 this.addEventListener("click", function() {
-                    reserveTimeGridClickVer2(curFacTitle, gridIdx);
+                    reserveTimeGridClickVer2(curFacTitle, gridIdx, curTopIdx, curUserName);
                 });
             })
+
             reserveTitlesTimes[titleIdx].appendChild(div);
         }
     }
@@ -266,33 +337,42 @@ function reserveTimeGridInit() {
  *    parent 속성
  *    document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(6) > th.reserve-iter-list-time > div:nth-child(15)")
  */     
-function reserveTimeGridClickVer2(curFacTitle, curIdx) {
+function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx, curUserName) {
     // 높이는 부모노드를 찾던지, nextSlibing, 이것저것 등등으로 찾아야할듯
     let reservePopup = document.querySelector(".reserve-popup-main");
     let curTitle = document.querySelector(".reserve-popup-main-title-text");
-    let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(5) > th.reserve-iter-list-time > ";
+    let curFacResUserName = document.querySelector(".reserve-popup-main-title-username");
+    let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + curTrIdx + ") > th.reserve-iter-list-time > ";
     let curDivChild = "div:nth-child(" + (curIdx + 1) + ")";
     curDiv += curDivChild;
+    
     document.querySelector(curDiv).style.value = "reserve";
 
     curTitle.innerHTML = curFacTitle;
+    curFacResUserName.innerHTML = curUserName;
 
     let reserveTimeHour = document.querySelector("#reservePopupTimeScroll");
     let reserveTimeMin = document.querySelector("#reservePopupMinuteScroll");
+    let resTimeEnd = new Array(document.querySelector("#reservePopupTimeScrollEnd"), document.querySelector("#reservePopupMinuteScrollEnd"));
 
     if (reservePopup.style.display == "none") {
         reserveTimeHour.value = String(curIdx >> 1);
+        resTimeEnd[0].value = reserveTimeHour.value; 
         if (curIdx & 0x1) {
             reserveTimeMin.value = "30";
+
+            resTimeEnd[0].value = String(parseInt(resTimeEnd[0].value) + 1);
+            resTimeEnd[1].value = "00";
         } else {
             reserveTimeMin.value = "00";
+            resTimeEnd[1].value = "30";
         }
         let curLeft = curIdx * 15;
-        let curTop = 3 * 100;
+        let curTop = 3 * 100       
         reservePopup.style.left = curLeft + "px";
         reservePopup.style.top = curTop + "px";
-        
         reservePopup.style.display = "block";
+
     } else {
         //reservePopup.style.display = "none";
         reservePopupClose();
@@ -348,7 +428,27 @@ function reserveTimeGridClick(curFacTitle, curIdx) {
     return;
 }
 
+function getNowDate() {
+    let curYear = new Date().getFullYear();     //현재 년도
+    let curMon = new Date().getMonth() + 1;     //현재 달
+    let curDate = new Date().getDate();         //현재 날짜임   
+    let curDay = new Date().getDay();           //0:일요일, 1:월요일...
+    let curTime = curYear + "-" + curMon + "-" + curDate;
+
+    let curDayStr = new Array("(SUN)", "(MON)", "(TUE)", "(WED)", "(THU)", "(FRI)", "(SAT)");
+    let rstCurTime = new Array(curTime, curDayStr[curDay]);
+    return rstCurTime;
+}
+
 function thTimeHeaderInit() {
+    // TODO:  버튼 눌러서 현재 날짜 좌, 우 이동도 시킬거임
+    // 오늘 날짜 header
+    // ex) 결과: [2022-11-06, (SUN)]
+    let curTime = getNowDate();
+    let curTimeHeader = document.querySelector(".reserve-cur-date-list");
+    curTimeHeader.innerHTML = curTime[0] + " " + curTime[1];
+
+
     // timeHeader Step 1 (시간)
     let thTimeHeaderHour = document.querySelector(".reserve-iter-list-time-header-1");
     thTimeHeaderHour.style.display = "grid";
@@ -424,10 +524,105 @@ function makeFacReserveTimeBtn() {
 }
 
 /**
+ *    해당 설비의 예약 시간을 가져온다.
+ */
+function getCurFacReserveTime(curFacTitle) {
+    var reserveTitles = document.querySelectorAll(".reserve-iter-list-title");
+    var reserveTimes = document.querySelectorAll(".reserve-iter-list-time");
+    let titlesLength = reserveTitles.length;    
+    let curFacReserveTime = "";
+    for (let titleIdx = 0; titleIdx < titlesLength; titleIdx++) {
+        let reserveTitle = reserveTitles[titleIdx].textContent;
+        reserveTitle = reserveTitle.slice(0, reserveTitle.length - 1);
+        if (reserveTitle == curFacTitle) {
+            let titleIdxOffset = titleIdx + G_topOffsetIdx;
+            curFacReserveTime = reserveTimes[titleIdx].getAttribute("value");
+            break;
+        }
+    }    
+    return curFacReserveTime;
+}
+
+/**
+ *     현재 예약할 시간을 index로 분리해준다.
+ */
+function getCurResTimeToIdx(curResTime) {
+    //step1 2022-11-05 10:00~2022-11-05 11:00
+    //      2022-11-05
+    //           10:00
+    //      2022-11-05
+    //           11:00
+    let curResTimeArr = curResTime.split("~");
+    let startTime = getResDivMod(curResTimeArr[0].trim().split(" ")[1]);
+    let endTime = getResDivMod(curResTimeArr[1].trim().split(" ")[1]);
+    let resultTime = new Array(startTime, endTime);
+    return resultTime;
+}
+
+/**
  *    예약시간이 겹치는지 확인
+ *    여기서는 front에서 미리 div값을 가지고 있는게 좋지 않나???
+ *    그냥 계산을 그때 그때 할까?
+ *    다른pc에서 예약하면 내 페이지에서는 갱신이 안되어있어서 back-end쪽에서 막을거임
+ *    그건 그거고, front에서 1차적으로 걸러주는게 좋은데 매번 연산해야하나??
+ *    매번 연산하자 ㅇㅇ 그게맞아 예약할때만 연산하는거니깐 매번 부하를 주지 않는다.
  */
 function validateDuplicateReserveTime(curFacTitle, curReserveTime) {
-    return;
+    //init Code
+    let errCode = true;
+
+    //step 1 예약 시작 시간이 종료시간보다 큰 경우 (절대로 없지만 혹시 모른다.)    
+    let resTime = getConvRserveTime(curReserveTime);
+    if (resTime[0] >= resTime[1]) {
+        alert("[ERR-1001] 설비 예약 시작시간이 종료시간보다 늦습니다.");
+        errCode = false;
+    }
+    // 현재 설비의 기존 예약시간을 div 배열 단위로 가져옵니다.
+    let curResTimes = getCurResTimeToIdx(curReserveTime);
+    let curResDivStart = curResTimes[0];
+    let curResDivEnd = curResTimes[1];
+    let curFacReserveTime = getCurFacReserveTime(curFacTitle);
+    if ( curFacReserveTime == "" ) {
+        alert("[ERR-1007] 현재 설비의 예약시간이 없습니다.");
+        errCode = false;
+    }        
+    let resDivList = getCurFacReserveInfo(curFacReserveTime, G_calendar2022);
+    let curFacResLen = resDivList[0].length;
+    let start = 0, end = 1;
+    for ( let curResIdx = 0; curResIdx < curFacResLen; curResIdx++ ) {
+        if ( (resDivList[start][curResIdx] + resDivList[end][curResIdx]) == 0 ) {
+            continue;
+        } 
+        //step 2 예약시간이 기존시간보다 오른쪽에서 겹칠 때
+        //   ex) 기존: |------|      |----|
+        //       예약:                 |xxx---|
+        if ( resDivList[end][curResIdx] > curResDivStart && resDivList[end][curResIdx] <= curResDivEnd ) {
+            alert("[ERR-1002] 설비 예약이 기존시간보다 오른쪽에서 겹칠 때입니다.");
+            errCode = false;
+        }
+        //step 3 예약시간이 기존시간보다 왼쪽에서 겹칠 때
+        //   ex) 기존:     |------|      |----|
+        //       예약: |---xxx|
+        else if ( resDivList[start][curResIdx] < curResDivEnd && resDivList[start][curResIdx] >= curResDivStart ) {
+            alert("[ERR-1003] 설비 예약이 기존시간보다 왼쪽에서 겹칠 때입니다.");
+            errCode = false;
+        }
+        //step 4 예약시간이 기존시간이랑 완전히 겹치는 경우
+        //   ex) 기존:     |---------------|
+        //       예약:         |------|
+        else if ( resDivList[start][curResIdx] <= curResDivStart && resDivList[end][curResIdx] >= curResDivEnd ) {
+            alert("[ERR-1004] 설비 예약이 기존시간이랑 완전히 겹치는 경우입니다.");
+            errCode = false;
+        }
+        //step 5 예약시간이 기존시간보다 더 크게 겹치는 경우 (절대로 없지만 혹시 모른다. 이 경우는 step 2, 3 에서 먼저 잡힘)
+        //   ex) 기존:     |-----|
+        //       예약: |---------------|
+        else if ( resDivList[start][curResIdx] >= curResDivStart && resDivList[end][curResIdx] <= curResDivEnd ) {
+            alert("[ERR-1005] 설비 예약이 기존시간보다 더 크게 겹치는 경우입니다.");
+            errCode = false;
+        }
+    }
+    return errCode;
 }
 
 /**
@@ -445,11 +640,13 @@ function getConvRserveTime(reserveTime) {
     let timeStep1Len = timeStep1.length;
 
     //step2 예약 시작 시간, 종료 시간 분리
-    let timeStep2 = timeStep1.trim().split(" ");
-    
+
+    let timeStepStart = timeStep1[0].trim().split(" ");
+    let timeStepEnd = timeStep1[1].trim().split(" ");
+
     //step3 시간을 계산할 수 있는 숫자로 변환
-    let timeStep3_1 = getTimeToMinute(timeStep2[0][0], timeStep2[0][1], calendar2022);
-    let timeStep3_2 = getTimeToMinute(timeStep2[1][0], timeStep2[1][1], calendar2022);
+    let timeStep3_1 = getTimeToMinute(timeStepStart[0], timeStepStart[1], calendar2022);
+    let timeStep3_2 = getTimeToMinute(timeStepEnd[0], timeStepEnd[1], calendar2022);
     let reserveTimeResult = new Array(timeStep3_1, timeStep3_2);
     return reserveTimeResult;
 }
@@ -465,6 +662,8 @@ function makeFacReserveTimeForDbBtn() {
     //      redirect로 새로고침처럼 행동해서 Display를 갱신한다.
     //      ex) 2022-10-14 11:30~2022-11-11 14:00
     //init code
+
+    //TODO: 날짜 선택하는 코드 추가해야합니다.
     let tempToday = "2022-11-05";
     let reserveUr = 'http://localhost:8080/reserve/reserve-main/fac-reserve';
     let reserveUserName = "mk.yoda@nklkb.com";
@@ -472,6 +671,7 @@ function makeFacReserveTimeForDbBtn() {
 
     //step1 code
     let curFacTitle = document.querySelector(".reserve-popup-main-title-text").innerHTML;
+    let curUserName = document.querySelector(".reserve-popup-main-title-username").innerHTML;
     let startTimeHour = document.querySelector("#reservePopupTimeScroll").value;
     let startTimeMinute = document.querySelector("#reservePopupMinuteScroll").value;
     
@@ -486,7 +686,10 @@ function makeFacReserveTimeForDbBtn() {
     
     //step2 code
     //TODO: 예외처리 넣어야함 (일단 패스했다는 가정합니다.)
-    validateDuplicateReserveTime(curFacTitle, curReserveTime);
+
+    if (validateDuplicateReserveTime(curFacTitle, curReserveTime) == false) {
+        return;
+    }
 
     //step3 code
     let data = 'facilityTitle=' + encodeURIComponent(curFacTitle) 
