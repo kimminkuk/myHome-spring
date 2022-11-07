@@ -33,7 +33,11 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
     @Override
     public FacReserveTimeMember reserveFacility(FacReserveTimeMember curFacReserveTime, String reserveTime) {
         // FACILITY_RESERVE_TIME_V2 테이블에 예약시간을 저장합니다.
-        String sql = "update FACILITY_RESERVE_TIME_V2 set reserve_time = ? where fac_title = ?";
+        //String sql = "update FACILITY_RESERVE_TIME_V2 set reserve_time = ? where fac_title = ?";
+
+        // FACILITY_RESERVE_TIME_V3 테이블에 예약시간을 저장합니다.
+        String sql = "update FACILITY_RESERVE_TIME_V3 set reserve_time = ? where fac_title = ?";
+
         String reserveTimeResult = curFacReserveTime.getReserveTime() + ", " + reserveTime;
         jdbcTemplate.update(sql, reserveTimeResult, curFacReserveTime.getReserveFacTitle());
         curFacReserveTime.setReserveTime(reserveTimeResult);
@@ -43,10 +47,12 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
     @Override
     public FacReserveTimeMember facInitReserveSave(FacReserveTimeMember curFacReserveTime) {
         // FACILITY_RESERVE_TIME_V2 테이블을 처음 생성 시..
+        // FACILITY_RESERVE_TIME_V3 로 변경
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        simpleJdbcInsert.withTableName("FACILITY_RESERVE_TIME_V2").usingGeneratedKeyColumns("id");
+        simpleJdbcInsert.withTableName("FACILITY_RESERVE_TIME_V3").usingGeneratedKeyColumns("id");
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("fac_title", curFacReserveTime.getReserveFacTitle());
+        parameters.put("reserve_content", curFacReserveTime.getReserveContent());
         parameters.put("user_name", curFacReserveTime.getUserName());
         parameters.put("reserve_time", curFacReserveTime.getReserveTime());
         Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
@@ -67,7 +73,7 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
 
     @Override
     public Optional<FacReserveTimeMember> findByReserveFacTitle(String facTitle) {
-        String sql = "select * from FACILITY_RESERVE_TIME_V2 where fac_title = ?";
+        String sql = "select * from FACILITY_RESERVE_TIME_V3 where fac_title = ?";
         List<FacReserveTimeMember> result = jdbcTemplate.query(sql, facReserveTimeMemberRowMapper(), facTitle);
         return result.stream().findAny();
     }
@@ -80,7 +86,7 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
 
     @Override
     public List<FacReserveTimeMember> findReserveFacAll() {
-        String sql = "select * from FACILITY_RESERVE_TIME_V2";
+        String sql = "select * from FACILITY_RESERVE_TIME_V3";
         return jdbcTemplate.query(sql, facReserveTimeMemberRowMapper());
     }
 
@@ -94,7 +100,7 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
 
     @Override
     public Optional<FacReserveTimeMember> delReserveFac(String facTitle) {
-        String sql = "delete from FACILITY_RESERVE_TIME_V2 where fac_title = ?";
+        String sql = "delete from FACILITY_RESERVE_TIME_V3 where fac_title = ?";
         jdbcTemplate.update(sql, facTitle);
         return Optional.empty();
     }
@@ -113,7 +119,7 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
 
     @Override
     public Optional<String> findCurFacReserveTime(String facTitle) {
-        String sql = "select * from FACILITY_RESERVE_TIME_V2 where fac_title = ?";
+        String sql = "select * from FACILITY_RESERVE_TIME_V3 where fac_title = ?";
         List<FacReserveTimeMember> result = jdbcTemplate.query(sql, facReserveTimeMemberRowMapper(), facTitle);
 
         return result.stream().map(FacReserveTimeMember::getReserveTime).findAny();
@@ -133,6 +139,7 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
             FacReserveTimeMember facReserveTimeMember = new FacReserveTimeMember();
             facReserveTimeMember.setId(rs.getLong("id"));
             facReserveTimeMember.setReserveFacTitle(rs.getString("fac_title"));
+            facReserveTimeMember.setReserveContent(rs.getString("reserve_content"));
             facReserveTimeMember.setUserName(rs.getString("user_name"));
             facReserveTimeMember.setReserveTime(rs.getString("reserve_time"));
             return facReserveTimeMember;

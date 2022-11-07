@@ -18,6 +18,22 @@ class ReserveFacilityMemoryRepositoryTest {
     }
 
     @Test
+    void saveFacVer1() {
+        //given
+        FacReserveTimeMember facReserveTimeMember = new FacReserveTimeMember();
+        facReserveTimeMember.setReserveTime("0000-00-00 00:00~0000-00-00 00:00");
+        facReserveTimeMember.setUserName("yoda@nklkb.com");
+        facReserveTimeMember.setReserveFacTitle("MT8311_ASAN_BMT#1");
+        facReserveTimeMember.setReserveContent("BMT#1 YODA");
+        //when
+        FacReserveTimeMember facReserveTimeMember1 = reserveFacilityRepository.facInitReserveSave(facReserveTimeMember);
+
+        //then
+        assertThat(facReserveTimeMember1).isEqualTo(facReserveTimeMember);
+        assertThat("BMT#1 YODA").isEqualTo(facReserveTimeMember1.getReserveContent());
+    }
+
+    @Test
     void save() {
         //given
         ReserveFacilityTitle reserveFacilityTitle = new ReserveFacilityTitle();

@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
-    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221106-15">
+    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221107-03">
 </head>
 <body>
     <div id="header">
@@ -30,9 +30,10 @@
             <thead>
                 <tr class="th-header-date">
                     <th></th>
-                    <th><<<</th>
-                    <th class="reserve-cur-date-list" style="width:100%; height:30px;"> 오늘 날짜 표시 xxxx-xx-xx (xxx) </th>
-                    <th>>>></th>
+                    <!-- 마우스 올리면 손가락 모양 나오게 -->
+                    <th class="reserve-cur-date-left-btn" onclick="reserveDayLeft()" onmouseover="btnLightVer2()"><<<</th>
+                    <th class="reserve-cur-date-list" onclick="reserveDaySelect()" onmouseover="btnLightVer2()"> 오늘 날짜 표시 xxxx-xx-xx (xxx)</th>
+                    <th class="reserve-cur-date-right-btn" onclick="reserveDayRight()" onmouseover="btnLightVer2()">>>></th>
                 <tr>
 
                 <!-- [시간1] 맨 위에 헤더 개념으로 하나 더 생성 -->
@@ -151,7 +152,7 @@
         </div>        
     </div>
 
-    <div class="reserve-main-item-make" style="display:none;">
+    <div class="reserve-main-item-make">
         <div class="reserve-main-item-make-title">
             <input type="text" id="reserveMainItemTitle" placeholder="예약 항목을 입력해주세요.">
         </div>
@@ -202,7 +203,10 @@
                 <input type="submit" value="만들기" id="reserveItemMakeBodyBtn" onclick="reserveItemMakeBodyBtn()">
             </div>
     </div>
+    <div class="reserve-page-user-name">
+        <input type="text" id="reservePageUserNameText" class="reserve-page-user-name-text" placeholder="현재 예약자 ID 입력">
+    </div>
 </body>
-<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221106-20"></script>
+<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221107-04"></script>
 <script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
 </html>

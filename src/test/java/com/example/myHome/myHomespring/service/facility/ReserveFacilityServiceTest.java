@@ -56,24 +56,29 @@ class ReserveFacilityServiceTest {
         //given
         String tempInitReserveTime = "0000-00-00 00:00~0000-00-00 00:00";
         String tempInitUserName = "mk.Yoda@nklkb.com";
+        String tempInitUserNameVer2 = tempInitUserName.split("@")[0];
 
         String title1 = "MT8311_ASAN_BMT#1";
         FacReserveTimeMember facReserveTimeMember1 = new FacReserveTimeMember();
         facReserveTimeMember1.setReserveTime(tempInitReserveTime);
         facReserveTimeMember1.setUserName(tempInitUserName);
         facReserveTimeMember1.setReserveFacTitle(title1);
+        facReserveTimeMember1.setReserveContent(tempInitUserNameVer2 + "님의 예약입니다.");
 
         String title2 = "MT8311_ASAN_BMT#2";
         FacReserveTimeMember facReserveTimeMember2 = new FacReserveTimeMember();
         facReserveTimeMember2.setReserveTime(tempInitReserveTime);
         facReserveTimeMember2.setUserName(tempInitUserName);
         facReserveTimeMember2.setReserveFacTitle(title2);
+        facReserveTimeMember2.setReserveContent(tempInitUserNameVer2 + "님의 예약입니다.");
 
         String title3 = "MT8311_ASAN_BMT#3";
         FacReserveTimeMember facReserveTimeMember3 = new FacReserveTimeMember();
         facReserveTimeMember3.setReserveTime(tempInitReserveTime);
         facReserveTimeMember3.setUserName(tempInitUserName);
         facReserveTimeMember3.setReserveFacTitle(title3);
+        facReserveTimeMember3.setReserveContent(tempInitUserNameVer2 + "님의 예약입니다.");
+
 
         //when
         Long reserve1 = reserveFacilityService.facReserveFirst(facReserveTimeMember1);
@@ -202,18 +207,6 @@ class ReserveFacilityServiceTest {
 
     @Test
     public void 기존_설비_삭제() {
-        //given
-        List<ReserveFacilityTitle> reserveFacilityTitles = reserveFacilityService.findReserveFacilityTitles();
-        int size = reserveFacilityTitles.size();
-        String inDbTitle1 = "테스트입니다.";
-        String inDbTitle2 = "MT6133_ASAN";
 
-        //when
-        reserveFacilityService.delFacility(inDbTitle1);
-        reserveFacilityTitles = reserveFacilityService.findReserveFacilityTitles();
-
-        //then
-
-        Assertions.assertThat(reserveFacilityTitles.size()).isEqualTo(size - 1);
     }
 }

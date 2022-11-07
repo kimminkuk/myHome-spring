@@ -23,9 +23,11 @@ function reserveMainItemMakeBtnFunc() {
         alert("[ERR-903] 아이템 제목은 문자열이어야 합니다.");
         return;
     }
-    var tempUserName = "mk.yoda@nklkb.com";
+    var tempUserName = "initUserName@InitUserName.com";
+    let initReserveConent = "initReserveConent";
     var tempReserveTime = "0000-00-00 00:00~0000-00-00 00:00";
     var data = 'facilityTitle=' + encodeURIComponent(reserveMainItemTitleValue);
+    data += '&reserveContent=' + encodeURIComponent(initReserveConent);
     data += '&reserveTime=' + encodeURIComponent(tempReserveTime);
     data += '&userName=' + encodeURIComponent(tempUserName);
     ur = ur + '?' + data;
@@ -302,11 +304,17 @@ function reserveTimeGridInit() {
                 //this.addEventListener("mouseout", function() {
                 //    this.style.backgroundColor = "white";
                 //});
+                this.style.cursor = "pointer";
 
-                this.addEventListener("click", function() {
-                    reserveTimeGridClickVer2(curFacTitle, gridIdx, curTopIdx, curUserName);
-                });
+                // TODO: 굳이 mouseover -> click 이벤트를 사용할 필요가 있을까?
+                //       click으로만 활용하게 변경
+                // this.addEventListener("click", function() {
+                //     reserveTimeGridClickVer2(curFacTitle, gridIdx, curTopIdx, curUserName);
+                // });
             })
+            div.addEventListener("click", function() {
+                reserveTimeGridClickVer2(curFacTitle, gridIdx, curTopIdx, curUserName);
+            });
 
             reserveTitlesTimes[titleIdx].appendChild(div);
         }
@@ -702,11 +710,52 @@ function makeFacReserveTimeForDbBtn() {
 
 
 /**
- *    예약시간 선택
+ *    onmouseover event ver2   
  */
-function makeFacReserveTimeBtnVer2() {
-    //redirect로 해도 그냥 잘 나오네?
+function btnLightVer2() {
+    //step 1: 현재 가리키고 있는 버튼의 정보를 가져온다.
+    let curBtnList = new Array( document.querySelector(".reserve-cur-date-left-btn"), document.querySelector(".reserve-cur-date-right-btn"),
+                                document.querySelector(".reserve-cur-date-list"));
     
+    let curBtnListLen = curBtnList.length;
+
+    //step 2: 현재 마우스가 on 되어 있으면 연한 초록색으로 표시한다.
+    for (let i = 0; i < curBtnListLen; i++) {
+        //curBtnList[i]가 마우스 on 되어 있는지 확인하는 코드
+        curBtnList[i].addEventListener("mouseover", function() {
+            // TODO: 그냥 초록색 지운다. 뭔가 없어보임.
+            // 색깔은 연한 초록색을 사용한다.
+            //curBtnList[i].style.backgroundColor = "#c2e0c6";
+
+            //curBtnList[i]의 커서를 손가락모양으로 변경한다.
+            curBtnList[i].style.cursor = "pointer";
+
+            //curBtnList[i]의 텍스트 색깔을 연한 초록색으로 변경한다.
+            curBtnList[i].style.color = "#c2e0c6";
+        });
+
+        //step 3: 현재 마우스가 out 되어 있으면 흰색으로 표시한다.
+        curBtnList[i].addEventListener("mouseout", function() {
+            // 색깔은 흰색을 사용한다.
+            curBtnList[i].style.backgroundColor = "#ffffff";
+
+            // curBtnList[i]의 텍스트 색깔을 검은색으로 변경한다.
+            curBtnList[i].style.color = "#000000";
+        });
+    }
+    return;
+}
+
+/**
+ *    예약페이지의 현재 날짜를 하루 전으로 이동하는 함수
+ */
+function reserveDayLeft() {
+    return;
+}
+/**
+ *    예약페이지의 현재 날짜를 하루 뒤로 이동하는 함수
+ */
+function reserveDayRight() {
     return;
 }
 

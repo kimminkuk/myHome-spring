@@ -68,22 +68,22 @@ public class reserveMainController {
 
     @GetMapping("/reserve/reserve-main/make-v2")
     public String reserveMainMakeVer2(Model model,
-                                  @RequestParam("facilityTitle") String facilityTitle,
-                                  @RequestParam("reserveTime") String reserveTime,
-                                  @RequestParam("userName") String userName) {
+                                      @RequestParam("facilityTitle") String facilityTitle,
+                                      @RequestParam("reserveContent") String reserveContent,
+                                      @RequestParam("reserveTime") String reserveTime,
+                                      @RequestParam("userName") String userName) {
         System.out.println("[DEBUG START] /reserve/reserve-main/make/facilityTitle: " + ", facilityTitle = "
-                + facilityTitle + ", reserveTime = " + reserveTime + ", userName = " + userName);
+                + facilityTitle + ", reserveTime = " + reserveTime + ", userName = " + userName + " reserveContent " + reserveContent +" Call");
 
         model.addAttribute("facilityTitle", facilityTitle);
         model.addAttribute("reserveTime", reserveTime);
         model.addAttribute("userName", userName);
-        FacReserveTimeMember facReserveTimeMember = new FacReserveTimeMember();
-        facReserveTimeMember.setReserveFacTitle(facilityTitle);
-        facReserveTimeMember.setReserveTime(reserveTime);
-        facReserveTimeMember.setUserName(userName);
+        model.addAttribute("reserveContent", reserveContent);
+        FacReserveTimeMember facReserveTimeMember = new FacReserveTimeMember(facilityTitle, reserveContent, reserveTime, userName);
+
         reserveFacilityService.facReserveFirst(facReserveTimeMember);
         System.out.println("[DEBUG END] /reserve/reserve-main/make/facilityTitle: " + ", facilityTitle = "
-                + facilityTitle + ", reserveTime = " + reserveTime + ", userName = " + userName);
+                + facilityTitle + ", reserveTime = " + reserveTime + ", userName = " + userName + " reserveContent " + reserveContent +" Call");
 
         return "redirect:/reserve/reserve-main-v2";
     }
@@ -91,20 +91,23 @@ public class reserveMainController {
     @GetMapping("/reserve/reserve-main/fac-reserve")
     public String reserveMainFacReserve(Model model,
                                         @RequestParam("facilityTitle") String facilityTitle,
+                                        @RequestParam("reserveContent") String reserveContent,
                                         @RequestParam("reserveTime") String reserveTime,
                                         @RequestParam("userName") String userName ) {
-        System.out.println("[DEBUG START] /reserve/reserve-main/fac-reserve/facilityTitle: " + facilityTitle + " userName: " + userName + " reserveTime: " + reserveTime);
+        System.out.println("[DEBUG START] /reserve/reserve-main/fac-reserve/facilityTitle: " + facilityTitle + " userName: " + userName + " reserveTime: " + reserveTime + " reserveContent: " + reserveContent + " Call");
 
         model.addAttribute("facilityTitle", facilityTitle);
+        model.addAttribute("reserveContent", reserveContent);
         model.addAttribute("userName", userName);
         model.addAttribute("reserveTime", reserveTime);
 
         FacReserveTimeMember facReserveTimeMember = new FacReserveTimeMember(facilityTitle, userName);
+        facReserveTimeMember.setReserveContent(reserveContent);
         String curResTime = reserveFacilityService.getCurFacReserveTime(facReserveTimeMember.getReserveFacTitle()).get();
         facReserveTimeMember.setReserveTime(curResTime);
         reserveFacilityService.facReserve(facReserveTimeMember, reserveTime);
 
-        System.out.println("[DEBUG END] /reserve/reserve-main/fac-reserve/facilityTitle: " + facilityTitle + " userName: " + userName + " reserveTime: " + reserveTime);
+        System.out.println("[DEBUG END] /reserve/reserve-main/fac-reserve/facilityTitle: " + facilityTitle + " userName: " + userName + " reserveTime: " + reserveTime + " reserveContent: " + reserveContent + " Call");
         return "redirect:/reserve/reserve-main-v2";
     }
 

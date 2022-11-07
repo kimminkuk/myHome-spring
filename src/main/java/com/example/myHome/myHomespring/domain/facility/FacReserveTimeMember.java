@@ -3,6 +3,9 @@ package com.example.myHome.myHomespring.domain.facility;
 public class FacReserveTimeMember {
     private Long id;
     private String reserveFacTitle;
+
+    private String reserveContent;
+
     private String userName;
     private String reserveTime;
 
@@ -38,6 +41,15 @@ public class FacReserveTimeMember {
         this.reserveTime = reserveTime;
     }
 
+
+    public String getReserveContent() {
+        return reserveContent;
+    }
+
+    public void setReserveContent(String reserveContent) {
+        this.reserveContent = reserveContent;
+    }
+
     public FacReserveTimeMember() {
 
     }
@@ -51,5 +63,12 @@ public class FacReserveTimeMember {
     public FacReserveTimeMember(String reserveFacTitle, String userName) {
         this.reserveFacTitle = reserveFacTitle;
         this.userName = userName;
+    }
+
+    public FacReserveTimeMember(String reserveFacTitle, String reserveContent, String userName, String reserveTime) {
+        this.reserveFacTitle = reserveFacTitle;
+        this.reserveContent = reserveContent;
+        this.userName = userName;
+        this.reserveTime = reserveTime;
     }
 }
