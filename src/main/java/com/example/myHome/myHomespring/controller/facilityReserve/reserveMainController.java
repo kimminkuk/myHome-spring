@@ -60,6 +60,12 @@ public class reserveMainController {
         //TODO: STEP1
         // 예약된 설비들을 보여준다.
         List<FacReserveTimeMember> reserveFacAll = reserveFacilityService.findReserveFacAll();
+        for (FacReserveTimeMember facReserveTimeMember : reserveFacAll) {
+            System.out.println("title = " + facReserveTimeMember.getReserveFacTitle());
+            System.out.println("Content = " + facReserveTimeMember.getReserveContent());
+            System.out.println("userName = " + facReserveTimeMember.getUserName());
+            System.out.println("Time = " + facReserveTimeMember.getReserveTime());
+        }
         model.addAttribute("reserveFacAll", reserveFacAll);
 
         System.out.println("[DEBUG END] /reserve/reserve-main-v2 Call");
@@ -72,17 +78,17 @@ public class reserveMainController {
                                       @RequestParam("reserveContent") String reserveContent,
                                       @RequestParam("reserveTime") String reserveTime,
                                       @RequestParam("userName") String userName) {
-        System.out.println("[DEBUG START] /reserve/reserve-main/make/facilityTitle: " + ", facilityTitle = "
+        System.out.println("[DEBUG START] /reserve/reserve-main/make-v2/facilityTitle: " + ", facilityTitle = "
                 + facilityTitle + ", reserveTime = " + reserveTime + ", userName = " + userName + " reserveContent " + reserveContent +" Call");
 
         model.addAttribute("facilityTitle", facilityTitle);
         model.addAttribute("reserveTime", reserveTime);
         model.addAttribute("userName", userName);
         model.addAttribute("reserveContent", reserveContent);
-        FacReserveTimeMember facReserveTimeMember = new FacReserveTimeMember(facilityTitle, reserveContent, reserveTime, userName);
+        FacReserveTimeMember facReserveTimeMember = new FacReserveTimeMember(facilityTitle, reserveContent, userName, reserveTime);
 
         reserveFacilityService.facReserveFirst(facReserveTimeMember);
-        System.out.println("[DEBUG END] /reserve/reserve-main/make/facilityTitle: " + ", facilityTitle = "
+        System.out.println("[DEBUG END] /reserve/reserve-main/make-v2/facilityTitle: " + ", facilityTitle = "
                 + facilityTitle + ", reserveTime = " + reserveTime + ", userName = " + userName + " reserveContent " + reserveContent +" Call");
 
         return "redirect:/reserve/reserve-main-v2";

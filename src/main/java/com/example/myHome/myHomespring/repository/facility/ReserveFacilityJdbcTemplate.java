@@ -101,6 +101,7 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
     @Override
     public Optional<FacReserveTimeMember> delReserveFac(String facTitle) {
         String sql = "delete from FACILITY_RESERVE_TIME_V3 where fac_title = ?";
+        //delete from FACILITY_RESERVE_TIME_V3 where fac_title = 'ASAN_MT8311_BMT#1';
         jdbcTemplate.update(sql, facTitle);
         return Optional.empty();
     }

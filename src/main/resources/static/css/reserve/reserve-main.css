@@ -93,19 +93,28 @@
 
 .reserve-page-user-name {
     position: absolute;
-    top: 95%;
+    top: 90%;
     height: 5%;
-    left: 95%;
-    width: 5%;
+    left: 80%;
+    width: 15%;
 
     /* border 1px 검은색 */
     border: 1px solid #333;
     /* font는 굵은 검은색 */
     font-weight: 700;
     color: #333;
-    
-}
 
+}
+.reserve-page-user-name-text {
+    position: relative;
+    width: 100%;
+    /* input의 위치를 중간으로 해줘 */
+    height: 50%;
+    /* 위, 아래 간격 없애줘 */
+    margin-top: 0px;
+    margin-bottom: 0px;
+
+}
 .reserve-main-item-make {
     display: none;
     position: absolute;

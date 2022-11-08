@@ -278,12 +278,10 @@ function reserveTimeGridInit() {
     var facTitles = document.querySelectorAll(".reserve-iter-list-title");
     var reserveTitlesTimes = document.querySelectorAll(".reserve-iter-list-time");
     var reserveTitlesTimeLength = reserveTitlesTimes.length;
-    var reserveUserNames = document.querySelectorAll(".reserve-iter-list-username");
     var curTopIdx = 0;
 
     for (var titleIdx = 0; titleIdx < reserveTitlesTimeLength; titleIdx++) {
         let curFacTitle = facTitles[titleIdx].innerHTML;
-        let curUserName = reserveUserNames[titleIdx].getAttribute("value");
         reserveTitlesTimes[titleIdx].style.display = "grid";
         reserveTitlesTimes[titleIdx].style.gridTemplateColumns = "repeat(48, 1fr)";
         reserveTitlesTimes[titleIdx].style.gridTemplateRows = "1fr";
@@ -313,7 +311,7 @@ function reserveTimeGridInit() {
                 // });
             })
             div.addEventListener("click", function() {
-                reserveTimeGridClickVer2(curFacTitle, gridIdx, curTopIdx, curUserName);
+                reserveTimeGridClickVer2(curFacTitle, gridIdx, curTopIdx);
             });
 
             reserveTitlesTimes[titleIdx].appendChild(div);
@@ -345,11 +343,10 @@ function reserveTimeGridInit() {
  *    parent 속성
  *    document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(6) > th.reserve-iter-list-time > div:nth-child(15)")
  */     
-function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx, curUserName) {
+function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     // 높이는 부모노드를 찾던지, nextSlibing, 이것저것 등등으로 찾아야할듯
     let reservePopup = document.querySelector(".reserve-popup-main");
     let curTitle = document.querySelector(".reserve-popup-main-title-text");
-    let curFacResUserName = document.querySelector(".reserve-popup-main-title-username");
     let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + curTrIdx + ") > th.reserve-iter-list-time > ";
     let curDivChild = "div:nth-child(" + (curIdx + 1) + ")";
     curDiv += curDivChild;
@@ -357,7 +354,6 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx, curUserName) {
     document.querySelector(curDiv).style.value = "reserve";
 
     curTitle.innerHTML = curFacTitle;
-    curFacResUserName.innerHTML = curUserName;
 
     let reserveTimeHour = document.querySelector("#reservePopupTimeScroll");
     let reserveTimeMin = document.querySelector("#reservePopupMinuteScroll");
@@ -674,12 +670,20 @@ function makeFacReserveTimeForDbBtn() {
     //TODO: 날짜 선택하는 코드 추가해야합니다.
     let tempToday = "2022-11-05";
     let reserveUr = 'http://localhost:8080/reserve/reserve-main/fac-reserve';
-    let reserveUserName = "mk.yoda@nklkb.com";
+    let reserveContent = document.querySelector("#reservePopupContent").value;
+    let reserveUserName = document.querySelector(".reserve-page-user-name-text").innerText;
+    if ( reserveUserName == "" || reserveUserName == null ) {
+        reserveUserName = "mk.yoda@nklkb.com";
+    }
+    
+    if ( reserveContent == "" || reserveContent == null ) {
+        reserveContent = reserveUserName + "님의 예약입니다.";
+    }
+
     let curReserveTime = "";
 
     //step1 code
     let curFacTitle = document.querySelector(".reserve-popup-main-title-text").innerHTML;
-    let curUserName = document.querySelector(".reserve-popup-main-title-username").innerHTML;
     let startTimeHour = document.querySelector("#reservePopupTimeScroll").value;
     let startTimeMinute = document.querySelector("#reservePopupMinuteScroll").value;
     
@@ -700,7 +704,8 @@ function makeFacReserveTimeForDbBtn() {
     }
 
     //step3 code
-    let data = 'facilityTitle=' + encodeURIComponent(curFacTitle) 
+    let data = 'facilityTitle=' + encodeURIComponent(curFacTitle)
+                + '&reserveContent=' + encodeURIComponent(reserveContent)
                 + '&reserveTime=' + encodeURIComponent(curReserveTime) 
                 + '&userName=' + encodeURIComponent(reserveUserName);
     reserveUr = reserveUr + '?' + data;
