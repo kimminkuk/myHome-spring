@@ -123,7 +123,7 @@ public class reserveMainController {
 
         System.out.println("[DEBUG START] /reserve/reserve-main/delete/delTitle " + delFacTitle + " Call");
         model.addAttribute("delFacTitle", delFacTitle);
-        reserveFacilityService.delFacility(delFacTitle);
+        reserveFacilityService.delReserveFac(delFacTitle);
         System.out.println("[DEBUG END] /reserve/reserve-main/delete/delTitle: " + delFacTitle + " Call");
 
 

@@ -66,8 +66,6 @@
             <div class="reserve-popup-main-title-text">설비이름</div>
             <div class="reserve-popup-main-title-close" onclick="reservePopupClose()">X</div>
         </div>
-        
-        <div class="reserve-popup-main-title-username">유저이름</div>
 
         <div class="reserve-popup-main-content" >
             <input type="text" id="reservePopupContent" placeholder="예약 항목을 입력해주세요.">
@@ -154,7 +152,7 @@
 
     <div class="reserve-main-item-make">
         <div class="reserve-main-item-make-title">
-            <input type="text" id="reserveMainItemTitle" placeholder="예약 항목을 입력해주세요.">
+            <input type="text" id="reserveMainItemTitleText" class="reserve-main-item-make-title-text" placeholder="예약 항목을 입력해주세요.">
         </div>
         <div class="reserve-main-item-make-btn">
             <input type="submit" value="항목 만들기" id="reserveMainItemMakeBtn" onclick="reserveMainItemMakeBtnFunc()">
@@ -207,6 +205,6 @@
         <input type="text" id="reservePageUserNameText" class="reserve-page-user-name-text" placeholder="현재 예약자 ID 입력" maxlength="72">
     </div>
 </body>
-<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221108-04"></script>
+<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221109-06"></script>
 <script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
 </html>

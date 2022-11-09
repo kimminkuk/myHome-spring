@@ -14,7 +14,7 @@ function reserveMainItemMakeBtnFunc() {
     //이거도 그냥 ajax로 하지말고, 리다이렉트로 하자
     //let ur = 'http://localhost:8080/reserve/reserve-main/make';
     let ur = 'http://localhost:8080/reserve/reserve-main/make-v2';
-    let reserveMainItemTitleValue = document.querySelector("#reserveMainItemTitle").value;
+    let reserveMainItemTitleValue = document.querySelector("#reserveMainItemTitleText").value;
     if (reserveMainItemTitleValue == null || reserveMainItemTitleValue == "") {
         alert("[ERR-902] 아이템 제목을 입력해주세요.");
         return;
@@ -150,6 +150,21 @@ function getResDivMod(resTime) {
         resMod += 1;
     }
     return resMod;
+}
+
+/**
+ *    유저 이름을 split로 나눠주는 함수
+ */
+function getUserNameSplit(oriData, splitData) {
+    //split 함수 예외처리
+    if ( typeof oriData != "string" || typeof splitData != "string" ) {
+        return null;
+    }
+    
+    if ( oriData.indexOf(splitData) == -1 ) {
+        return null;
+    }
+    return oriData.split(splitData)[0];
 }
 
 /**
@@ -347,6 +362,19 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     // 높이는 부모노드를 찾던지, nextSlibing, 이것저것 등등으로 찾아야할듯
     let reservePopup = document.querySelector(".reserve-popup-main");
     let curTitle = document.querySelector(".reserve-popup-main-title-text");
+    let curUserName = document.querySelector(".reserve-page-user-name-text").value;
+    let reserveUserName = getUserNameSplit(curUserName, "@");
+    if (curUserName == "" || curUserName == null) {
+        curUserName = "테스트@naver.com";
+    }
+    
+    
+    if ( reserveUserName == null ) {
+        reserveUserName = "에러발생";
+    }
+    let reserveContentInit = reserveUserName + "님의 회의실 예약";
+    document.querySelector("#reservePopupContent").placeholder = reserveContentInit;
+
     let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + curTrIdx + ") > th.reserve-iter-list-time > ";
     let curDivChild = "div:nth-child(" + (curIdx + 1) + ")";
     curDiv += curDivChild;
@@ -656,6 +684,17 @@ function getConvRserveTime(reserveTime) {
 }
 
 /**
+ *    아 이거 db 설계를 다시 해야하나..?
+ *    ex) 2022-10-14 11:30~2022-11-11 14:00, 2022-10-14 14:30~2022-11-11 16:00
+ *        이런식인데.. 저장한 사람까지 알았어야했네, userName으로 따로 저장하면 될 줄 알았는데 예약 시간마다 다르게 저장해야하네
+ *        그렇다면 시간앞에 (userName) 이런식으로 저장하면 되겠다.
+ *    ex) (yoda)2022-10-14 11:30~2022-11-11 14:00, (mk.kim)2022-11-11 14:30~2022-11-11 16:00, (jidae)2022-11-14 14:30~2022-11-16 16:00
+ *        이렇게해서 split 다시 구현해야할듯요????? ㅎㅎ;
+ *        이래서 db 설계를 조금 바꾸면 전체적인걸 다 바꿔야하는구만..
+ * 
+ *    ex) 아니 근데.. 예약 내용까지 있어야하는데?????
+ *        (첫번쨰 요소: 아아디, 두번째 요소: 예약 내용) -> 쉼표로 구분? 이런식으로 해야하나 흠...
+ *        (yoda, yoda님의 회의실 예약)2022-10-14 11:30~2022-11-11 14:00, (mk.kim, BMT#3 MK.KIM)2022-11-11 14:30~2022-11-11 16:00, (jidae, YIKJ 출장 미팅룸 예약)2022-11-14 14:30~2022-11-16 16:00
  *    예약시간 저장 -> DB에 저장
  */
 function makeFacReserveTimeForDbBtn() {
@@ -670,17 +709,16 @@ function makeFacReserveTimeForDbBtn() {
     //TODO: 날짜 선택하는 코드 추가해야합니다.
     let tempToday = "2022-11-05";
     let reserveUr = 'http://localhost:8080/reserve/reserve-main/fac-reserve';
-    let reserveContent = document.querySelector("#reservePopupContent").value;
-    let reserveUserName = document.querySelector(".reserve-page-user-name-text").innerText;
+    
+    let reserveUserName = document.querySelector(".reserve-page-user-name-text").value;
     if ( reserveUserName == "" || reserveUserName == null ) {
         reserveUserName = "mk.yoda@nklkb.com";
     }
-    
-    if ( reserveContent == "" || reserveContent == null ) {
-        reserveContent = reserveUserName + "님의 예약입니다.";
-    }
 
-    let curReserveTime = "";
+    let reserveContent = document.querySelector(".reserve-main-item-make-title-text").value;
+    if ( reserveContent == '' ) {
+        reserveContent = document.querySelector(".reserve-main-item-make-title-text").placeholder;
+    }
 
     //step1 code
     let curFacTitle = document.querySelector(".reserve-popup-main-title-text").innerHTML;
@@ -692,9 +730,9 @@ function makeFacReserveTimeForDbBtn() {
     
     let startTime = tempToday + " " + String(startTimeHour) + ":" + String(startTimeMinute);
     let endTime = tempToday + " " + String(endTimeHour) + ":" + String(endTimeMinute);
-    
+
     //String 변환 코드
-    curReserveTime = startTime + "~" + endTime;
+    let curReserveTime = startTime + "~" + endTime;
     
     //step2 code
     //TODO: 예외처리 넣어야함 (일단 패스했다는 가정합니다.)
