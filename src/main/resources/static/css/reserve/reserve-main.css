@@ -233,6 +233,286 @@ body > div.reserve-main-facility-table > table {
 .reserve-cur-date-right-btn {
     position: absolute;
     left: 60%;
+    width: 5%;    
+}
+
+/* 
+ *    예약 페이지 확인 창 
+ */
+
+.reserve-confirm-page-main {
+    display: none;
+    position: absolute;
+    top : 40%;
+    left : 30%;
+    width: 400px;
+    height: 350px;
+    /*연한 회색으로*/
+    background-color: #f2f2f2;
+    border: 1px solid #333;
+    z-index: 100;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-header {
+    display: inline;
+    position: relative;
+    width: 80%;
+    left: 0%;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-close-btn {
+    display: inline;
+    position: relative;
+    width: 20%;
+    left: 80%;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-header-sub {
+    position: relative;
+    width: 100%;
+    left: 0%;
+    top: 40px;
+    height: 120px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-title {
+    position: relative;
+    width: 100%;
+    left: 0%;
+    top: 40px;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+}
+.reserve-confirm-page-main .reserve-confirm-page-title .reserve-confirm-page-title-init {
+    display: inline;
+    width: 20%;
+    left: 0%;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+    /* 글씨는 굵게 */
+    font-weight: bold;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-title .reserve-confirm-page-title-text {
+    display: inline;
+    position: relative;
+    width: 80%;
+    left: 15%;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-time {
+    position: relative;
+    width: 100%;
+    left: 0%;
+    top: 40px;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-time .reserve-confirm-page-time-init {
+    display: inline;
+    width: 20%;
+    left: 0%;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-time .reserve-confirm-page-time-scroll-hour-start {
+    display: inline;
+    width: 15%;
+    left: 15%;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-time .reserve-confirm-page-time-scroll-minute-start {
+    display: inline;
+    width: 15%;
+    left: 30%;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+}
+.reserve-confirm-page-main .reserve-confirm-page-time .reserve-confirm-page-time-scorll-divide-text {
+    display: inline;
     width: 5%;
-    
+    left: 50%;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+    text-align: center;
+    font-size: 14px;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-time .reserve-confirm-page-time-scroll-hour-end {
+    display: inline;
+    width: 15%;
+    left: 65%;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-time .reserve-confirm-page-time-scroll-minute-end {
+    display: inline;
+    width: 15%;
+    left: 80%;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-place {
+    display: inline;
+    position: relative;
+    width: 100%;
+    left: 0%;
+    top : 40px;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-place .reserve-confirm-page-place-init {
+    display: inline;
+    width: 15%;
+    left: 0%;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-place .reserve-confirm-page-place-text {
+    display: inline;
+    width: 85%;
+    left: 15%;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-btn-ok-parent {
+    position: relative;
+    width: 10%;
+    left: 90%;
+    top: 42px;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-btn-ok-parent .reserve-confirm-page-btn-ok {
+    width: 100%;
+    height: 100%;
+    line-height: 30px;
+    /* 버튼 색깔을 그라데이션 파란색으로 해줘 */
+    background: linear-gradient(to bottom, #00bfff, #1e90ff);
+
+    border: 1px solid #333;
+
+    /* 텍스트 색은 흰색으로 해줘 굵게 */
+    color: #fff;
+    font-weight: bold;
+    z-index: 100;
+    text-align: center;
+    font-size: 14px;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-btn-cancel-parent {
+    position: relative;
+    width: 15%;
+    left: 70%;
+    top: 10px;
+    height: 30px;
+    line-height: 30px;
+    /* background-color: #fff; */
+    border: 1px solid #333;
+    z-index: 100;
+}
+
+.reserve-confirm-page-main .reserve-confirm-page-btn-cancel-parent .reserve-confirm-page-btn-cancel {
+    width: 100%;
+    height: 100%;
+    line-height: 30px;
+    /* 버튼 색깔을 일반 흰색으로 해줘*/
+    background-color: #fff;
+
+    border: 1px solid #333;
+
+    /* 텍스트 색은 검은색으로 해줘 */
+    color: #333;
+    z-index: 100;
+    text-align: center;
+    font-size: 14px;
 }

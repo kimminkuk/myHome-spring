@@ -74,3 +74,11 @@ create table FACILITY_RESERVE_TIME_V3
     reserve_time varchar(1023) not null,
     primary key (id)
 );
+
+-- Language: sql
+-- Path: sql/ddl.sql
+-- 음.. 예약 DB에서 예약내용 + 예약자를 가져와야합니다. 아 아닌가???
+-- 아까 해보니깐, 예약하는 사람이 누구인지 알아야하고,
+-- A라는 사람이 해당 시간에 예약하고, A사람이 해당 예약을 클릭하면 정보가 나온다.
+-- B라는 사람이 해당 시간을 클릭해도 아무것도 안뜸, 예약페이지만 나온다.
+-- 그리고 예약하면 바로에러발생

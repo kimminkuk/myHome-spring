@@ -520,6 +520,10 @@ function thTimeHeaderInit() {
             thTimeHeaderMin.children[gridIdx].innerHTML = "00";
         }
     }
+
+    // ID 임시로 생성해둠
+    let initId = document.querySelector(".reserve-page-user-name-text");
+    initId.value = "yoda@nklbk.com";
     return;
 }
 
@@ -748,9 +752,62 @@ function makeFacReserveTimeForDbBtn() {
                 + '&userName=' + encodeURIComponent(reserveUserName);
     reserveUr = reserveUr + '?' + data;
     location.href = reserveUr;
+
+    reserveConfirmPage();
+
     return;
 }
 
+/**
+ *    예약확인페이지
+ */
+function reserveConfirmPage() {
+    //step0 초기 설정 및 변수 선언
+    let reserveConfirmPage = document.querySelector(".reserve-confirm-page-main");
+    let closeBtn = document.querySelector(".reserve-confirm-page-close-btn");
+    closeBtn.addEventListener("moouseover", function() {
+        closeBtn.style.cursor = "pointer";
+        //closeBtn 색을 연한 초록색으로 변경
+        closeBtn.style.color = "#00ff00";
+    });
+    closeBtn.addEventListener("mouseout", function() {
+        closeBtn.style.cursor = "default";
+        //closeBtn 색을 검은색으로 변경
+        closeBtn.style.color = "#000000";
+    });
+    closeBtn.addEventListener("click", function() {
+        reserveConfirmPage.style.display = "none";
+    });
+    let confirmBtnOk = document.querySelector(".reserve-confirm-page-btn-ok");
+    let confirmBtnCancel = document.querySelector(".reserve-confirm-page-btn-cancel");
+    let confirmHeaderText = document.querySelector(".reserve-confirm-page-header");
+    let confirmHeaderTextSub = document.querySelector(".reserve-confirm-page-header-sub");
+
+    
+
+    //step1 예약 내용을 띄운다.
+    document.querySelector(".reserve-confirm-page-main").style.display = "block";
+
+    //reserveConfirmPage.style.display = "block";
+
+    //step2 예약 취소 버튼 누를 시, 해당 예약 삭제
+    confirmBtnCancel.addEventListener("click", function() {
+        deleteCurReserve();
+    });
+    
+    //step2-1 확인 버튼 누를 시, 예약 완료
+    confirmBtnOk.addEventListener("click", function() {
+        document.querySelector(".reserve-confirm-page").style.display = "none";
+    });
+    return;
+}
+
+/**
+ *    현재 예약한 내용 바로 삭제
+ */
+function deleteCurReserve() {
+    return;
+}
 
 /**
  *    onmouseover event ver2   
