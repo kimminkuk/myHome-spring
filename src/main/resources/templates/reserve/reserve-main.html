@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
-    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221110-12">
+    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221112-32">
 </head>
 <body>
     <div id="header">
@@ -60,18 +60,20 @@
             </thead>
         </table>
     </div>
+
     <!-- 예약 창 팝업 -->
     <div class="reserve-popup-main" style="display:none;">
         <div class="reserve-popup-main-title">
             <div class="reserve-popup-main-title-text">설비이름</div>
-            <div class="reserve-popup-main-title-close" onclick="reservePopupClose()">X</div>
+            <div class="reserve-popup-main-title-close">X</div>
         </div>
 
         <div class="reserve-popup-main-content" >
-            <input type="text" id="reservePopupContent" placeholder="예약 항목을 입력해주세요.">
-
+            <div class="reserve-popup-main-content-init">제목</div>
+            <input type="text" id="reservePopupContent" class="reserve-popup-content-text" placeholder="예약 항목을 입력해주세요.">
         </div>
         <div class="reserve-popup-main-time">
+            <div class="reserve-popup-main-time-init">일시</div>
             <div class="reserve-popup-time-scroll">
                 <select id="reservePopupTimeScroll">
                     <option value="0">0</option>
@@ -106,9 +108,6 @@
                     <option value="30">30</option>
                 </select>
             </div>    
-        </div>
-
-        <div class="reserve-popup-main-time-end">
             <div class="reserve-popup-time-scroll-end">
                 <select id="reservePopupTimeScrollEnd">
                     <option value="0">0</option>
@@ -143,22 +142,30 @@
                     <option value="00">00</option>
                     <option value="30">30</option>
                 </select>
-            </div>    
+            </div>            
         </div>
 
         <div class="reserve-popup-main-btn">
-            <input type="submit" class="reserve-popup-btn" value="예약하기" id="reservePopupBtn" onclick="makeFacReserveTimeForDbBtn()">
-        </div>        
+            <input type="submit" class="reserve-popup-btn-close" value="취소하기" id="reservePopupBtnClose">
+            <input type="submit" class="reserve-popup-btn-db-send" value="예약하기" id="reservePopupBtn">
+        </div>
+
     </div>
 
+    <!-- 항목 만들기 창 -->
     <div class="reserve-main-item-make">
+        <div class="reserve-main-item-make-title-close">X</div>
+
         <div class="reserve-main-item-make-title">
             <input type="text" id="reserveMainItemTitleText" class="reserve-main-item-make-title-text" placeholder="예약 항목을 입력해주세요.">
         </div>
+        
         <div class="reserve-main-item-make-btn">
-            <input type="submit" value="항목 만들기" id="reserveMainItemMakeBtn" onclick="reserveMainItemMakeBtnFunc()">
+            <input type="submit" value="항목 만들기" id="reserveMainItemMakeBtnSend" class="reserve-main-item-make-btn-send">
         </div>        
     </div>
+
+    <!--  예약 페이지 창  -->
     <div class="reserve-item-make-body" style="display:none;">
             <div class="reserve-item-time">
                 <input type="text" id="reserveItemTime" placeholder="예약시간을 설정해주세요.">
@@ -208,7 +215,7 @@
     </div>
 
     <!-- 예약 확인 창 -->
-    <div class="reserve-confirm-page-main" style="display: block;">
+    <div class="reserve-confirm-page-main" style="display: none;">
         <div class="reserve-confirm-page-header">
             예약 완료
         </div>
@@ -226,103 +233,50 @@
             <input type="text" readonly="true" id="reserveConfirmPageTitleText" class="reserve-confirm-page-title-text" placeholder="">
         </div>
 
-        <div class="reserve-confirm-page-time">
-            <div class="reserve-confirm-page-time-init">
+        <div class="reserve-confirm-page-time-div-title">
+            <div class="reserve-confirm-page-time-div-title-text">
                 일시
             </div>
-            <div class="reserve-confirm-page-time-scroll-hour-start">
-                <select id="reserveConfirmPageTimeScrollHourStart">
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                    <option value="13">13</option>
-                    <option value="14">14</option>
-                    <option value="15">15</option>
-                    <option value="16">16</option>
-                    <option value="17">17</option>
-                    <option value="18">18</option>
-                    <option value="19">19</option>
-                    <option value="20">20</option>
-                    <option value="21">21</option>
-                    <option value="22">22</option>
-                    <option value="23">23</option>
-                    <option value="24">24</option>
-                </select>
-            </div>
-            <div class="reserve-confirm-page-time-scroll-minute-start">
-                <select id="reserveConfirmPageTimeScrollMinuteStart">
-                    <option value="00">00</option>
-                    <option value="30">30</option>
-                </select>
-            </div>    
-            
-            <div class="reserve-confirm-page-time-scorll-divide-text">
-                -
-            </div>
-
-            <div class="reserve-confirm-page-time-scroll-hour-end">
-                <select id="reserveConfirmPageTimeScrollHourEnd">
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                    <option value="13">13</option>
-                    <option value="14">14</option>
-                    <option value="15">15</option>
-                    <option value="16">16</option>
-                    <option value="17">17</option>
-                    <option value="18">18</option>
-                    <option value="19">19</option>
-                    <option value="20">20</option>
-                    <option value="21">21</option>
-                    <option value="22">22</option>
-                    <option value="23">23</option>
-                    <option value="24">24</option>
-                </select>
-            </div>
-            <div class="reserve-confirm-page-time-scroll-minute-end">
-                <select id="reserveConfirmPageTimeScorllMinuteEnd">
-                    <option value="00">00</option>
-                    <option value="30">30</option>
-                </select>
-            </div>
         </div>
+
+        <div class="reserve-confirm-page-time-div-start-hour">
+            <input type="text" readonly="true" class="reserve-confirm-page-time-div-start-hour-text" value="0000-00-00">
+        </div>
+
+        <div class="reserve-confirm-page-time-div-start-minute">
+            <input type="text" readonly="true" class="reserve-confirm-page-time-div-start-minute-text" value="00:00">
+        </div>
+
+        <div class="reserve-confirm-page-time-div-divide">
+            <input type="text" readonly="true" class="reserve-confirm-page-time-div-divide-text" value="~">
         
+        </div>
+
+        <div class="reserve-confirm-page-time-div-end-hour">
+            <input type="text" readonly="true" class="reserve-confirm-page-time-div-end-hour-text" value="0000-01-01">
+        </div>
+
+        <div class="reserve-confirm-page-time-div-end-minute">
+            <input type="text" readonly="true" class="reserve-confirm-page-time-div-end-minute-text" value="01:00">
+        </div>  
+
         <div class="reserve-confirm-page-place">
             <div class="reserve-confirm-page-place-init">
                 장소
             </div>
             <input type="text" readonly="true" id="reserveConfirmPagePlaceText" class="reserve-confirm-page-place-text" placeholder="">
         </div>
-
+        
         <div class="reserve-confirm-page-btn-ok-parent">
-            <input type="submit" value="확인" id="reserveConfirmPageBtnOk" class="reserve-confirm-page-btn-ok" onclick="reserveConfirmPageBtnOk()">
+            <input type="submit" value="확인" id="reserveConfirmPageBtnOk" class="reserve-confirm-page-btn-ok">
         </div>
 
         <div class="reserve-confirm-page-btn-cancel-parent">
-            <input type="submit" value="예약취소" id="reserveConfirmPageBtnCancel" class="reserve-confirm-page-btn-cancel" onclick="reserveConfirmPageBtnCancel()">
-        </div>
+            <input type="submit" value="예약취소" id="reserveConfirmPageBtnCancel" class="reserve-confirm-page-btn-cancel">
+        </div>      
+
     </div>
 </body>
-<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221110-06"></script>
+<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221112-32"></script>
 <script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
 </html>

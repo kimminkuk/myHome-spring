@@ -1,7 +1,23 @@
 var G_calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 var G_topOffsetIdx = 5;
+
 function reserveItemMake() {
+    //변수 선언
     let reserveMainItemMakeBtn = document.querySelector(".reserve-main-item-make");
+    let reserveMainItemMakeCloseBtn = document.querySelector(".reserve-main-item-make-title-close");
+    let reserveMainItemMakeBtnSend = document.querySelector(".reserve-main-item-make-btn-send");
+
+    mouseOnOffStyleMake(reserveMainItemMakeCloseBtn, "#737373");
+    mouseOnOffStyleMake(reserveMainItemMakeBtnSend, "#FFFFFF");
+
+    reserveMainItemMakeCloseBtn.addEventListener("click", function() {
+        reserveMainItemMakeBtn.style.display = "none";
+    })
+
+    reserveMainItemMakeBtnSend.addEventListener("click", function() {
+        reserveMainItemMakeBtnFunc();
+    });
+
     if (reserveMainItemMakeBtn.style.display == "none") {
         reserveMainItemMakeBtn.style.display = "block";
     } else {
@@ -334,6 +350,21 @@ function reserveTimeGridInit() {
     }
     return;
 }
+
+function mouseOnOffStyleMake(curObject, oriColor) {
+    
+    curObject.addEventListener("mouseover", function() {
+        this.style.cursor = "pointer";
+        this.style.color = "#00ff00";
+    });
+
+    curObject.addEventListener("mouseout", function() {
+        this.style.cursor = "default";
+        this.style.color = oriColor;
+    });
+    return;
+}
+
 /**
  *    아.. 이거 음...왜?
  *    DB로 연결하는게 아니라 해당 칸이 이미 설정 (true?) 되어있는지 확인하고 설정 해야함.
@@ -359,15 +390,35 @@ function reserveTimeGridInit() {
  *    document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(6) > th.reserve-iter-list-time > div:nth-child(15)")
  */     
 function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
-    // 높이는 부모노드를 찾던지, nextSlibing, 이것저것 등등으로 찾아야할듯
+    
+    // 변수 선언
     let reservePopup = document.querySelector(".reserve-popup-main");
+    let reservePopupCloseBtn = document.querySelector(".reserve-popup-main-title-close");
+    let reservePopupBtnSendClose = document.querySelector(".reserve-popup-btn-close");
+    let reservePopupBtnDbSend = document.querySelector(".reserve-popup-btn-db-send");
     let curTitle = document.querySelector(".reserve-popup-main-title-text");
     let curUserName = document.querySelector(".reserve-page-user-name-text").value;
     let reserveUserName = getUserNameSplit(curUserName, "@");
+
+    mouseOnOffStyleMake(reservePopupBtnSendClose, "#737373");
+    mouseOnOffStyleMake(reservePopupBtnDbSend, "#FFFFFF");
+    mouseOnOffStyleMake(reservePopupCloseBtn, "#737373");
+
+    reservePopupBtnSendClose.addEventListener("click", function() {
+        reservePopup.style.display = "none"; 
+    });
+
+    reservePopupBtnDbSend.addEventListener("click", function() {
+        makeFacReserveTimeForDbBtn();
+    });
+
+    reservePopupCloseBtn.addEventListener("click", function() {
+        reservePopup.style.display = "none";
+    });
+
     if (curUserName == "" || curUserName == null) {
         curUserName = "테스트@naver.com";
     }
-    
     
     if ( reserveUserName == null ) {
         reserveUserName = "에러발생";
@@ -406,8 +457,8 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
         reservePopup.style.display = "block";
 
     } else {
-        //reservePopup.style.display = "none";
-        reservePopupClose();
+        reservePopup.style.display = "none";
+        //reservePopupClose();
     }
 
     return;
@@ -719,9 +770,9 @@ function makeFacReserveTimeForDbBtn() {
         reserveUserName = "mk.yoda@nklkb.com";
     }
 
-    let reserveContent = document.querySelector(".reserve-main-item-make-title-text").value;
-    if ( reserveContent == '' ) {
-        reserveContent = document.querySelector(".reserve-main-item-make-title-text").placeholder;
+    let reserveContent = document.querySelector(".reserve-popup-content-text").value;
+    if ( reserveContent == "" || reserveContent == null ) {
+        reserveContent = reserveUserName.split("@")[0] + "님의 회의실 예약";
     }
 
     //step1 code
@@ -741,7 +792,7 @@ function makeFacReserveTimeForDbBtn() {
     //step2 code
     //TODO: 예외처리 넣어야함 (일단 패스했다는 가정합니다.)
 
-    if (validateDuplicateReserveTime(curFacTitle, curReserveTime) == false) {
+    if ( validateDuplicateReserveTime(curFacTitle, curReserveTime) == false ) {
         return;
     }
 
@@ -751,9 +802,13 @@ function makeFacReserveTimeForDbBtn() {
                 + '&reserveTime=' + encodeURIComponent(curReserveTime) 
                 + '&userName=' + encodeURIComponent(reserveUserName);
     reserveUr = reserveUr + '?' + data;
-    location.href = reserveUr;
+    
+    //step4로 이동
+    //location.href = reserveUr;
 
-    reserveConfirmPage();
+    //step 4 예약확인 페이지를 띄운다.
+    //       확인 버튼을 누르면 DB로 예약 데이터를 전송하고, redirect해준다.
+    reserveConfirmPage(reserveUr, startTime, endTime, curFacTitle, reserveContent);
 
     return;
 }
@@ -761,44 +816,79 @@ function makeFacReserveTimeForDbBtn() {
 /**
  *    예약확인페이지
  */
-function reserveConfirmPage() {
+function reserveConfirmPage(reserveUr, startTime, endTime, curFacTitle, reserveContent) {
     //step0 초기 설정 및 변수 선언
-    let reserveConfirmPage = document.querySelector(".reserve-confirm-page-main");
+    let startTimeSplit = startTime.split(" ");
+    let endTimeSplit = endTime.split(" ");
+    let reserveConfirmPagePopup = document.querySelector(".reserve-confirm-page-main");
     let closeBtn = document.querySelector(".reserve-confirm-page-close-btn");
-    closeBtn.addEventListener("moouseover", function() {
+    let confirmBtnOk = document.querySelector(".reserve-confirm-page-btn-ok");
+    let confirmBtnCancel = document.querySelector(".reserve-confirm-page-btn-cancel");
+    let confirmPlaceText = document.querySelector(".reserve-confirm-page-place-text");
+    let confirmReserveTitleText = document.querySelector(".reserve-confirm-page-title-text");
+
+    let confirmReserveStartTimeHour = document.querySelector(".reserve-confirm-page-time-div-start-hour-text");
+    let confirmReserveStartTimeMinute = document.querySelector(".reserve-confirm-page-time-div-start-minute-text");
+    let confirmReserveEndTimeHour = document.querySelector(".reserve-confirm-page-time-div-end-hour-text");
+    let confirmReserveEndTimeMinute = document.querySelector(".reserve-confirm-page-time-div-end-minute-text");    
+
+    confirmReserveStartTimeHour.value = startTimeSplit[0];
+    confirmReserveStartTimeMinute.value = startTimeSplit[1];
+    confirmReserveEndTimeHour.value = endTimeSplit[0];
+    confirmReserveEndTimeMinute.value = endTimeSplit[1];
+    confirmPlaceText.value = curFacTitle;
+    confirmReserveTitleText.value = reserveContent;
+
+    closeBtn.addEventListener("mouseover", function() {
         closeBtn.style.cursor = "pointer";
         //closeBtn 색을 연한 초록색으로 변경
         closeBtn.style.color = "#00ff00";
     });
     closeBtn.addEventListener("mouseout", function() {
         closeBtn.style.cursor = "default";
-        //closeBtn 색을 검은색으로 변경
-        closeBtn.style.color = "#000000";
+        //closeBtn 색을 빨간색으로 변경
+        closeBtn.style.color = "#ff0000";
     });
     closeBtn.addEventListener("click", function() {
-        reserveConfirmPage.style.display = "none";
+        reserveConfirmPagePopup.style.display = "none";
     });
-    let confirmBtnOk = document.querySelector(".reserve-confirm-page-btn-ok");
-    let confirmBtnCancel = document.querySelector(".reserve-confirm-page-btn-cancel");
-    let confirmHeaderText = document.querySelector(".reserve-confirm-page-header");
-    let confirmHeaderTextSub = document.querySelector(".reserve-confirm-page-header-sub");
 
+    confirmBtnOk.addEventListener("mouseover", function() {
+        confirmBtnOk.style.cursor = "pointer";
+    });
+    confirmBtnOk.addEventListener("mouseout", function() {
+        confirmBtnOk.style.cursor = "default";
+    });
     
+    confirmBtnCancel.addEventListener("mouseover", function() {
+        confirmBtnCancel.style.cursor = "pointer";
+        //confirmBtnCancel의 백그라운드 색을 아주 연한 회색으로 변경
+        confirmBtnCancel.style.backgroundColor = "#f0f0f0";
+    });
+    confirmBtnCancel.addEventListener("mouseout", function() {
+        confirmBtnCancel.style.cursor = "default";
+        //confirmBtnCancel의 백그라운드 색을 
+        confirmBtnCancel.style.backgroundColor = "#ffffff";
+    });
+
 
     //step1 예약 내용을 띄운다.
-    document.querySelector(".reserve-confirm-page-main").style.display = "block";
-
-    //reserveConfirmPage.style.display = "block";
+    if ( reserveConfirmPagePopup.style.display == "none" ) {
+        reserveConfirmPagePopup.style.display = "block";
+    }
 
     //step2 예약 취소 버튼 누를 시, 해당 예약 삭제
     confirmBtnCancel.addEventListener("click", function() {
+        reserveConfirmPagePopup.style.display = "none";
         deleteCurReserve();
     });
     
     //step2-1 확인 버튼 누를 시, 예약 완료
     confirmBtnOk.addEventListener("click", function() {
-        document.querySelector(".reserve-confirm-page").style.display = "none";
+        reserveConfirmPagePopup.style.display = "none";
+        location.href = reserveUr;        
     });
+
     return;
 }
 
@@ -806,6 +896,7 @@ function reserveConfirmPage() {
  *    현재 예약한 내용 바로 삭제
  */
 function deleteCurReserve() {
+    alert("회의실 예약을 취소했습니다.");
     return;
 }
 
