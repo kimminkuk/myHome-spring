@@ -807,3 +807,108 @@ body > div.reserve-main-facility-table > table {
     font-weight: bold;
     font-size: 20px;
 }
+
+/* 달력 */
+.reserve-popup-calendar-main {
+    position: absolute;
+    width: 200px;
+    height: 150px;
+    background-color: #1abc9c;
+    text-align: center;
+    z-index: 100;
+    left : 30%;
+    top : 20%;
+}
+
+.reserve-popup-calendar-main .calendar-month {
+    position : relative;
+    margin: 0;
+    padding: 0;
+}
+
+.reserve-popup-calendar-main .calendar-month .calendar-month-prev {
+    position : relative;
+    display: inline;
+    left: 0%;
+    color : #c2e0c6;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.reserve-popup-calendar-main .calendar-month .calendar-text-year-month {
+    display: inline;
+    position : relative;
+    color : #333;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;  
+    padding: 10%;
+}
+
+.reserve-popup-calendar-main .calendar-month .calendar-month-next {
+    position : relative;
+    display: inline;
+    color : #c2e0c6;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.reserve-popup-calendar-main .calendar-weekdays-ul {
+    position : relative;
+    display: inline;
+    margin: 0;
+    padding: 0;
+}
+
+.reserve-popup-calendar-main .calendar-weekdays-ul .calendar-weekdays-li {
+    position : relative;
+    display: inline-block;
+    color: #FFFFFF;
+    width: 11.6%;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.reserve-popup-calendar-main .calendar-days-ul {
+    padding: 10px 0;
+    background: #eee;
+    margin: 0;    
+}
+
+.reserve-popup-calendar-main .calendar-days-ul .calendar-day {
+    list-style-type: none;
+    display: inline-block;
+    width: 13.6%;
+    text-align: center;
+    margin-bottom: 5px;
+    font-size:12px;
+    color: #777;
+    cursor: pointer;
+    
+}
+
+.reserve-popup-calendar-main .calendar-days-ul .calendar-day .calendar-active {
+    padding: 5px;
+    background: #1abc9c;
+    color: #FFFFFF !important
+}
+
+.reserve-popup-calendar-main .calendar-select-month-ul {
+    position: relative;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    background-color: #eee;
+}
+
+.reserve-popup-calendar-main .calendar-select-month-ul .calendar-select-month-li {
+    list-style-type: none;
+    display: inline-block;
+    width: 28.6%;
+    text-align: center;
+    color: #777;
+}

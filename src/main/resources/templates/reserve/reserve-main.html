@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
-    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221112-32">
+    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221114-18">
 </head>
 <body>
     <div id="header">
@@ -165,51 +165,7 @@
         </div>        
     </div>
 
-    <!--  예약 페이지 창  -->
-    <div class="reserve-item-make-body" style="display:none;">
-            <div class="reserve-item-time">
-                <input type="text" id="reserveItemTime" placeholder="예약시간을 설정해주세요.">
-            </div>
-            <!-- 시간 스크롤 -->
-            <div class="reserve-item-time-scroll">
-                <select id="reserveItemTimeScroll">
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                    <option value="13">13</option>
-                    <option value="14">14</option>
-                    <option value="15">15</option>
-                    <option value="16">16</option>
-                    <option value="17">17</option>
-                    <option value="18">18</option>
-                    <option value="19">19</option>
-                    <option value="20">20</option>
-                    <option value="21">21</option>
-                    <option value="22">22</option>
-                    <option value="23">23</option>
-                    <option value="24">24</option>
-                </select>
-            </div>
-            <div class="reserve-item-minute-scroll">
-                <select id="reserveItemMinuteScroll">
-                    <option value="00">00</option>
-                    <option value="30">30</option>
-                </select>
-            </div>                 
-            <div class="reserve-item-make-body-btn">
-                <input type="submit" value="만들기" id="reserveItemMakeBodyBtn" onclick="reserveItemMakeBodyBtn()">
-            </div>
-    </div>
+    <!-- 임시 아이디 제공 -->
     <div class="reserve-page-user-name">
         <input type="text" id="reservePageUserNameText" class="reserve-page-user-name-text" placeholder="현재 예약자 ID 입력" maxlength="72">
     </div>
@@ -273,10 +229,46 @@
 
         <div class="reserve-confirm-page-btn-cancel-parent">
             <input type="submit" value="예약취소" id="reserveConfirmPageBtnCancel" class="reserve-confirm-page-btn-cancel">
-        </div>      
-
+        </div>
     </div>
+
+    <!-- 달력 코드 -->
+    <div class="reserve-popup-calendar-main" style="display: none;">
+        <div class="calendar-month">
+            <div class="calendar-month-prev">&#10094;</div>
+            <div class="calendar-text-year-month">2022-11</div>
+            <div class="calendar-month-next">&#10095;</div>
+        </div>
+
+        <ul class="calendar-weekdays-ul">
+            <li class="calendar-weekdays-li">Sun</li>
+            <li class="calendar-weekdays-li">Mon</li>
+            <li class="calendar-weekdays-li">Tue</li>
+            <li class="calendar-weekdays-li">Wed</li>
+            <li class="calendar-weekdays-li">Thu</li>
+            <li class="calendar-weekdays-li">Fri</li>
+            <li class="calendar-weekdays-li">Sat</li>
+        </ul>
+
+        <!--<ul class="calendar-days-ul">
+
+        </ul>-->
+        <ul class="calendar-select-month-ul" style="display: none;">
+            <li class="calendar-select-month-li">1</li>
+            <li class="calendar-select-month-li">2</li>
+            <li class="calendar-select-month-li">3</li>
+            <li class="calendar-select-month-li">4</li>
+            <li class="calendar-select-month-li">5</li>
+            <li class="calendar-select-month-li">6</li>
+            <li class="calendar-select-month-li">7</li>
+            <li class="calendar-select-month-li">8</li>
+            <li class="calendar-select-month-li">9</li>
+            <li class="calendar-select-month-li">10</li>
+            <li class="calendar-select-month-li">11</li>
+            <li class="calendar-select-month-li">12</li>
+        </ul>
+    </div>  
 </body>
-<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221112-32"></script>
+<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221114-39"></script>
 <script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
 </html>
