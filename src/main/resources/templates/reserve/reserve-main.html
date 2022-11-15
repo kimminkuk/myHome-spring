@@ -4,8 +4,11 @@
     <title>Hello My Home</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
+    <!--<link rel="stylesheet" href="../css/v1.css?ver=221017">-->
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
-    <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221114-18">
+    <!-- <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221115-25">
+    <link rel="stylesheet" href="../../static/css/v1.css?ver=221017"> -->
+    <link rel="stylesheet" href="../css/reserve/reserve-main.css?ver=221115-34">
 </head>
 <body>
     <div id="header">
@@ -144,6 +147,11 @@
                 </select>
             </div>            
         </div>
+        
+        <div class="reserve-date-start">
+            <div class="reserve-date-start-init">시작일</div>
+            <input type="text" readonly="true" id="reserveDateStartText" class="reserve-date-start-text">
+        </div>
 
         <div class="reserve-popup-main-btn">
             <input type="submit" class="reserve-popup-btn-close" value="취소하기" id="reservePopupBtnClose">
@@ -238,6 +246,7 @@
             <div class="calendar-month-prev">&#10094;</div>
             <div class="calendar-text-year-month">2022-11</div>
             <div class="calendar-month-next">&#10095;</div>
+            <div class="calendar-popup-close">X</div>
         </div>
 
         <ul class="calendar-weekdays-ul">
@@ -269,6 +278,7 @@
         </ul>
     </div>  
 </body>
-<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221114-39"></script>
+<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221115-36"></script>
+<!--<script type="text/javascript" src="../js/common.js?ver=221018-1"></script>-->
 <script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
 </html>

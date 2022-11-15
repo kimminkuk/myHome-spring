@@ -270,6 +270,16 @@
     color: #333;
 }
 
+.reserve-popup-main .reserve-date-start {
+    position: relative;
+    display: inline;
+    left: 5%;
+    width: 30%;
+    height: 60px;
+    z-index: 100;
+    border: 1px #333;
+}
+
 .reserve-popup-main .reserve-popup-main-time .reserve-popup-time-scroll {
     display: inline;
     position: relative;
@@ -853,6 +863,15 @@ body > div.reserve-main-facility-table > table {
     text-align: center;
     font-size: 14px;
     font-weight: bold;
+}
+
+.reserve-popup-calendar-main .calendar-month .calendar-popup-close {
+    position : relative;
+    display: inline;
+    color : #777;
+    text-align: center;
+    font-size: 14px;
+    left: 15%;
 }
 
 .reserve-popup-calendar-main .calendar-weekdays-ul {
