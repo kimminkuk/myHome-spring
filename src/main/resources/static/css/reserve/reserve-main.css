@@ -270,22 +270,17 @@
     color: #333;
 }
 
-.reserve-popup-main .reserve-date-start {
-    position: relative;
-    display: inline;
-    left: 5%;
-    width: 30%;
-    height: 60px;
-    z-index: 100;
-    border: 1px #333;
-}
-
-.reserve-popup-main .reserve-popup-main-time .reserve-popup-time-scroll {
+.reserve-popup-main .reserve-popup-main-time .reserve-popup-date-start {
     display: inline;
     position: relative;
     left: 5%;
     width: 15%;
     height: 20px;
+}
+
+.reserve-popup-main .reserve-popup-main-time .reserve-popup-date-start .reserve-date-start-text{
+    height: 14px;
+    width: 17%;
 }
 
 .reserve-popup-main .reserve-popup-main-time .reserve-popup-minute-scroll {
@@ -296,12 +291,17 @@
     height: 20px;
 }
 
-.reserve-popup-main .reserve-popup-main-time .reserve-popup-time-scroll-end {
+.reserve-popup-main .reserve-popup-main-time .reserve-popup-date-end {
     display: inline;
     position: relative;
     left: 5%;
     width: 15%;
     height: 20px;
+}
+
+.reserve-popup-main .reserve-popup-main-time .reserve-popup-date-end .reserve-date-end-text{
+    height: 14px;
+    width: 17%;
 }
 
 .reserve-popup-main .reserve-popup-main-time .reserve-popup-minute-scroll-end {
@@ -713,6 +713,7 @@ body > div.reserve-main-facility-table > table {
     height: 20px;
     font-weight: bold;
 }
+
 
 .reserve-confirm-page-main .reserve-confirm-page-time-div-start-minute {
     position: relative;

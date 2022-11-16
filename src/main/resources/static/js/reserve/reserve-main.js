@@ -480,23 +480,33 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
 
     curTitle.innerHTML = curFacTitle;
 
-    let reserveTimeHour = document.querySelector("#reservePopupTimeScroll");
     let reserveTimeMin = document.querySelector("#reservePopupMinuteScroll");
-    let resTimeEnd = new Array(document.querySelector("#reservePopupTimeScrollEnd"), document.querySelector("#reservePopupMinuteScrollEnd"));
-
-    
+    let reserveTimeHour = '';
+    let resTimeHourEnd = '';
+    let resTimeEnd = document.querySelector("#reservePopupMinuteScrollEnd");
 
     if (reservePopup.style.display == "none") {
-        reserveTimeHour.value = String(curIdx >> 1);
-        resTimeEnd[0].value = reserveTimeHour.value; 
-        if (curIdx & 0x1) {
-            reserveTimeMin.value = "30";
+        reserveTimeHour = String(curIdx >> 1);
+        if ( curIdx & 0x1 ) {
+            if ( parseInt(reserveTimeHour) < 10 ) {
+                reserveTimeHour = "0" + reserveTimeHour;
+            } 
+            reserveTimeMin.value = reserveTimeHour + ":30";
+            
+            if ( parseInt(reserveTimeHour) + 1 < 10 ) {
+                resTimeHourEnd = "0" + String(parseInt(reserveTimeHour) + 1);
+            } else {
+                resTimeHourEnd = String(parseInt(reserveTimeHour) + 1);
+            }
 
-            resTimeEnd[0].value = String(parseInt(resTimeEnd[0].value) + 1);
-            resTimeEnd[1].value = "00";
+            resTimeEnd.value = resTimeHourEnd + ":00";
+            
         } else {
-            reserveTimeMin.value = "00";
-            resTimeEnd[1].value = "30";
+            if ( reserveTimeHour < 10 ) {
+                reserveTimeHour = "0" + reserveTimeHour;
+            }
+            reserveTimeMin.value = reserveTimeHour + ":00";
+            resTimeEnd.value = reserveTimeHour + ":30";
         }
         let curLeft = curIdx * 15;
         let curTop = 3 * 100       
@@ -511,20 +521,25 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
 
     //[임시] 캘린더 오픈하는 코드
     let reserveStartTimeText = document.querySelector(".reserve-date-start-text");
+    let reserveEndTimeText = document.querySelector(".reserve-date-end-text");
+    
     let curDate = new Date().getFullYear() + "-" + ( new Date().getMonth() + 1 ) + "-" + new Date().getDate();
-    reserveStartTimeText.value = curDate;
-    reserveStartTimeText.innerHTML = curDate;
     let curMonth = new Date().getMonth() + 1;
 
+    reserveStartTimeText.value = curDate;
+    reserveStartTimeText.innerHTML = curDate;
+    reserveEndTimeText.value = curDate;
+    reserveEndTimeText.innerHTML = curDate;
+    
     reserveStartTimeText.addEventListener("click", function() {
         openCalendar(curMonth);
     });
-    reserveTimeHour.addEventListener("click", function() {
+
+    reserveEndTimeText.addEventListener("click", function() {
         openCalendar(curMonth);
     });
-    resTimeEnd[0].addEventListener("click", function() {
-        openCalendar(curMonth);
-    });
+    mouseOnOffStyleMake(reserveStartTimeText, "#000000");
+    mouseOnOffStyleMake(reserveEndTimeText, "#000000");
     return;
 }
 
@@ -1123,14 +1138,16 @@ function makeFacReserveTimeForDbBtn() {
 
     //step1 code
     let curFacTitle = document.querySelector(".reserve-popup-main-title-text").innerHTML;
-    let startTimeHour = document.querySelector("#reservePopupTimeScroll").value;
+    //let startTimeHour = document.querySelector("#reservePopupTimeScroll").value;
     let startTimeMinute = document.querySelector("#reservePopupMinuteScroll").value;
     
-    let endTimeHour = document.querySelector("#reservePopupTimeScrollEnd").value;
+    //let endTimeHour = document.querySelector("#reservePopupTimeScrollEnd").value;
     let endTimeMinute = document.querySelector("#reservePopupMinuteScrollEnd").value;
     
-    let startTime = tempToday + " " + String(startTimeHour) + ":" + String(startTimeMinute);
-    let endTime = tempToday + " " + String(endTimeHour) + ":" + String(endTimeMinute);
+    //let startTime = tempToday + " " + String(startTimeHour) + ":" + String(startTimeMinute);
+    //let endTime = tempToday + " " + String(endTimeHour) + ":" + String(endTimeMinute);
+    let startTime = tempToday + " " + String(startTimeMinute);
+    let endTime = tempToday + " " + String(endTimeMinute);
 
     //String 변환 코드
     let curReserveTime = startTime + "~" + endTime;
@@ -1160,7 +1177,7 @@ function makeFacReserveTimeForDbBtn() {
 }
 
 /**
- *    예약확인페이지
+ *    예약 확인 페이지
  */
 function reserveConfirmPage(reserveUr, startTime, endTime, curFacTitle, reserveContent) {
     //step0 초기 설정 및 변수 선언

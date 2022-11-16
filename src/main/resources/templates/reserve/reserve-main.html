@@ -4,25 +4,22 @@
     <title>Hello My Home</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
-    <!--<link rel="stylesheet" href="../css/v1.css?ver=221017">-->
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
-    <!-- <link rel="stylesheet" href="/css/reserve/reserve-main.css?ver=221115-25">
-    <link rel="stylesheet" href="../../static/css/v1.css?ver=221017"> -->
-    <link rel="stylesheet" href="../css/reserve/reserve-main.css?ver=221115-34">
+    <link rel="stylesheet" href="../css/reserve/reserve-main.css?ver=221116-07">
 </head>
 <body>
     <div id="header">
         <div class="group-nav-reserve-main">
             <ul>
                 <div class="li-original">
-                    <li class="li-menu-btn" onclick="goHomeHtml()"  onmouseover="btnLight()" >HOME</li>
+                    <li class="li-menu-btn" onclick="goHomeHtml()">HOME</li>
                 </div>
             </ul>
 
             <ul>
                 <div class="li-reserve-menu">
-                    <li class="li-menu-btn" id="reserveItemMakeBtn" onclick="reserveItemMake()"  onmouseover="btnLight()" >항목만들기</li>
-                    <li class="li-menu-btn" id="reserveItemDeleteBtn" onclick="reserveDelVisible()"  onmouseover="btnLight()" >항목 지우기</li>
+                    <li class="li-menu-btn" id="reserveItemMakeBtn" onclick="reserveItemMake()">항목만들기</li>
+                    <li class="li-menu-btn" id="reserveItemDeleteBtn" onclick="reserveDelVisible()">항목 지우기</li>
                 </div>                
             </ul>
         </div>
@@ -77,80 +74,29 @@
         </div>
         <div class="reserve-popup-main-time">
             <div class="reserve-popup-main-time-init">일시</div>
-            <div class="reserve-popup-time-scroll">
-                <select id="reservePopupTimeScroll">
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                    <option value="13">13</option>
-                    <option value="14">14</option>
-                    <option value="15">15</option>
-                    <option value="16">16</option>
-                    <option value="17">17</option>
-                    <option value="18">18</option>
-                    <option value="19">19</option>
-                    <option value="20">20</option>
-                    <option value="21">21</option>
-                    <option value="22">22</option>
-                    <option value="23">23</option>                    
-                </select>
+
+            <div class="reserve-popup-date-start">
+                <input type="text" readonly="true" id="reserveDateStartText" class="reserve-date-start-text">
+                <!-- <select id="reservePopupTimeScroll">
+                  
+                </select> -->
             </div>
             <div class="reserve-popup-minute-scroll">
                 <select id="reservePopupMinuteScroll">
-                    <option value="00">00</option>
-                    <option value="30">30</option>
+
                 </select>
             </div>    
-            <div class="reserve-popup-time-scroll-end">
-                <select id="reservePopupTimeScrollEnd">
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                    <option value="13">13</option>
-                    <option value="14">14</option>
-                    <option value="15">15</option>
-                    <option value="16">16</option>
-                    <option value="17">17</option>
-                    <option value="18">18</option>
-                    <option value="19">19</option>
-                    <option value="20">20</option>
-                    <option value="21">21</option>
-                    <option value="22">22</option>
-                    <option value="23">23</option>
-                    <option value="24">24</option>                    
-                </select>
+            <div class="reserve-popup-date-end">
+                <input type="text" readonly="true" id="reserveDateEndText" class="reserve-date-end-text">
+                <!-- <select id="reservePopupTimeScrollEnd">
+              
+                </select> -->
             </div>
             <div class="reserve-popup-minute-scroll-end">
                 <select id="reservePopupMinuteScrollEnd">
-                    <option value="00">00</option>
-                    <option value="30">30</option>
+
                 </select>
             </div>            
-        </div>
-        
-        <div class="reserve-date-start">
-            <div class="reserve-date-start-init">시작일</div>
-            <input type="text" readonly="true" id="reserveDateStartText" class="reserve-date-start-text">
         </div>
 
         <div class="reserve-popup-main-btn">
@@ -278,7 +224,6 @@
         </ul>
     </div>  
 </body>
-<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221115-36"></script>
-<!--<script type="text/javascript" src="../js/common.js?ver=221018-1"></script>-->
+<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221116-16"></script>
 <script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
 </html>
