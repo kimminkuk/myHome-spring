@@ -46,3 +46,8 @@ function errorCode1007() {
     alert("[ERR-1007] 현재 설비의 예약시간이 없습니다.");
     return;
 }
+
+function errorCode1008() {
+    alert("[ERR-1008] 문자열 처리 에러 발생");
+    return;
+}

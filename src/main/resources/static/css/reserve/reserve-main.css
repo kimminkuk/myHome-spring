@@ -216,13 +216,10 @@
 }
 
 .reserve-popup-main .reserve-popup-main-title .reserve-popup-main-title-close {
-    display: inline;
-    position: relative;
-    width: 10%;
-    left: 60%;
-    height: 40px;
+    position: absolute;
+    left: 95%;
+    top: 0%;
     line-height: 40px;
-    /*background-color: #FBFBFB;*/
     z-index: 100;
     text-align: center;
     font-size: 20px;
@@ -642,8 +639,10 @@ body > div.reserve-main-facility-table > table {
     width: 100%;
     height: 100%;
     line-height: 30px;
+    /* 버튼 색깔을 밝은 파란색으로 해줘 */
+    background-color: #00BFFF;
     /* 버튼 색깔을 그라데이션 파란색으로 해줘 */
-    background: linear-gradient(to bottom, #00bfff, #1e90ff);
+    /* background: linear-gradient(to bottom, #00bfff, #1e90ff);*/
 
     border: 1px solid #333;
 
@@ -694,7 +693,7 @@ body > div.reserve-main-facility-table > table {
     z-index: 100;
 }
 
-.reserve-confirm-page-main .reserve-confirm-page-time-div-start-hour {
+.reserve-confirm-page-main .reserve-confirm-page-time-div-start-date {
     position: relative;
     display: inline;
     width: 10%;
@@ -706,7 +705,7 @@ body > div.reserve-main-facility-table > table {
     color: #333;
 }
 
-.reserve-confirm-page-main .reserve-confirm-page-time-div-start-hour .reserve-confirm-page-time-div-start-hour-text {
+.reserve-confirm-page-main .reserve-confirm-page-time-div-start-date .reserve-confirm-page-time-div-start-date-text {
     width: 15%;
     border: 1px #333;
     background-color: #ffffff;
@@ -757,7 +756,7 @@ body > div.reserve-main-facility-table > table {
     font-size: 20px;
 }
 
-.reserve-confirm-page-main .reserve-confirm-page-time-div-end-hour {
+.reserve-confirm-page-main .reserve-confirm-page-time-div-end-date {
     position: relative;
     display: inline;
     width: 10%;
@@ -770,7 +769,7 @@ body > div.reserve-main-facility-table > table {
     
 }
 
-.reserve-confirm-page-main .reserve-confirm-page-time-div-end-hour .reserve-confirm-page-time-div-end-hour-text {
+.reserve-confirm-page-main .reserve-confirm-page-time-div-end-date .reserve-confirm-page-time-div-end-date-text {
     width: 15%;
     border: 1px #333;
     background-color: #ffffff;

@@ -142,6 +142,10 @@ function deleteFacilityTitleBtn(delTitle) {
  */
 function getTimeToMinute(dayTime, hourTime, calendar2022) {
     let year = 365, hour = 24, minute = 60;
+    if ( ( splitCheck(dayTime, "-") == false ) || ( splitCheck(hourTime, ":") == false ) ) {
+        alert("[ERR-1008] 문자열 처리 에러 발생");
+        return;
+    }
     let dayTimeArr = dayTime.split("-");
     let hourTimeArr = hourTime.split(":");
     let dayTimeToMinute = parseInt(dayTimeArr[0]) * year * hour * minute +
@@ -181,6 +185,20 @@ function getUserNameSplit(oriData, splitData) {
         return null;
     }
     return oriData.split(splitData)[0];
+}
+
+/**
+ *    split 함수 예외처리
+ */
+function splitCheck(oriData, splitData) {
+    if ( typeof oriData != "string" || typeof splitData != "string" ) {
+        return false;
+    }
+    
+    if ( oriData.indexOf(splitData) == -1 ) {
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -317,7 +335,7 @@ function reserveTimeGridInit() {
         reserveTitlesTimes[titleIdx].style.gridTemplateColumns = "repeat(48, 1fr)";
         reserveTitlesTimes[titleIdx].style.gridTemplateRows = "1fr";
 
-        for (let gridIdx = 0; gridIdx < 48; gridIdx++) {
+        for (let gridIdx = 0; gridIdx <= 48; gridIdx++) {
             curTopIdx = titleIdx + G_topOffsetIdx;
             var div = document.createElement("div");
             div.style.className = "reserve-time-grid";
@@ -369,6 +387,32 @@ function mouseOnOffStyleMake(curObject, oriColor) {
     return;
 }
 
+function mouseOnOffStyleMakeVer2(curObject, oriColor, mouseOnColor) {
+    curObject.addEventListener("mouseover", function() {
+        this.style.cursor = "pointer";
+        this.style.color = mouseOnColor;
+    });
+
+    curObject.addEventListener("mouseout", function() {
+        this.style.cursor = "default";
+        this.style.color = oriColor;
+    });
+    return;
+}
+
+function mouseOnOffStyleMakeVer3(curObject, oriColor, mouseOnColor) {
+    curObject.addEventListener("mouseover", function() {
+        this.style.cursor = "pointer";
+        this.style.backgroundColor = mouseOnColor;
+    });
+
+    curObject.addEventListener("mouseout", function() {
+        this.style.cursor = "default";
+        this.style.backgroundColor = oriColor;
+    });
+    return;
+}
+
 /**
  *    달력의 날짜 클릭 이벤트 처리
  *    조금 특수한 경우라, 함수로 추가 작성
@@ -378,17 +422,18 @@ function mouseOnOffStyleMake(curObject, oriColor) {
 function calendarDayClickEvent(curObject, oriColor, curDateInfo) {
 
     curObject.addEventListener("click", function() {
-        // let reservePopupTimeScroll = document.querySelector("#reservePopupTimeScroll");
-        // let createCurDateOption = document.createElement("option");
-        // reservePopupTimeScroll.value = curDateInfo;
-        // reservePopupTimeScroll.innerHTML = curDateInfo;
-        //reserveTimeMinOption[timeIdx] = document.createElement("option");
-        //reserveTimeMinOption[timeIdx].value = timeValueHour + ":" + timeValueMin;
-        //reserveTimeMinOption[timeIdx].innerHTML = timeValueHour + ":" + timeValueMin;        
-        //reserveTimeStartHourMin.appendChild(reserveTimeMinOption[timeIdx]);
-        let reserveStartDate = document.querySelector(".reserve-date-start-text");
-        reserveStartDate.innerHTML = curDateInfo;
-        reserveStartDate.value = curDateInfo;
+        let calendarStartEndCheckText = document.querySelector(".calendar-start-end-check");
+        //String Compare code
+
+        if ( calendarStartEndCheckText.innerText == "start" ) {
+            let reserveStartDate = document.querySelector(".reserve-date-start-text");
+            reserveStartDate.innerHTML = curDateInfo;
+            reserveStartDate.value = curDateInfo;
+        } else if ( calendarStartEndCheckText.innerText == "end" ) {
+            let reserveEndDate = document.querySelector(".reserve-date-end-text");
+            reserveEndDate.innerHTML = curDateInfo;
+            reserveEndDate.value = curDateInfo;
+        }
         closeCalendar();
     });
 
@@ -531,11 +576,16 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     reserveEndTimeText.value = curDate;
     reserveEndTimeText.innerHTML = curDate;
     
+    let calendarStartEndCheck = document.querySelector(".calendar-start-end-check");
+    
+
     reserveStartTimeText.addEventListener("click", function() {
+        calendarStartEndCheck.innerText = "start";    
         openCalendar(curMonth);
     });
 
     reserveEndTimeText.addEventListener("click", function() {
+        calendarStartEndCheck.innerText = "end";
         openCalendar(curMonth);
     });
     mouseOnOffStyleMake(reserveStartTimeText, "#000000");
@@ -916,7 +966,7 @@ function thTimeHeaderInit() {
     let reserveTimEndHourMin = document.querySelector("#reservePopupMinuteScrollEnd");
     let reserveTimeMinOption = new Array();
     
-    for (let timeIdx = 0; timeIdx < 48; timeIdx++) {
+    for (let timeIdx = 0; timeIdx <= 48; timeIdx++) {
         //timeValue: 00:00 -> 00:30 .... 23:00 -> 23:00
         let timeValueHour = "00";
         let timeValueMin = "00";
@@ -934,7 +984,7 @@ function thTimeHeaderInit() {
         reserveTimeMinOption[timeIdx].value = timeValueHour + ":" + timeValueMin;
         reserveTimeMinOption[timeIdx].innerHTML = timeValueHour + ":" + timeValueMin;
 
-        if ( timeIdx != 47 ) { //마지막Index 제외
+        if ( timeIdx != 48 ) { //마지막Index 제외
             reserveTimeStartHourMin.appendChild(reserveTimeMinOption[timeIdx]);
         }
         if ( timeIdx != 0 ) { //첫번째 Index 제외
@@ -1123,7 +1173,7 @@ function makeFacReserveTimeForDbBtn() {
     //init code
 
     //TODO: 날짜 선택하는 코드 추가해야합니다.
-    let tempToday = "2022-11-05";
+    let reserveToday = new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate();
     let reserveUr = 'http://localhost:8080/reserve/reserve-main/fac-reserve';
     
     let reserveUserName = document.querySelector(".reserve-page-user-name-text").value;
@@ -1138,16 +1188,11 @@ function makeFacReserveTimeForDbBtn() {
 
     //step1 code
     let curFacTitle = document.querySelector(".reserve-popup-main-title-text").innerHTML;
-    //let startTimeHour = document.querySelector("#reservePopupTimeScroll").value;
     let startTimeMinute = document.querySelector("#reservePopupMinuteScroll").value;
-    
-    //let endTimeHour = document.querySelector("#reservePopupTimeScrollEnd").value;
     let endTimeMinute = document.querySelector("#reservePopupMinuteScrollEnd").value;
     
-    //let startTime = tempToday + " " + String(startTimeHour) + ":" + String(startTimeMinute);
-    //let endTime = tempToday + " " + String(endTimeHour) + ":" + String(endTimeMinute);
-    let startTime = tempToday + " " + String(startTimeMinute);
-    let endTime = tempToday + " " + String(endTimeMinute);
+    let startTime = reserveToday + " " + String(startTimeMinute);
+    let endTime = reserveToday + " " + String(endTimeMinute);
 
     //String 변환 코드
     let curReserveTime = startTime + "~" + endTime;
@@ -1190,51 +1235,27 @@ function reserveConfirmPage(reserveUr, startTime, endTime, curFacTitle, reserveC
     let confirmPlaceText = document.querySelector(".reserve-confirm-page-place-text");
     let confirmReserveTitleText = document.querySelector(".reserve-confirm-page-title-text");
 
-    let confirmReserveStartTimeHour = document.querySelector(".reserve-confirm-page-time-div-start-hour-text");
+    let confirmReserveStartTimeDate = document.querySelector(".reserve-confirm-page-time-div-start-date-text");
     let confirmReserveStartTimeMinute = document.querySelector(".reserve-confirm-page-time-div-start-minute-text");
-    let confirmReserveEndTimeHour = document.querySelector(".reserve-confirm-page-time-div-end-hour-text");
+    let confirmReserveEndTimeDate = document.querySelector(".reserve-confirm-page-time-div-end-date-text");
     let confirmReserveEndTimeMinute = document.querySelector(".reserve-confirm-page-time-div-end-minute-text");    
 
-    confirmReserveStartTimeHour.value = startTimeSplit[0];
+    confirmReserveStartTimeDate.value = startTimeSplit[0];
     confirmReserveStartTimeMinute.value = startTimeSplit[1];
-    confirmReserveEndTimeHour.value = endTimeSplit[0];
+    confirmReserveEndTimeDate.value = endTimeSplit[0];
     confirmReserveEndTimeMinute.value = endTimeSplit[1];
     confirmPlaceText.value = curFacTitle;
     confirmReserveTitleText.value = reserveContent;
 
-    closeBtn.addEventListener("mouseover", function() {
-        closeBtn.style.cursor = "pointer";
-        //closeBtn 색을 연한 초록색으로 변경
-        closeBtn.style.color = "#00ff00";
-    });
-    closeBtn.addEventListener("mouseout", function() {
-        closeBtn.style.cursor = "default";
-        //closeBtn 색을 빨간색으로 변경
-        closeBtn.style.color = "#ff0000";
-    });
+
+    mouseOnOffStyleMakeVer2(closeBtn, "#ff0000", "#00ff00");
+    mouseOnOffStyleMakeVer3(confirmBtnOk, "#00BFFF", "#00ff00");
+    mouseOnOffStyleMakeVer3(confirmBtnCancel, "#ffffff", "#f0f0f0");
+
     closeBtn.addEventListener("click", function() {
         reserveConfirmPagePopup.style.display = "none";
     });
-
-    confirmBtnOk.addEventListener("mouseover", function() {
-        confirmBtnOk.style.cursor = "pointer";
-    });
-    confirmBtnOk.addEventListener("mouseout", function() {
-        confirmBtnOk.style.cursor = "default";
-    });
     
-    confirmBtnCancel.addEventListener("mouseover", function() {
-        confirmBtnCancel.style.cursor = "pointer";
-        //confirmBtnCancel의 백그라운드 색을 아주 연한 회색으로 변경
-        confirmBtnCancel.style.backgroundColor = "#f0f0f0";
-    });
-    confirmBtnCancel.addEventListener("mouseout", function() {
-        confirmBtnCancel.style.cursor = "default";
-        //confirmBtnCancel의 백그라운드 색을 
-        confirmBtnCancel.style.backgroundColor = "#ffffff";
-    });
-
-
     //step1 예약 내용을 띄운다.
     if ( reserveConfirmPagePopup.style.display == "none" ) {
         reserveConfirmPagePopup.style.display = "block";
