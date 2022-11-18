@@ -1,5 +1,14 @@
+const E_calendarStatus = {
+    START: 0,
+    END: 1,
+    MAIN: 2,
+    NONE: 3
+};
+
 var G_calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 var G_topOffsetIdx = 5;
+var G_calendarStatus = E_calendarStatus.NONE;
+
 
 function reserveItemMake() {
     //변수 선언
@@ -143,7 +152,6 @@ function deleteFacilityTitleBtn(delTitle) {
 function getTimeToMinute(dayTime, hourTime, calendar2022) {
     let year = 365, hour = 24, minute = 60;
     if ( ( splitCheck(dayTime, "-") == false ) || ( splitCheck(hourTime, ":") == false ) ) {
-        alert("[ERR-1008] 문자열 처리 에러 발생");
         return;
     }
     let dayTimeArr = dayTime.split("-");
@@ -192,10 +200,12 @@ function getUserNameSplit(oriData, splitData) {
  */
 function splitCheck(oriData, splitData) {
     if ( typeof oriData != "string" || typeof splitData != "string" ) {
+        alert("[ERR-1008] 문자열 처리 에러 발생");
         return false;
     }
     
     if ( oriData.indexOf(splitData) == -1 ) {
+        alert("[ERR-1008] 문자열 처리 에러 발생");
         return false;
     }
     return true;
@@ -324,6 +334,7 @@ function initDispFacReserveTime() {
  *    document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(5) > th.reserve-iter-list-time > div:nth-child(14)")
  */
 function reserveTimeGridInit() {
+    
     var facTitles = document.querySelectorAll(".reserve-iter-list-title");
     var reserveTitlesTimes = document.querySelectorAll(".reserve-iter-list-time");
     var reserveTitlesTimeLength = reserveTitlesTimes.length;
@@ -419,20 +430,22 @@ function mouseOnOffStyleMakeVer3(curObject, oriColor, mouseOnColor) {
  *    달력의 시작, 끝 부분도 처리를 해줘야하는데 어디서 해주지?
  */
 
-function calendarDayClickEvent(curObject, oriColor, curDateInfo) {
+function calendarDayClickEvent(curObject, oriColor, curDateInfo, curDayText) {
 
     curObject.addEventListener("click", function() {
-        let calendarStartEndCheckText = document.querySelector(".calendar-start-end-check");
-        //String Compare code
-
-        if ( calendarStartEndCheckText.innerText == "start" ) {
+        let calendarStatus = G_calendarStatus;
+        if ( calendarStatus == E_calendarStatus.START ) {
             let reserveStartDate = document.querySelector(".reserve-date-start-text");
             reserveStartDate.innerHTML = curDateInfo;
             reserveStartDate.value = curDateInfo;
-        } else if ( calendarStartEndCheckText.innerText == "end" ) {
+        } else if ( calendarStatus == E_calendarStatus.END ) {
             let reserveEndDate = document.querySelector(".reserve-date-end-text");
             reserveEndDate.innerHTML = curDateInfo;
             reserveEndDate.value = curDateInfo;
+        } else if ( calendarStatus == E_calendarStatus.MAIN ) {
+            let reserveMainPageCurDate = document.querySelector(".reserve-cur-date-list");
+            reserveMainPageCurDate.innerHTML = curDateInfo + ' ' + curDayText;
+            reserveMainPageCurDate.innerText = curDateInfo + ' ' + curDayText;
         }
         closeCalendar();
     });
@@ -475,6 +488,7 @@ function calendarDayClickEvent(curObject, oriColor, curDateInfo) {
 function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     
     // 변수 선언
+    let reserveCurDate = document.querySelector(".reserve-cur-date-list");
     let reservePopup = document.querySelector(".reserve-popup-main");
     let reservePopupCloseBtn = document.querySelector(".reserve-popup-main-title-close");
     let reservePopupBtnSendClose = document.querySelector(".reserve-popup-btn-close");
@@ -567,25 +581,32 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     //[임시] 캘린더 오픈하는 코드
     let reserveStartTimeText = document.querySelector(".reserve-date-start-text");
     let reserveEndTimeText = document.querySelector(".reserve-date-end-text");
-    
-    let curDate = new Date().getFullYear() + "-" + ( new Date().getMonth() + 1 ) + "-" + new Date().getDate();
-    let curMonth = new Date().getMonth() + 1;
+    let curFullDate = String(reserveCurDate.innerText);
+    if ( splitCheck(curFullDate, " ") == false ) {
+        return;
+    }
+    let curDate = curFullDate.split(" ")[0];
+
+    if ( splitCheck(curDate, "-") == false ) {
+        return;
+    }
+    let curMonth = curDate.split("-")[1];
+    //let curDate = new Date().getFullYear() + "-" + ( new Date().getMonth() + 1 ) + "-" + new Date().getDate();
+    //let curMonth = new Date().getMonth() + 1;
 
     reserveStartTimeText.value = curDate;
     reserveStartTimeText.innerHTML = curDate;
     reserveEndTimeText.value = curDate;
     reserveEndTimeText.innerHTML = curDate;
     
-    let calendarStartEndCheck = document.querySelector(".calendar-start-end-check");
-    
-
     reserveStartTimeText.addEventListener("click", function() {
-        calendarStartEndCheck.innerText = "start";    
+        G_calendarStatus = E_calendarStatus.START;
+    
         openCalendar(curMonth);
     });
 
     reserveEndTimeText.addEventListener("click", function() {
-        calendarStartEndCheck.innerText = "end";
+        G_calendarStatus = E_calendarStatus.END;
         openCalendar(curMonth);
     });
     mouseOnOffStyleMake(reserveStartTimeText, "#000000");
@@ -793,6 +814,8 @@ function makeCalendarYear2022() {
     //2022년의 1월 1일이 토요일이였습니다.
     let monthFirstDayRow = 6; //토요일
     let emptySpace = ' ';
+    let dayCnt = 0;
+    let curDayText = new Array("(SUN)", "(MON)", "(TUE)", "(WED)", "(THU)", "(FRI)", "(SAT)");
     for ( let monthIdx = 0; monthIdx < 12; monthIdx++ ) {
         
         //dayIdx에서는 컬럼 숫자까지 증가해야합니다.
@@ -826,10 +849,15 @@ function makeCalendarYear2022() {
                     calendarActive.value = curDate;
                     calendarActive.innerHTML = curDate;
                     calendarDay.appendChild(calendarActive);
+                    let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarActive.value ); 
+                    calendarDayClickEvent(calendarActive, "#777", curDateInfo, curDayText[ ( monthFirstDayRow + dayCnt ) % weekNum]);                    
                 } else {
                     calendarDay.innerHTML = dayIdx - offsetCurMonRow + 1;
                     calendarDay.value = dayIdx - offsetCurMonRow + 1;
+                    let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarDay.value ); 
+                    calendarDayClickEvent(calendarDay, "#777", curDateInfo, curDayText[ ( monthFirstDayRow + dayCnt ) % weekNum]);                    
                 }
+
             } else {
                 //다음 달 내용 (일단 공백)
                 calendarDay.innerHTML = emptySpace;
@@ -843,9 +871,10 @@ function makeCalendarYear2022() {
             } 
             
             //mouseOnOffStyleMake(calendarDay, "#777");
-            let curDateInfo = new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarDay.value; 
-            calendarDayClickEvent(calendarDay, "#777", curDateInfo);
+            //let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarDay.value ); 
+            //calendarDayClickEvent(calendarDay, "#777", curDateInfo, curDayText[ ( monthFirstDayRow + dayCnt ) % weekNum]);
             calendarMainPopupDayUls[monthIdx].appendChild(calendarDay);
+            dayCnt++;
         }
         //calendarMainPopup.appendChild(calendarMainPopupDayUls[monthIdx]);
         //calendarMainPopupDayUls[monthIdx].style.display = "none";
@@ -1334,6 +1363,21 @@ function reserveDayRight() {
     return;
 }
 
+/**
+ *    예약페이지의 메인 날짜 선택 함수
+ */
+function reserveDaySelect() {
+    G_calendarStatus = E_calendarStatus.MAIN;
+    let curMainPageDate = document.querySelector(".reserve-cur-date-list").innerText;
+    //ex) 2022-11-18 (FRI)
+    if ( splitCheck(curMainPageDate, " ") == false) {
+        return;
+    }
+    let curYearMonthDay = curMainPageDate.split(" ")[0];
+    let curMonth = curYearMonthDay.split("-")[1];
+    openCalendar(curMonth);
+    return;
+}
 
 function reservePopupClose() {
     document.querySelector(".reserve-popup-main").style.display = "none";

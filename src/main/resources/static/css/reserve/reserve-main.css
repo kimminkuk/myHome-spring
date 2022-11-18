@@ -866,12 +866,13 @@ body > div.reserve-main-facility-table > table {
 }
 
 .reserve-popup-calendar-main .calendar-month .calendar-popup-close {
-    position : relative;
+    position : absolute;
     display: inline;
     color : #777;
     text-align: center;
     font-size: 14px;
-    left: 15%;
+    right: 5%;
+    top: 10%;
 }
 
 .reserve-popup-calendar-main .calendar-weekdays-ul {
