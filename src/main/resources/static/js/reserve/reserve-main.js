@@ -695,6 +695,50 @@ function moveOpenCalendar(curMonth) {
 }
 
 /**
+ *    캘린더 좌, 우 날짜 이동해서 날짜 획득하는 함수
+ *    return ex) 2022-11-17
+ */
+function getMoveDayDate(curMonth, curDay, moveDirection) {
+    
+    curMonth = curMonth - 1;
+    // Step1 날짜를 왼쪽으로 이동
+    if ( moveDirection == -1 ) {
+        curDay = curDay + moveDirection;
+        // step1 이전 날로 이동할 때, curDay가 1일이면 이전달 마지막 날짜로 이동
+        if ( curDay <= 0 ) {
+            curMonth = curMonth - 1;
+            
+            //TODO: 년 단위 업데이트는 아직 예정에 없습니다.
+            if ( curMonth < 0 ) { 
+                curMonth = 0;
+                curDay = 1
+            } else {
+                curDay = G_calendar2022[curMonth]    
+            }
+        }
+    }
+    //Step 2 다음 날로 이동할 때, curDay가 마지막 날짜보다 크면 다음달 1일로 이동
+    else {
+        curDay = curDay + moveDirection;
+        let lastDay = new Date(new Date().getFullYear(), curMonth, curDay).getDate();
+
+        // lastDay가 1이면 다음달로 넘어간거임.
+        if ( lastDay == 1 ) {
+            curMonth = curMonth + 1;
+            if (curMonth > 11) {
+                curMonth = 11;
+                curDay = 31;
+            } else {
+                curDay = 1;
+            }
+        }
+    }
+    
+    let resultDate = new Array( new Date().getFullYear(), curMonth + 1, curDay );
+    return resultDate;
+}
+
+/**
  *    캘린더 초기화(none) 함수
  */
 function initCalendar() {
@@ -850,12 +894,14 @@ function makeCalendarYear2022() {
                     calendarActive.innerHTML = curDate;
                     calendarDay.appendChild(calendarActive);
                     let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarActive.value ); 
-                    calendarDayClickEvent(calendarActive, "#777", curDateInfo, curDayText[ ( monthFirstDayRow + dayCnt ) % weekNum]);                    
+                    let curDayInfo = new Date(curYear, monthIdx, calendarActive.value).getDay();
+                    calendarDayClickEvent(calendarActive, "#777", curDateInfo, curDayText[curDayInfo]);                    
                 } else {
                     calendarDay.innerHTML = dayIdx - offsetCurMonRow + 1;
                     calendarDay.value = dayIdx - offsetCurMonRow + 1;
                     let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarDay.value ); 
-                    calendarDayClickEvent(calendarDay, "#777", curDateInfo, curDayText[ ( monthFirstDayRow + dayCnt ) % weekNum]);                    
+                    let curDayInfo = new Date(curYear, monthIdx, calendarDay.value).getDay();
+                    calendarDayClickEvent(calendarDay, "#777", curDateInfo, curDayText[curDayInfo]);                    
                 }
 
             } else {
@@ -1350,16 +1396,51 @@ function btnLightVer2() {
     return;
 }
 
+function getCurReservePageDate() {
+    let curMainPageDate = document.querySelector(".reserve-cur-date-list").innerText;
+    //ex) 2022-11-18 (FRI)
+    if ( splitCheck(curMainPageDate, " ") == false) {
+        return;
+    }
+    let curMainPageDateSplit = curMainPageDate.split(" ");
+    if ( splitCheck(curMainPageDateSplit[0], "-") == false) {
+        return;
+    }
+    let curReservePageYearMonthDayList = curMainPageDateSplit[0].split("-");
+    return curReservePageYearMonthDayList;
+}
+
+function getCurReservePageDateDay(curDate) {
+    let curReservePageDateDay = new Array("(SUN)", "(MON)", "(TUE)", "(WED)", "(THU)", "(FRI)", "(SAT)");
+    let curDayTextIdx = new Date(curDate[0], curDate[1]-1, curDate[2]).getDay() % 7;
+    return curReservePageDateDay[curDayTextIdx];
+}
+
 /**
  *    예약페이지의 현재 날짜를 하루 전으로 이동하는 함수
  */
 function reserveDayLeft() {
+
+    let curReservePageDate = getCurReservePageDate();
+    let moveDate = getMoveDayDate( parseInt(curReservePageDate[1]), parseInt(curReservePageDate[2]), -1 );
+    let curDateInfo = moveDate[0] + "-" + moveDate[1] + "-" + moveDate[2];
+    let curDayText = getCurReservePageDateDay(moveDate);
+    let reserveMainPageCurDate = document.querySelector(".reserve-cur-date-list");
+    reserveMainPageCurDate.innerHTML = curDateInfo + ' ' + curDayText;
+    reserveMainPageCurDate.innerText = curDateInfo + ' ' + curDayText;    
     return;
 }
 /**
  *    예약페이지의 현재 날짜를 하루 뒤로 이동하는 함수
  */
 function reserveDayRight() {
+    let curReservePageDate = getCurReservePageDate();
+    let moveDate = getMoveDayDate( parseInt(curReservePageDate[1]), parseInt(curReservePageDate[2]), 1 );
+    let curDateInfo = moveDate[0] + "-" + moveDate[1] + "-" + moveDate[2];
+    let curDayText = getCurReservePageDateDay(moveDate);
+    let reserveMainPageCurDate = document.querySelector(".reserve-cur-date-list");
+    reserveMainPageCurDate.innerHTML = curDateInfo + ' ' + curDayText;
+    reserveMainPageCurDate.innerText = curDateInfo + ' ' + curDayText;
     return;
 }
 
@@ -1368,14 +1449,18 @@ function reserveDayRight() {
  */
 function reserveDaySelect() {
     G_calendarStatus = E_calendarStatus.MAIN;
-    let curMainPageDate = document.querySelector(".reserve-cur-date-list").innerText;
-    //ex) 2022-11-18 (FRI)
-    if ( splitCheck(curMainPageDate, " ") == false) {
-        return;
-    }
-    let curYearMonthDay = curMainPageDate.split(" ")[0];
-    let curMonth = curYearMonthDay.split("-")[1];
-    openCalendar(curMonth);
+    // let curMainPageDate = document.querySelector(".reserve-cur-date-list").innerText;
+    // //ex) 2022-11-18 (FRI)
+    // if ( splitCheck(curMainPageDate, " ") == false) {
+    //     return;
+    // }
+    // let curYearMonthDay = curMainPageDate.split(" ")[0];
+    // let curMonth = curYearMonthDay.split("-")[1];
+
+
+    // ex) curReservePageDate : { 2022, 11, 18 }
+    let curReservePageDate = getCurReservePageDate();
+    openCalendar(curReservePageDate[1]);
     return;
 }
 
