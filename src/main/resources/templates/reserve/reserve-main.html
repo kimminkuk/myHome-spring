@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
-    <link rel="stylesheet" href="../css/reserve/reserve-main.css?ver=221118-06">
+    <link rel="stylesheet" href="../css/reserve/reserve-main.css?ver=221120-21">
 </head>
 <body>
     <div id="header">
@@ -26,8 +26,8 @@
     </div>
     <div class="reserve-main-facility-table">
         <!-- thymeleaf table code -->
-        <table>
-            <thead>
+        <table class="reserve-main-table">
+            <thead class="reserve-main-table-thead">
                 <tr class="th-header-date">
                     <th></th>
                     <!-- 마우스 올리면 손가락 모양 나오게 -->
@@ -41,13 +41,16 @@
                     <th class="reserve-iter-list-number-header-1"></th>
                     <th class="reserve-iter-list-title-header-1"></th>
                     <th class="reserve-iter-list-time-header-1"></th>
+                    <th class="reserve-iter-list-time-header-2"></th>
+                    <div class="th-header-time1-left-btn"><</div>
+                    <div class="th-header-time1-right-btn">></div>
                 </tr>                
                 
                 <!-- [시간2] 맨 위에 헤더 개념으로 하나 더 생성 -->
                 <tr class="th-header-time2">
                     <th class="reserve-iter-list-number-header-2"></th>
                     <th class="reserve-iter-list-title-header-2"></th>
-                    <th class="reserve-iter-list-time-header-2"></th>
+                    <!--<th class="reserve-iter-list-time-header-2"></th>-->
                 </tr>
 
                 <!-- thymeleaf iter -->
@@ -224,6 +227,6 @@
         </ul>
     </div>  
 </body>
-<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221119-07"></script>
+<script type="text/javascript" src="../js/reserve/reserve-main.js?ver=221120-21"></script>
 <script type="text/javascript" src="../js/common.js?ver=221018-1"></script>
 </html>

@@ -366,7 +366,7 @@
     font-weight: bold;
 }
 
-
+/* 예약 테이블  */
 
 body > div.reserve-main-facility-table > table {
     position: absolute;
@@ -374,8 +374,13 @@ body > div.reserve-main-facility-table > table {
     left: 5%;
 }
 
+.reserve-main-table {
+    top : 15%;
+}
+
 .th-header-date {
-    position: relative;
+    top: -20%;
+    position: absolute;
     width: 100%;
     height: 20px;
 }
@@ -397,7 +402,35 @@ body > div.reserve-main-facility-table > table {
     left: 60%;
     width: 5%;    
 }
+.reserve-main-table .reserve-main-table-thead .th-header-time1 .reserve-iter-list-time-header-1 {
+    border-top: 1px solid #333;
+    border-left: 1px solid #333;
+    border-right: 1px solid #333;
+}
 
+.reserve-main-table .reserve-main-table-thead .th-header-time1 .reserve-iter-list-time-header-2 {
+    border-bottom: 1px solid #333;
+    border-left: 1px solid #333;
+    border-right: 1px solid #333;
+}
+
+.reserve-main-table .reserve-main-table-thead .th-header-time1 .th-header-time1-left-btn {
+    position: absolute;
+    top: 2%;
+    left: 20%;
+    font-size: 30px;
+    color: #333;
+    font-weight: bold;
+}
+
+.reserve-main-table .reserve-main-table-thead .th-header-time1 .th-header-time1-right-btn {
+    position: absolute;
+    top: 2%;
+    left: 100%;
+    font-size: 30px;
+    color: #333;
+    font-weight: bold;
+}
 /* 
  *    예약 페이지 확인 창 
  */
