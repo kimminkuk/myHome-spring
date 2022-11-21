@@ -176,6 +176,79 @@ public class ReserveFacilityService {
         // step6 예외가 안뜨면 저장하기
         return;
     }
+
+    /**
+     *    validateFacReserveTimeVer2 js code 검증 완료
+     *    Front-end에서 Update가 안되어있는 상태에서는 예약시간이 겹치는지 확인이 안됨
+     *    따라서, Back-end에서도 예약시간이 겹치는지 확인해야함
+     */
+    private void validateFacReserveTimeVer2(FacReserveTimeMember facReserveTimeMember, String reserveTime) {
+        int[] calendar2022 = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        List<Integer> resStartTimes = new ArrayList<>();
+        List<Integer> resEndTimes = new ArrayList<>();
+        String curFacReserveTime = facReserveTimeMember.getReserveTime();
+        String[] curFacReserveTimeArr = curFacReserveTime.split(",");
+
+        for (String curFacResTime : curFacReserveTimeArr) {
+            String[] curFacResTimeStep1 = curFacResTime.split("~");
+
+            int cnt = 0;
+            for (String curFacResTimeStep2 : curFacResTimeStep1) {
+                String[] timeStep3 = curFacResTimeStep2.strip().split(" ");
+
+                if ((cnt & 1) == 0) { //0, 2
+                    resStartTimes.add(getTimeToMinute(timeStep3[0], timeStep3[1], calendar2022));
+                } else { //1, 3
+                    resEndTimes.add(getTimeToMinute(timeStep3[0], timeStep3[1], calendar2022));
+                }
+                cnt++;
+            }
+        }
+
+        String[] reserveTimeArr = reserveTime.split("~");
+        String[] curStartTime = reserveTimeArr[0].strip().split(" ");
+        String[] curEndTime = reserveTimeArr[1].strip().split(" ");
+
+        int curReserveStartTime = getTimeToMinute(curStartTime[0], curStartTime[1], calendar2022);
+        int curReserveEndTime = getTimeToMinute(curEndTime[0], curEndTime[1], calendar2022);
+
+        if (curReserveEndTime <= curReserveStartTime) {
+            throw new IllegalStateException("예약 종료시간이 예약 시작시간보다 작습니다.");
+        }
+
+        int resTimeArrLength = resStartTimes.size();
+        int resTimeIdx = 0;
+        for (resTimeIdx = 0; resTimeIdx < resTimeArrLength; resTimeIdx++) {
+            // 1. 예약시간이 기존시간이랑 오른쪽으로 겹칠때
+            // [기존] |-|  |------|       |---|
+            // [신규]          |------|
+            if (resEndTimes.get(resTimeIdx) > curReserveStartTime && resEndTimes.get(resTimeIdx) <= curReserveEndTime) {
+                throw new IllegalStateException("[1]이미 예약된 시간입니다.");
+            }
+            // 2. 예약시간이 기존시간이랑 왼쪽으로 겹칠때
+            // [기존]  |--|    |------|   |--|      |------| |--|
+            // [신규]      |------|           |------|
+            else if (resStartTimes.get(resTimeIdx) < curReserveEndTime && resStartTimes.get(resTimeIdx) >= curReserveStartTime) {
+                throw new IllegalStateException("[2]이미 예약된 시간입니다.");
+            }
+            //3-1. 예약시간이 기존시간이랑 왼, 외 전부 겹칠 때
+            // [기존]  |------------|
+            // [신규]      |------|
+            else if (resStartTimes.get(resTimeIdx) <= curReserveStartTime && resEndTimes.get(resTimeIdx) >= curReserveEndTime) {
+                throw new IllegalStateException("[3-1]이미 예약된 시간입니다.");
+            }
+            //3-2
+            // [기존]  |------------|
+            // [신규] |--------------|
+            else if (resStartTimes.get(resTimeIdx) >= curReserveStartTime && resEndTimes.get(resTimeIdx) <= curReserveEndTime) {
+                throw new IllegalStateException("[3-2]이미 예약된 시간입니다.");
+            }
+        }
+
+        // step6 예외가 안뜨면 저장하기
+        return;
+    }
+
     private int getTimeToMinute(String dayTime, String hourTime, int[] calendar2022) {
         String[] dayTimeArr = dayTime.split("-");
         String[] hourTimeArr = hourTime.split(":");

@@ -199,16 +199,13 @@ function getResDivMod(resTime) {
  function getResDivModVer2(dayTime, resTime) {
     // dayTime은 2022-11-20 이런식으로 들어옵니다.
     // 이건 2022 * 365 + 아 이거 빼야한다.
-    if ( splitCheck(dayTime, "-") == false ) {
-        return;
-    }
     let dayTimeSplitStep1 = dayTime.split("-"); //2022-11-20 -> 2022, 11, 20
 
     let dayOffset = 0;
     for ( let monthIdx = 1; monthIdx < parseInt(dayTimeSplitStep1[1]); monthIdx++ ) { 
         dayOffset += new Date( dayTimeSplitStep1[0], monthIdx, 0).getDate();
     }
-    let dayValue = parseInt(dayTimeSplitStep1[0]) * 365 + dayOffset + parseInt(dayTimeSplitStep1[2]) * 48;
+    let dayValue = ( parseInt(dayTimeSplitStep1[0]) * 365 + ( dayOffset + parseInt(dayTimeSplitStep1[2]) ) ) * 48;
     let hourMinuteValue = getResDivMod(resTime);
     return dayValue + hourMinuteValue;
 }
@@ -301,7 +298,7 @@ function getCurFacReserveInfo(curFacResTime, calendar2022) {
  function getCurFacReserveInfoVer2(curFacResTime, calendar2022) {
     //[step 1] : curFacTitle 찾고, 해당 설비예약을 ,로 split 해준다.
     //       ex) 2022-11-05 09:00~2022-11-05 10:00, 2022-11-05 11:00~2022-11-05 12:00
-    
+    //       ex) 2022-01-02 13:00~2022-01-10 10:00, 2022-11-02 17:00~2022-12-15 17:00
     let curReserveTimeArr = curFacResTime.split(",");
     let curResTimeLength = curReserveTimeArr.length;
     let curResStartTimeList = new Array();
@@ -318,18 +315,24 @@ function getCurFacReserveInfo(curFacResTime, calendar2022) {
         //          2022-11-05 10:00
         //          2022-11-05 11:00    
         //          2022-11-05 12:00
+        if ( splitCheck(curReserveTimeArr[curResTimeIdx], "~") == false ) {
+            return;
+        }
         let curResTimes = curReserveTimeArr[curResTimeIdx].split("~");
         let curResTimesLen = curResTimes.length;
         
         //[step2-2] 예약 시작과 끝을 구분해준다.
         for (let curIdx = 0; curIdx < curResTimesLen; curIdx++) {
-            //ex )  2022-11-05 
+            //ex )  2022-11-05
             //      09:00
             //      2022-11-05
             //      10:00
             //      ...
+            if ( splitCheck(curResTimes[curIdx].trim(), " ") == false ) {
+                return;
+            }
             let startEndTime = curResTimes[curIdx].trim().split(" ");
-            if ((curIdx & 1) == 0) {
+            if ( ( curIdx & 1 ) == 0 ) {
                 //[step2-3] 시작시간
                 curResStartTimeList.push(getTimeToMinute(startEndTime[0], startEndTime[1], calendar2022));
                 todayResDivStartList.push(getResDivModVer2(startEndTime[0], startEndTime[1]));
@@ -341,7 +344,7 @@ function getCurFacReserveInfo(curFacResTime, calendar2022) {
         }
     }
     
-    let resultTime = new Array(todayResDivStartList, todayResDivEndList);
+    let resultTime = new Array(todayResDivStartList, todayResDivEndList); //1당 30분이다.
     return resultTime;
 }
 
@@ -1432,6 +1435,32 @@ function getCurResTimeToIdx(curResTime) {
 }
 
 /**
+ *     현재 예약할 시간을 index로 분리해준다.
+ *     Ver2.0: 시간을 날짜도 포함한다.
+ */
+ function getCurResTimeToIdxVer2(curResTime) {
+    //step1 2022-11-05 10:00~2022-11-05 11:00
+    //      2022-11-05
+    //           10:00
+    //      2022-11-05
+    //           11:00
+
+    let curResTimeArr = curResTime.split("~");
+
+    //step2 [0] 2022-11-05 10:00
+    //      [1] 2022-11-05 11:00
+    let startTimeStep = curResTimeArr[0].trim().split(" ");
+    let endTimeStep = curResTimeArr[1].trim().split(" ");
+
+    let startTime = getResDivModVer2(startTimeStep[0], startTimeStep[1]);
+    let endTime = getResDivModVer2(endTimeStep[0], endTimeStep[1]);
+    let resultTime = new Array(startTime, endTime);
+    return resultTime;
+}
+
+
+
+/**
  *    예약시간이 겹치는지 확인
  *    여기서는 front에서 미리 div값을 가지고 있는게 좋지 않나???
  *    그냥 계산을 그때 그때 할까?
@@ -1511,15 +1540,21 @@ function validateDuplicateReserveTimeVer2(curFacTitle, curReserveTime) {
         alert("[ERR-1001] 설비 예약 시작시간이 종료시간보다 늦습니다.");
         errCode = false;
     }
-    // 현재 설비의 기존 예약시간을 div 배열 단위로 가져옵니다.
-    let curResTimes = getCurResTimeToIdx(curReserveTime);
-    let curResDivStart = curResTimes[0];
-    let curResDivEnd = curResTimes[1];
-    let curFacReserveTime = getCurFacReserveTime(curFacTitle);
+    let curFacReserveTime = getCurFacReserveTime(curFacTitle); //ex) 2022-01-02 13:00~2022-01-10 10:00, 2022-11-02 17:00~2022-12-15 17:00
     if ( curFacReserveTime == "" ) {
         alert("[ERR-1007] 현재 설비의 예약시간이 없습니다.");
         errCode = false;
-    }        
+    }
+
+    if ( splitCheck(curFacReserveTime, ",") == false ) {
+        return;
+    }
+
+    // 현재 설비의 기존 예약시간을 div 배열 단위로 가져옵니다.
+    let curResTimes = getCurResTimeToIdxVer2(curReserveTime);
+    let curResDivStart = curResTimes[0];
+    let curResDivEnd = curResTimes[1];
+
     let resDivList = getCurFacReserveInfoVer2(curFacReserveTime, G_calendar2022);
     let curFacResLen = resDivList[0].length;
     let start = 0, end = 1;
@@ -1571,7 +1606,6 @@ function getConvRserveTime(reserveTime) {
     // ex) 2022-10-14 11:30~2022-11-11 14:00
     //     [2022-10-14 11:30] [2022-11-11 14:00]
     let timeStep1 = reserveTime.split("~");
-    let timeStep1Len = timeStep1.length;
 
     //step2 예약 시작 시간, 종료 시간 분리
 
