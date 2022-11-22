@@ -113,16 +113,20 @@ class ReserveFacilityServiceTest {
         String reserveTime2 = "2022-11-02 23:00~2022-11-02 23:30";
         String reserveTime3 = "2022-11-02 23:30~2022-11-02 24:00";
         String reserveTime4 = "2022-11-02 08:00~2022-11-02 17:00";
+        String reserveTimeVer2Test = "2022-10-30 08:00~2022-11-01 17:00"; //Ver1에서는 실패합니다. Ver2에서는 성공해야 합니다.
+        String reserveTimeVer2Test2 = "2022-11-01 17:00~2022-11-02 08:00"; //reserveTime4 바로 전까지 등록해보기.
 
         //given
         String tempInitReserveTime = "0000-00-00 00:00~0000-00-00 00:00";
         String tempInitUserName = "mk.Yoda@nklkb.com";
+        String tempInitResContent = "예약 테스트입니다.";
+        String title1 = "MT8311_ASAN_BMT#9999";
 
-        String title1 = "MT8311_ASAN_BMT#1";
         FacReserveTimeMember facReserveTimeMember1 = new FacReserveTimeMember();
         facReserveTimeMember1.setReserveTime(tempInitReserveTime);
         facReserveTimeMember1.setUserName(tempInitUserName);
         facReserveTimeMember1.setReserveFacTitle(title1);
+        facReserveTimeMember1.setReserveContent(tempInitResContent);
 
         //when
         Long reserve1 = reserveFacilityService.facReserveFirst(facReserveTimeMember1);
@@ -137,6 +141,12 @@ class ReserveFacilityServiceTest {
 
         reserveFacilityService.facReserve(facReserveTimeMember1, reserveTime4);
         System.out.println("[3] curFac1Time: " + facReserveTimeMember1.getReserveTime());
+
+        reserveFacilityService.facReserve(facReserveTimeMember1, reserveTimeVer2Test);
+        System.out.println("[4] curFac1Time: " + facReserveTimeMember1.getReserveTime());
+
+        reserveFacilityService.facReserve(facReserveTimeMember1, reserveTimeVer2Test2);
+        System.out.println("[5] curFac1Time: " + facReserveTimeMember1.getReserveTime());
 
         return;
     }

@@ -79,7 +79,10 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
 
     @Override
     public FacReserveTimeMember reserveFacility(FacReserveTimeMember curFacReserveTime, String reserveTime) {
-        validateFacReserveTime(curFacReserveTime, reserveTime);
+        //Update Ver2.0 : Ver1.0은 00:00 ~ 24:00 까지의 시간만 계산했습니다.
+        //              : Ver2.0은 날짜까지 포함해서 시간을 계산합니다.
+        //validateFacReserveTime(curFacReserveTime, reserveTime);
+        validateFacReserveTimeVer2(curFacReserveTime, reserveTime);
         String updateReserveTime = curFacReserveTime.getReserveTime() + ", " + reserveTime;
         curFacReserveTime.setReserveTime(updateReserveTime);
         storeFacReserveTime.put(curFacReserveTime.getId(), curFacReserveTime);
@@ -202,8 +205,8 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
 
         //  이러면 흠,,,for문 2번돌려야하는데 어차피 저장해주는 알고리즘이니깐 좀 단순하게 하는게 맞을듯 (유지보수 편하게)
         int[] calendar2022 = new int[]{31,28,31,30,31,30,31,31,30,31,30,31};
-        List<Integer> resStartTimes = new ArrayList<>();
-        List<Integer> resEndTimes = new ArrayList<>();
+        List<Integer> curFacResStartTimes = new ArrayList<>();
+        List<Integer> curFacResEndTimes = new ArrayList<>();
         String curFacReserveTime = facReserveTimeMember.getReserveTime();
         String[] curFacReserveTimeArr = curFacReserveTime.split(",");
 
@@ -223,9 +226,9 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
                 //step3-1 분으로 바꾼 시간을 배열에 넣기
                 //step3-2 curFacResTimeStep1의 짝수 홀수 구분해서 넣기
                 if ( ( cnt & 1 ) == 0 ) {
-                    resStartTimes.add(getTimeToMinuteVer2(timeStep3[0], timeStep3[1], calendar2022));
+                    curFacResStartTimes.add( getResDivModVer2( timeStep3[0], timeStep3[1] ) );
                 } else {
-                    resEndTimes.add(getTimeToMinuteVer2(timeStep3[0], timeStep3[1], calendar2022));
+                    curFacResEndTimes.add( getResDivModVer2( timeStep3[0], timeStep3[1] ) );
                 }
                 cnt++;
             }
@@ -235,8 +238,8 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
         String[] curStartTime = reserveTimeArr[0].strip().split(" ");
         String[] curEndTime = reserveTimeArr[1].strip().split(" ");
 
-        int curReserveStartTime = getTimeToMinute(curStartTime[0], curStartTime[1], calendar2022);
-        int curReserveEndTime = getTimeToMinute(curEndTime[0], curEndTime[1], calendar2022);
+        int curReserveStartTime = getResDivModVer2(curStartTime[0], curStartTime[1]);
+        int curReserveEndTime = getResDivModVer2(curEndTime[0], curEndTime[1]);
 
         //step 4-1 혹시, 예약의 끝시간이 처음시간보다 큰 경우 (있을 수 가 있나?? 하지만 날 믿지마)
         if ( curReserveEndTime <= curReserveStartTime ) {
@@ -252,37 +255,37 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
         // [신규]               |---------|
         // [신규]   |----| |-----|        |---|
 
-        int resTimeArrLength = resStartTimes.size();
+        int resTimeArrLength = curFacResStartTimes.size();
         int resTimeIdx = 0;
         for (resTimeIdx = 0; resTimeIdx < resTimeArrLength; resTimeIdx++) {
             // TODO: 0000-00-00 00:00~0000-00-00 00:00 없애는 코드 구상 중 (후 순위)
             // front-end에서 확인된 에러 방지 추가
             // 근본적으로는 0000-00-00 00:00~0000-00-00 00:00 을 없애야 할거같은데 음.. 일단 다른게 더 급하니 나중에 생각하자.
-            if ( (resEndTimes.get(resTimeIdx) + resStartTimes.get(resTimeIdx)) == 0 ) {
+            if ( ( curFacResEndTimes.get(resTimeIdx) + curFacResStartTimes.get(resTimeIdx) ) == 0 ) {
                 continue;
             }
             // 1. 예약시간이 기존시간이랑 오른쪽으로 겹칠때
             // [기존] |-|  |------|       |---|
             // [신규]          |------|
-            if (resEndTimes.get(resTimeIdx) > curReserveStartTime && resEndTimes.get(resTimeIdx) <= curReserveEndTime) {
+            if ( curFacResEndTimes.get(resTimeIdx) > curReserveStartTime && curFacResEndTimes.get(resTimeIdx) <= curReserveEndTime ) {
                 throw new IllegalStateException("[1]이미 예약된 시간입니다.");
             }
             // 2. 예약시간이 기존시간이랑 왼쪽으로 겹칠때
             // [기존]  |--|    |------|   |--|      |------| |--|
             // [신규]      |------|           |------|
-            else if (resStartTimes.get(resTimeIdx) < curReserveEndTime && resStartTimes.get(resTimeIdx) >= curReserveStartTime) {
+            else if ( curFacResStartTimes.get(resTimeIdx) < curReserveEndTime && curFacResStartTimes.get(resTimeIdx) >= curReserveStartTime ) {
                 throw new IllegalStateException("[2]이미 예약된 시간입니다.");
             }
             //3-1. 예약시간이 기존시간이랑 왼, 외 전부 겹칠 때
             // [기존]  |------------|
             // [신규]      |------|
-            else if (resStartTimes.get(resTimeIdx) <= curReserveStartTime && resEndTimes.get(resTimeIdx) >= curReserveEndTime) {
+            else if ( curFacResStartTimes.get(resTimeIdx) <= curReserveStartTime && curFacResEndTimes.get(resTimeIdx) >= curReserveEndTime ) {
                 throw new IllegalStateException("[3-1]이미 예약된 시간입니다.");
             }
             //3-2
             // [기존]  |------------|
             // [신규] |--------------|
-            else if (resStartTimes.get(resTimeIdx) >= curReserveStartTime && resEndTimes.get(resTimeIdx) <= curReserveEndTime) {
+            else if ( curFacResStartTimes.get(resTimeIdx) >= curReserveStartTime && curFacResEndTimes.get(resTimeIdx) <= curReserveEndTime) {
                 throw new IllegalStateException("[3-2]이미 예약된 시간입니다.");
             }
         }
@@ -363,7 +366,7 @@ public class ReserveFacilityMemoryRepository implements ReserveFacilityRepositor
         int dayOffset = 0;
         Calendar dayOffsetCal = Calendar.getInstance();
         for ( int monthIdx = 1; monthIdx < Integer.parseInt(dayTimeArr[1]); monthIdx++ ) {
-            //Calendar 클래스에서 달력의 마지막날짜 가져오기
+            //Calendar 클래스에서 달력의 마지막날짜 가져와서 예약하는 날짜가 포함되어 있는 달 이전 날짜들을 합해준다.
             dayOffsetCal.set(Calendar.YEAR, Integer.parseInt(dayTimeArr[0]));
             dayOffsetCal.set(Calendar.MONTH, monthIdx - 1);
             dayOffset += dayOffsetCal.getActualMaximum(Calendar.DAY_OF_MONTH );

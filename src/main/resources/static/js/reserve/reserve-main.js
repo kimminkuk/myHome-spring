@@ -1533,13 +1533,6 @@ function validateDuplicateReserveTime(curFacTitle, curReserveTime) {
 function validateDuplicateReserveTimeVer2(curFacTitle, curReserveTime) {
     //init Code
     let errCode = true;
-
-    //step 1 예약 시작 시간이 종료시간보다 큰 경우 (절대로 없지만 혹시 모른다.)    
-    let resTime = getConvRserveTime(curReserveTime);
-    if (resTime[0] >= resTime[1]) {
-        alert("[ERR-1001] 설비 예약 시작시간이 종료시간보다 늦습니다.");
-        errCode = false;
-    }
     let curFacReserveTime = getCurFacReserveTime(curFacTitle); //ex) 2022-01-02 13:00~2022-01-10 10:00, 2022-11-02 17:00~2022-12-15 17:00
     if ( curFacReserveTime == "" ) {
         alert("[ERR-1007] 현재 설비의 예약시간이 없습니다.");
@@ -1550,12 +1543,19 @@ function validateDuplicateReserveTimeVer2(curFacTitle, curReserveTime) {
         return;
     }
 
-    // 현재 설비의 기존 예약시간을 div 배열 단위로 가져옵니다.
+    // 현재 설비에 예약하려고 하는 시간을 div 배열 단위로 가져옵니다.
     let curResTimes = getCurResTimeToIdxVer2(curReserveTime);
     let curResDivStart = curResTimes[0];
     let curResDivEnd = curResTimes[1];
-
+    //step 1 예약 시작 시간이 종료시간보다 큰 경우 (절대로 없지만 혹시 모른다.)
+    if ( curResDivEnd <= curResDivStart ) {
+        alert("[ERR-1001] 설비 예약 시작시간이 종료시간보다 늦습니다.");
+        errCode = false;
+    }
+    
+    // 현재 설비의 기존 예약시간을 div 배열 단위로 가져옵니다.
     let resDivList = getCurFacReserveInfoVer2(curFacReserveTime, G_calendar2022);
+
     let curFacResLen = resDivList[0].length;
     let start = 0, end = 1;
     for ( let curResIdx = 0; curResIdx < curFacResLen; curResIdx++ ) {
@@ -1950,6 +1950,10 @@ function makeTimeVerticalLine() {
     return;
 }
 
+/**
+ *    예약 페이지의 시간 개념 세로줄을 움직이는 함수
+ *    페이지 갱신시에도 호출되어야 한다. (달력 이동, 날짜 이동 등등)
+ */
 function moveTimeVerticalLine() {
     
     //현재 시간을 가져온다.
@@ -1957,15 +1961,29 @@ function moveTimeVerticalLine() {
     let curYear = curDate.getFullYear();
     let curMonth = curDate.getMonth() + 1;
     let curDay = curDate.getDate();
+    let curResPageDate = document.querySelector(".reserve-cur-date-list").innerText;
+    let curResPageFullDate = curResPageDate.split(" ")[0];
+    let curFullDate = curYear + "-" + curMonth + "-" + curDay;
+    
+    //curResPageDate와 curFullDate가 같지 않으면 return
+    if ( curResPageFullDate != curFullDate ) {
+        return;
+    }
+    let curTableOffsetLeft = document.querySelector(".reserve-iter-list-time-header-1").offsetLeft;
+    let curTableOffsetWidth = document.querySelector(".reserve-iter-list-time-header-1").offsetWidth;
+    curTableOffsetWidth = curTableOffsetLeft + curTableOffsetWidth;
 
-    // 현재 페이지의 날짜와 현재 날짜가 같은지 확인한다.
-    // 다르면 return
-    //
     let curHour = curDate.getHours();
     let curMinute = curDate.getMinutes();
+    let curVerticalPos = curTableOffsetWidth / 1440;
+    curVerticalPos = curVerticalPos * (curHour * 60 + curMinute);
+    // row가 00:00 ~ 24:00 까지 48개이다.
+    // 1개당 30분이다.
+    // 48 * 30 = 1440분
     
-    //
-    
+    let verticalLine = document.querySelector(".reserve-vertical-line");
+    verticalLine.style.left = curVerticalPos + "px";
+
     return;
 }
 
