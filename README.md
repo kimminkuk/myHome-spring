@@ -39,6 +39,11 @@
       100% 1. 예약시, 확인 해주는 창 나옴
       100% 2. 예약 버튼 누를 시, Get 방식으로 DB에 저장
       100% 3. 취소 시, 선택한 예약 데이터들 초기화
+      
+   #### 시연 영상
+   ![ezgif com-gif-maker](https://user-images.githubusercontent.com/27074717/203331127-c5d66641-a11d-40a6-b96a-1a0ddbbeb665.gif)
+
+
 ---------   
 # DB 
 1. REDIS
@@ -56,3 +61,6 @@
 
 # 완료 목록
 1. gamePage
+
+# 자주 사용하는 사이트
+1. 영상 gif 변환: https://ezgif.com/maker
