@@ -61,3 +61,6 @@
 
 # 완료 목록
 1. gamePage
+
+# 자주 사용하는 사이트
+1. 영상 gif 변환: https://ezgif.com/maker
