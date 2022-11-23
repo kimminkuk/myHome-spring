@@ -420,6 +420,9 @@ function reserveGridMakeAndClear(startDivIdx, endDivIdx, facIdx, status) {
     let curReservePageDate = document.querySelector(".reserve-cur-date-list").innerText; //0000-00-00 (FRI)
     let curReservePageDateValue = getConvReserveDate(curReservePageDate); //ex) 2022-11-20 -> 2022 * 365 + 11 * 30 + 20
 
+    // 시간 보여주는 라인 추가
+    moveTimeVerticalLine();
+
     for ( let facIdx = 0; facIdx < facReserveTimesLength; facIdx++ ) {
         //step1. 현재 설비의 예약된 시간을(String형태) 가져온다.
         let curReserveTime = facReserveTimes[facIdx].getAttribute("value");
@@ -573,6 +576,45 @@ function initDispFacReserveTime() {
 
 /**
  *    예약 시간 grid에 div 속성 추가
+ *    Ver3.0 : 날짜가 바뀌면, 예약된 시간을 다시 계산해서 div에 넣어준다.
+ *           : 예약 grid를 하나의 display에서 48 ->  24  |   24  |   24 로 변경 예정
+ *    div 속성:
+ *    document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(5) > th.reserve-iter-list-time > div:nth-child(14)")
+ */
+ function reserveTimeGridInitVer3() {
+    var facTitles = document.querySelectorAll(".reserve-iter-list-title");
+    var reserveTitlesTimes = document.querySelectorAll(".reserve-iter-list-time");
+    var reserveTitlesTimeLength = reserveTitlesTimes.length;
+    var curTopIdx = 0;
+
+    for (var titleIdx = 0; titleIdx < reserveTitlesTimeLength; titleIdx++) {
+        let curFacTitle = facTitles[titleIdx].innerHTML;
+        reserveTitlesTimes[titleIdx].style.display = "grid";
+        reserveTitlesTimes[titleIdx].style.gridTemplateColumns = "repeat(24, 1fr)";
+        reserveTitlesTimes[titleIdx].style.gridTemplateRows = "1fr";
+
+        for (let gridIdx = 0; gridIdx <= 48; gridIdx++) {
+            curTopIdx = titleIdx + G_topOffsetIdx;
+            var div = document.createElement("div");
+            div.style.className = "reserve-time-grid";
+            div.style.border = "1px solid black";
+            div.style.backgroundColor = "white";
+            div.style.value = "nonReserve";
+            div.addEventListener("mouseover", function() {
+                this.style.cursor = "pointer";
+            })
+            div.addEventListener("click", function() {
+                reserveTimeGridClickVer2(curFacTitle, gridIdx, curTopIdx);
+            });
+
+            reserveTitlesTimes[titleIdx].appendChild(div);
+        }
+    }
+    return;    
+}
+
+/**
+ *    예약 시간 grid에 div 속성 추가
  *    Ver2.0 : 날짜가 바뀌면, 예약된 시간을 다시 계산해서 div에 넣어준다.
  *    div 속성:
  *    document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(5) > th.reserve-iter-list-time > div:nth-child(14)")
@@ -703,6 +745,21 @@ function mouseOnOffStyleMakeVer3(curObject, oriColor, mouseOnColor) {
         this.style.cursor = "default";
         this.style.backgroundColor = oriColor;
     });
+    return;
+}
+
+function mouseOnOffStyleAndClickMake(curObject, oriColor, mouseOnColor, clickFunc) {
+    curObject.addEventListener("mouseover", function() {
+        this.style.cursor = "pointer";
+        this.style.color = mouseOnColor;
+    });
+    curObject.addEventListener("mouseout", function() {
+        this.style.cursor = "default";
+        this.style.color = oriColor;
+    });
+
+    curObject.addEventListener("click", clickFunc);
+    
     return;
 }
 
@@ -1395,6 +1452,172 @@ function thTimeHeaderInit() {
     reserveHeaderTime1.appendChild(reserveHeaderTimeMoveLeftBtn);
     reserveHeaderTime1.appendChild(reserveHeaderTimeMoveRightBtn);
 
+    // 날짜 이동 및 날짜 클릭시 이벤트 처리 ( onmouseover를 html에서 처리해서 다른 js에서 호출하니 반응이 느릴 때가 있어서 여기서 처리했습니다. 마우스를 오버해도 반응이 안된다던지.. )
+    let calendarDateClick = document.querySelector(".reserve-cur-date-list");
+    let calendarDateLeftBtn = document.querySelector(".reserve-cur-date-left-btn");
+    let calendarDateRightBtn = document.querySelector(".reserve-cur-date-right-btn");
+    mouseOnOffStyleMake(calendarDateLeftBtn, "#333");
+    mouseOnOffStyleMake(calendarDateRightBtn, "#333");
+    mouseOnOffStyleMake(calendarDateClick, "#333");
+
+    mouseOnOffStyleAndClickMake(calendarDateLeftBtn, "#333", "#00ff00", reserveDayLeft);
+    mouseOnOffStyleAndClickMake(calendarDateRightBtn, "#333", "#00ff00", reserveDayRight);
+    mouseOnOffStyleAndClickMake(calendarDateClick, "#333", "#00ff00", reserveDaySelect);
+
+    
+    // 화면에 세로줄을 만들어 줘.
+    makeTimeVerticalLine();
+
+    return;
+}
+
+/**
+ *    예약 배열을 만드는 함수 (현재는 시간, 분 단위만 처리했다.)
+ *    배열을 48 -> 00:00 ~ 12:00 | 6:00 ~ 18:00 | 12:00 ~ 24:00 로 변경해본다.
+ */
+ function thTimeHeaderInitVer2() {
+    // TODO:  버튼 눌러서 현재 날짜 좌, 우 이동도 시킬거임
+    // 오늘 날짜 header
+    // ex) 결과: [2022-11-06, (SUN)]
+    let curTime = getNowDate();
+    let curTimeHeader = document.querySelector(".reserve-cur-date-list");
+    curTimeHeader.innerHTML = curTime[0] + " " + curTime[1];
+    curTimeHeader.innerText = curTime[0] + " " + curTime[1];
+
+
+    // timeHeader Step 1 (시간)
+    let thTimeHeaderHour = document.querySelector(".reserve-iter-list-time-header-1");
+    thTimeHeaderHour.style.display = "grid";
+    thTimeHeaderHour.style.gridTemplateColumns = "repeat(24, 1fr)";
+    thTimeHeaderHour.style.gridTemplateRows = "1fr";
+    for (let gridIdx = 0; gridIdx < 48; gridIdx++) {
+        let div = document.createElement("div");
+        div.style.textAlign = "center";
+        div.style.fontSize = "12px";
+        thTimeHeaderHour.appendChild(div);
+    }
+    for (let gridIdx = 0; gridIdx < 24; gridIdx++) {
+        let hour = "00";
+        if (gridIdx < 10) {
+            hour = "0" + gridIdx;
+        } else {
+            hour = gridIdx;
+        }
+        thTimeHeaderHour.children[gridIdx * 2].innerHTML = hour;
+    }
+
+    // timeHeader Step 2 (분)
+    let thTimeHeaderMin = document.querySelector(".reserve-iter-list-time-header-2");
+    thTimeHeaderMin.style.display = "grid";
+    thTimeHeaderMin.style.gridTemplateColumns = "repeat(24, 1fr)";
+    thTimeHeaderMin.style.gridTemplateRows = "1fr";
+    for (let gridIdx = 0; gridIdx < 48; gridIdx++) {
+        let div = document.createElement("div");
+        div.style.textAlign = "center";
+        div.style.fontSize = "10px";
+        thTimeHeaderMin.appendChild(div);
+    }
+    for (let gridIdx = 0; gridIdx < 48; gridIdx++) {
+        if (gridIdx & 0x1) {
+            thTimeHeaderMin.children[gridIdx].innerHTML = "30";
+        } else {
+            thTimeHeaderMin.children[gridIdx].innerHTML = "00";
+        }
+    }
+
+    // ID 임시로 생성해둠
+    let initId = document.querySelector(".reserve-page-user-name-text");
+    initId.value = "yoda@nklbk.com";
+
+
+    
+    // 예약할 수 있는 시간들의 Option 배열 생성
+    // 이건 HTML에서하냐 JS 숨기느냐 고민이 많은데, HTML은 너무 길어지니깐 일단 JS로 숨겨보자
+    // reserveTimeMin의 option 배열을 만들어줘
+    let reserveTimeStartHourMin = document.querySelector("#reservePopupMinuteScroll");
+    let reserveTimEndHourMin = document.querySelector("#reservePopupMinuteScrollEnd");
+    let reserveTimeMinOption = new Array();
+    
+    for (let timeIdx = 0; timeIdx <= 48; timeIdx++) {
+        //timeValue: 00:00 -> 00:30 .... 23:00 -> 23:00
+        let timeValueHour = "00";
+        let timeValueMin = "00";
+        if ( timeIdx < 20 ) {            
+            timeValueHour = "0" + String(parseInt(timeIdx >> 1));
+        } else {
+            timeValueHour = String(parseInt(timeIdx >> 1));
+        }
+        if ( ( timeIdx & 1 ) ) { //홀수
+            timeValueMin = "30";
+        } else {
+            timeValueMin = "00";
+        }
+        reserveTimeMinOption[timeIdx] = document.createElement("option");
+        reserveTimeMinOption[timeIdx].value = timeValueHour + ":" + timeValueMin;
+        reserveTimeMinOption[timeIdx].innerHTML = timeValueHour + ":" + timeValueMin;
+
+        if ( timeIdx != 48 ) { //마지막Index 제외
+            reserveTimeStartHourMin.appendChild(reserveTimeMinOption[timeIdx]);
+        }
+        if ( timeIdx != 0 ) { //첫번째 Index 제외
+            reserveTimEndHourMin.appendChild(reserveTimeMinOption[timeIdx].cloneNode(true));
+        }
+    }
+
+    // 달력도 만들어야합니다...
+    // 일단 오늘 날짜로 계속 변경은 해줘야합니다. 그거부터..
+
+    //js 달력 코드
+    //https://www.w3schools.com/howto/howto_js_datepicker.asp
+    let dateRepo = new Date();
+    let calendarMoveLeft = document.querySelector(".calendar-month-prev");
+    let calendarMoveRight = document.querySelector(".calendar-month-next");
+    let calendarDates = document.querySelectorAll(".calendar-day");
+    //현재 년, 월
+    let calendarYearMon = document.querySelector(".calendar-text-year-month");
+
+
+    mouseOnOffStyleMake(calendarMoveLeft, "#c2e0c6");
+    mouseOnOffStyleMake(calendarMoveRight, "#c2e0c6");
+    mouseOnOffStyleMake(calendarYearMon, "#333");
+    for (let dateIdx = 0; dateIdx < calendarDates.length; dateIdx++) {
+        mouseOnOffStyleMake(calendarDates[dateIdx], "#777");
+    }
+
+    //현재 년, 월 value 입력    
+    calendarYearMon.value = dateRepo.getFullYear() + "-" + dateRepo.getMonth();
+
+    // 윤년은 일단 버린다.
+    // 2022년 달력 배열 만들기
+    makeCalendarYear2022();
+
+
+    // Grid 시간표 좌, 우 이동해주는 Div Btn
+    // html 코드에서 table > tr > div 이런식으로 헀는데, 적용이 안 돼서 appendChild로 처리했습니다. ( display가 table이라서 설정을 못해주나? )
+    let reserveHeaderTime1 = document.querySelector(".th-header-time1");
+    let reserveHeaderTimeMoveLeftBtn = document.querySelector(".th-header-time1-left-btn");
+    let reserveHeaderTimeMoveRightBtn = document.querySelector(".th-header-time1-right-btn");
+    mouseOnOffStyleMake(reserveHeaderTimeMoveLeftBtn, "#333");
+    mouseOnOffStyleMake(reserveHeaderTimeMoveRightBtn, "#333");
+    reserveHeaderTime1.appendChild(reserveHeaderTimeMoveLeftBtn);
+    reserveHeaderTime1.appendChild(reserveHeaderTimeMoveRightBtn);
+
+    // 날짜 이동 및 날짜 클릭시 이벤트 처리 ( onmouseover를 html에서 처리해서 다른 js에서 호출하니 반응이 느릴 때가 있어서 여기서 처리했습니다. 마우스를 오버해도 반응이 안된다던지.. )
+    let calendarDateClick = document.querySelector(".reserve-cur-date-list");
+    let calendarDateLeftBtn = document.querySelector(".reserve-cur-date-left-btn");
+    let calendarDateRightBtn = document.querySelector(".reserve-cur-date-right-btn");
+    mouseOnOffStyleMake(calendarDateLeftBtn, "#333");
+    mouseOnOffStyleMake(calendarDateRightBtn, "#333");
+    mouseOnOffStyleMake(calendarDateClick, "#333");
+
+    mouseOnOffStyleAndClickMake(calendarDateLeftBtn, "#333", "#00ff00", reserveDayLeft);
+    mouseOnOffStyleAndClickMake(calendarDateRightBtn, "#333", "#00ff00", reserveDayRight);
+    mouseOnOffStyleAndClickMake(calendarDateClick, "#333", "#00ff00", reserveDaySelect);
+
+    
+    // 화면에 세로줄을 만들어 줘.
+    makeTimeVerticalLine();
+
     return;
 }
 
@@ -1945,7 +2168,7 @@ function makeTimeVerticalLine() {
     tableParent.appendChild(verticalLine);
 
 
-    moveTimeVerticalLine();
+    //moveTimeVerticalLine();
 
     return;
 }
@@ -1953,6 +2176,8 @@ function makeTimeVerticalLine() {
 /**
  *    예약 페이지의 시간 개념 세로줄을 움직이는 함수
  *    페이지 갱신시에도 호출되어야 한다. (달력 이동, 날짜 이동 등등)
+ *    이게 갱신이 되면, 계속 생기나? setTimeout이..? 이거 아이디를 죽여야하나?
+ *    아 아니지, 현재 날짜가 아니면, return 한다.
  */
 function moveTimeVerticalLine() {
     
@@ -1965,37 +2190,44 @@ function moveTimeVerticalLine() {
     let curResPageFullDate = curResPageDate.split(" ")[0];
     let curFullDate = curYear + "-" + curMonth + "-" + curDay;
     
-    //curResPageDate와 curFullDate가 같지 않으면 return
-    if ( curResPageFullDate != curFullDate ) {
+    //curResPageDate와 curFullDate가 같지 않으면 return 혹은 verticalLine object가 없으면 return;
+    let verticalLine = document.querySelector(".reserve-vertical-line");
+    if ( verticalLine == null ) {
         return;
     }
+    if ( curResPageFullDate != curFullDate ) {
+        verticalLine.style.display = "none";
+        return;
+    } else {
+        verticalLine.style.display = "block";
+    }
+
     let curTableOffsetLeft = document.querySelector(".reserve-iter-list-time-header-1").offsetLeft;
     let curTableOffsetWidth = document.querySelector(".reserve-iter-list-time-header-1").offsetWidth;
-    curTableOffsetWidth = curTableOffsetLeft + curTableOffsetWidth;
 
-    let curHour = curDate.getHours();
-    let curMinute = curDate.getMinutes();
-    let curVerticalPos = curTableOffsetWidth / 1440;
-    curVerticalPos = curVerticalPos * (curHour * 60 + curMinute);
+
     // row가 00:00 ~ 24:00 까지 48개이다.
     // 1개당 30분이다.
     // 48 * 30 = 1440분
-    
-    let verticalLine = document.querySelector(".reserve-vertical-line");
-    verticalLine.style.left = curVerticalPos + "px";
-
+    let curHour = curDate.getHours();
+    let curMinute = curDate.getMinutes();
+    let curVerticalPos = curTableOffsetWidth / 1440;
+    verticalLine.style.left = ( curVerticalPos * (curHour * 60 + curMinute) + curTableOffsetLeft ) + "px";
+    setTimeout(moveTimeVerticalLine, 1000 * 60);
     return;
 }
 
  /**
   *    th-header
   */
-thTimeHeaderInit();
+//thTimeHeaderInit();
+thTimeHeaderInitVer2();
 
 /**
  *     예약 시간 grid 만들기
  */
-reserveTimeGridInit();
+//reserveTimeGridInit();
+reserveTimeGridInitVer3();
 
 /**
  *     설비 예약 타이틀 지우기 버튼
@@ -2008,9 +2240,3 @@ reserveItemDeleteMakeInit();
 //initDispFacReserveTime();
 
 initDispFacReserveTimeVer2();
-
-// 화면에 세로줄을 만들어 줘.
-makeTimeVerticalLine();
-
-
-setTimeout(moveTimeVerticalLine, 1000 * 60);

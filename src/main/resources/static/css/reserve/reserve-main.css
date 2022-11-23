@@ -389,18 +389,21 @@ body > div.reserve-main-facility-table > table {
     position: absolute;
     left: 40%;
     width: 5%;
+    color: #333;
 }
 
 .reserve-cur-date-list {
     position: absolute;
     left: 45%;
     width: 15%;
+    color: #333;
 }
 
 .reserve-cur-date-right-btn {
     position: absolute;
     left: 60%;
-    width: 5%;    
+    width: 5%;  
+    color: #333;  
 }
 .reserve-main-table .reserve-main-table-thead .th-header-time1 .reserve-iter-list-time-header-1 {
     border-top: 1px solid #333;
