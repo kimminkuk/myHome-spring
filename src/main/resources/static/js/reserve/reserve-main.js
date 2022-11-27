@@ -10,10 +10,18 @@ const E_reserveStatus = {
     RESERVE: 1
 };
 
+const E_curTimeDisplay = {
+    LEFT: 0,
+    MIDDLE: 1,
+    RIGHT: 2,
+    NONE: 3
+};
+
 var G_calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 var G_topOffsetIdx = 5;
 var G_gridColumnLength = 48;
 var G_calendarStatus = E_calendarStatus.NONE;
+var G_displayStatus = E_curTimeDisplay.LEFT;
 
 
 function reserveItemMake() {
@@ -391,13 +399,16 @@ function reserveGridMakeAndClear(startDivIdx, endDivIdx, facIdx, status) {
             let curDivIdx = divIdx + 1; //div는 1부터 시작
             let curTrIdx = facIdx + G_topOffsetIdx;
             let divResColor = document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + curTrIdx + ") > th.reserve-iter-list-time > div:nth-child(" + curDivIdx + ")");
-            divResColor.style.background = "white";
+            if ( divResColor.value != "reserve") {
+                divResColor.style.background = "white";
+            }
         }
     } else if ( status == E_reserveStatus.RESERVE ) {
         for ( let divIdx = startDivIdx; divIdx < endDivIdx; divIdx++ ) {
             let curDivIdx = divIdx + 1; //div는 1부터 시작
             let curTrIdx = facIdx + G_topOffsetIdx;
             let divResColor = document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + curTrIdx + ") > th.reserve-iter-list-time > div:nth-child(" + curDivIdx + ")");
+            divResColor.value = "reserve";
             divResColor.style.background = "lightgray";
         }
     } else {
@@ -482,6 +493,7 @@ function reserveGridMakeAndClear(startDivIdx, endDivIdx, facIdx, status) {
             if ( ( dateStart <= curReservePageDateValue ) && ( curReservePageDateValue <= dateEnd ) ) {
                 if ( dateStart == curReservePageDateValue ) {
                     divStart = getResDivMod(curResStartTimeDiv[resDivIdx]);
+                    //divStart = getResDivModVer2(  , curResStartTimeDiv[resDivIdx] );
                 } else {
                     divStart = 0;
                 }
@@ -592,22 +604,33 @@ function initDispFacReserveTime() {
         reserveTitlesTimes[titleIdx].style.display = "grid";
         reserveTitlesTimes[titleIdx].style.gridTemplateColumns = "repeat(24, 1fr)";
         reserveTitlesTimes[titleIdx].style.gridTemplateRows = "1fr";
+        reserveTitlesTimes[titleIdx].style.gridAutoFlow = "column";
 
-        for (let gridIdx = 0; gridIdx <= 48; gridIdx++) {
+        for (let gridIdx = 0; gridIdx < 48; gridIdx++) {
             curTopIdx = titleIdx + G_topOffsetIdx;
             var div = document.createElement("div");
             div.style.className = "reserve-time-grid";
             div.style.border = "1px solid black";
             div.style.backgroundColor = "white";
-            div.style.value = "nonReserve";
+            //div.style.value = "nonReserve";
+            div.value = "nonReserve";
+            div.style.width = "100%";
+            div.style.padding = "0px";
+            div.style.margin = "0px";
+            
             div.addEventListener("mouseover", function() {
                 this.style.cursor = "pointer";
             })
             div.addEventListener("click", function() {
                 reserveTimeGridClickVer2(curFacTitle, gridIdx, curTopIdx);
             });
-
+            
             reserveTitlesTimes[titleIdx].appendChild(div);
+            if ( gridIdx < 24 ) {
+                div.style.display = "block";
+            } else {
+                div.style.display = "none";
+            }
         }
     }
     return;    
@@ -877,7 +900,8 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     let curDivChild = "div:nth-child(" + (curIdx + 1) + ")";
     curDiv += curDivChild;
     
-    document.querySelector(curDiv).style.value = "reserve";
+    //document.querySelector(curDiv).style.value = "reserve";
+    //document.querySelector(curDiv).value = "reserve";
 
     curTitle.innerHTML = curFacTitle;
 
@@ -1484,9 +1508,13 @@ function thTimeHeaderInit() {
     curTimeHeader.innerHTML = curTime[0] + " " + curTime[1];
     curTimeHeader.innerText = curTime[0] + " " + curTime[1];
 
+    let dateRepo = new Date();
 
     // timeHeader Step 1 (시간)
     let thTimeHeaderHour = document.querySelector(".reserve-iter-list-time-header-1");
+    let reseveDisplayTableWidth = thTimeHeaderHour.offsetWidth;
+    let divDisplayWidth = reseveDisplayTableWidth / 24 + "px";
+
     thTimeHeaderHour.style.display = "grid";
     thTimeHeaderHour.style.gridTemplateColumns = "repeat(24, 1fr)";
     thTimeHeaderHour.style.gridTemplateRows = "1fr";
@@ -1494,6 +1522,7 @@ function thTimeHeaderInit() {
         let div = document.createElement("div");
         div.style.textAlign = "center";
         div.style.fontSize = "12px";
+        div.style.width = divDisplayWidth;
         thTimeHeaderHour.appendChild(div);
     }
     for (let gridIdx = 0; gridIdx < 24; gridIdx++) {
@@ -1511,13 +1540,14 @@ function thTimeHeaderInit() {
     thTimeHeaderMin.style.display = "grid";
     thTimeHeaderMin.style.gridTemplateColumns = "repeat(24, 1fr)";
     thTimeHeaderMin.style.gridTemplateRows = "1fr";
-    for (let gridIdx = 0; gridIdx < 48; gridIdx++) {
+    for (let gridIdx = 0; gridIdx < 24; gridIdx++) {
         let div = document.createElement("div");
         div.style.textAlign = "center";
         div.style.fontSize = "10px";
+        div.style.width = divDisplayWidth;
         thTimeHeaderMin.appendChild(div);
     }
-    for (let gridIdx = 0; gridIdx < 48; gridIdx++) {
+    for (let gridIdx = 0; gridIdx < 24; gridIdx++) {
         if (gridIdx & 0x1) {
             thTimeHeaderMin.children[gridIdx].innerHTML = "30";
         } else {
@@ -1528,7 +1558,6 @@ function thTimeHeaderInit() {
     // ID 임시로 생성해둠
     let initId = document.querySelector(".reserve-page-user-name-text");
     initId.value = "yoda@nklbk.com";
-
 
     
     // 예약할 수 있는 시간들의 Option 배열 생성
@@ -1569,7 +1598,7 @@ function thTimeHeaderInit() {
 
     //js 달력 코드
     //https://www.w3schools.com/howto/howto_js_datepicker.asp
-    let dateRepo = new Date();
+    
     let calendarMoveLeft = document.querySelector(".calendar-month-prev");
     let calendarMoveRight = document.querySelector(".calendar-month-next");
     let calendarDates = document.querySelectorAll(".calendar-day");
@@ -1597,10 +1626,10 @@ function thTimeHeaderInit() {
     let reserveHeaderTime1 = document.querySelector(".th-header-time1");
     let reserveHeaderTimeMoveLeftBtn = document.querySelector(".th-header-time1-left-btn");
     let reserveHeaderTimeMoveRightBtn = document.querySelector(".th-header-time1-right-btn");
-    mouseOnOffStyleMake(reserveHeaderTimeMoveLeftBtn, "#333");
-    mouseOnOffStyleMake(reserveHeaderTimeMoveRightBtn, "#333");
     reserveHeaderTime1.appendChild(reserveHeaderTimeMoveLeftBtn);
     reserveHeaderTime1.appendChild(reserveHeaderTimeMoveRightBtn);
+    mouseOnOffStyleAndClickMake(reserveHeaderTimeMoveLeftBtn, "#333", "#00ff00", reserveGridDisplayMoveLeftBtn);
+    mouseOnOffStyleAndClickMake(reserveHeaderTimeMoveRightBtn, "#333", "#00ff00", reserveGridDisplayMoveRightBtn);
 
     // 날짜 이동 및 날짜 클릭시 이벤트 처리 ( onmouseover를 html에서 처리해서 다른 js에서 호출하니 반응이 느릴 때가 있어서 여기서 처리했습니다. 마우스를 오버해도 반응이 안된다던지.. )
     let calendarDateClick = document.querySelector(".reserve-cur-date-list");
@@ -1613,10 +1642,6 @@ function thTimeHeaderInit() {
     mouseOnOffStyleAndClickMake(calendarDateLeftBtn, "#333", "#00ff00", reserveDayLeft);
     mouseOnOffStyleAndClickMake(calendarDateRightBtn, "#333", "#00ff00", reserveDayRight);
     mouseOnOffStyleAndClickMake(calendarDateClick, "#333", "#00ff00", reserveDaySelect);
-
-    
-    // 화면에 세로줄을 만들어 줘.
-    makeTimeVerticalLine();
 
     return;
 }
@@ -2041,6 +2066,113 @@ function getCurReservePageDateDay(curDate) {
     return curReservePageDateDay[curDayTextIdx];
 }
 
+/*
+ *    예약 페이지의 시간을 오른쪽으로 이동한다.
+ *    reserveTimeGridClickVer2 의 설비들의 예약 Grid들을 block, none 처리를 합니다.
+ *    오른쪽, 왼쪽으로 이동시 날짜까지 변경 가능하도록 합니다.
+ */
+function reserveGridDisplayMoveRightBtn() {
+    // ex) div: 0-24 | 12-36 | 24-48  -> 24-48일때 오른쪽버튼을 누르면 다음날, 0-24로 변경한다. 
+    reserveDisplayStatus(E_curTimeDisplay.RIGHT, G_displayStatus);
+    return;
+}
+
+function reserveGridDisplayMoveLeftBtn() {
+    // list의 div가 left일때 end point가 48을 넘어가면 날짜를 변경하고, 0-24로 변경한다.
+    // ex) div: 0-24 | 12-36 | 24-48  -> 현재 시간이 0-24일때 왼쪽버튼을 누르면 이전날, 24-48로 변경한다. 
+    reserveDisplayStatus(E_curTimeDisplay.LEFT, G_displayStatus);
+    return;
+}
+
+// 현재 상태에서 (왼쪽, 가운데, 오른쪽 어디일지는 시간에 따라 다르다.)
+// 그 상태에서, 오른쪽, 왼쪽 버튼을 누르면 예약을 바꾼다.
+
+function reserveDisplayStatus( nextStatus, curStatus ) {
+    
+    let curResFacList = document.querySelectorAll(".reserve-iter-list-time");
+    
+    let curResDisplayTime = document.querySelector(".reserve-iter-list-time-header-1");
+    
+    //let curResDisplayTimeMinute = document.querySelectorAll(".reserve-iter-list-time-header-2");
+    
+    let posIdx = new Array(0, 0);
+    
+    if ( curStatus == E_curTimeDisplay.LEFT ) {
+        posIdx[0] = 0, posIdx[1] = 24;
+    } else if ( curStatus == E_curTimeDisplay.RIGHT ) {
+        posIdx[0] = 24, posIdx[1] = 48;
+    } else {
+        posIdx[0] = 12, posIdx[1] = 36;
+    }
+
+    if ( nextStatus == E_curTimeDisplay.LEFT ) {
+        posIdx[0] -= 12, posIdx[1] -= 12;
+        if ( posIdx[0] < 0 ) { //전날로 이동하고, 현재 resDisplay를 Right로 이동합니다.
+            G_displayStatus = E_curTimeDisplay.RIGHT
+            reserveDayLeft();
+            reserveDisplayStatus( E_curTimeDisplay.NONE, E_curTimeDisplay.RIGHT );
+            return;
+        }
+    } else if ( nextStatus == E_curTimeDisplay.RIGHT ) {
+        posIdx[0] += 12, posIdx[1] += 12;
+        if ( posIdx[0] > 24 ) { // 다음날로 이동하고, 현재 resDisplay를 Left로 이동합니다.
+            G_displayStatus = E_curTimeDisplay.LEFT
+            reserveDayRight();
+            reserveDisplayStatus( E_curTimeDisplay.NONE, E_curTimeDisplay.LEFT );
+            return;
+        }
+    }
+
+    for ( let i = 0; i < curResFacList.length; i++ ) {
+        for ( let unDisplayIdx = 0; unDisplayIdx < posIdx[0]; unDisplayIdx++ ) {
+            curResFacList[i].childNodes[unDisplayIdx].style.display = "none";
+            curResDisplayTime.childNodes[unDisplayIdx].style.display = "none";
+        }
+        
+        for ( let unDisplayIdx = posIdx[1]; unDisplayIdx < 48; unDisplayIdx++ ) {
+            curResFacList[i].childNodes[unDisplayIdx].style.display = "none";
+            curResDisplayTime.childNodes[unDisplayIdx].style.display = "none";
+        }
+    
+        for ( let divPosIdx = posIdx[0]; divPosIdx < posIdx[1]; divPosIdx++ ) {
+            curResFacList[i].childNodes[divPosIdx].style.display = "block";
+            curResDisplayTime.childNodes[divPosIdx].style.display = "block";
+        }
+    }
+    
+    G_displayStatus = getCurDisplayStatus(posIdx[0])
+    
+    return;
+}
+
+function getCurDisplayStatus(startPosIdx) {
+    if ( startPosIdx == 0 ) {
+        return E_curTimeDisplay.LEFT;
+    } else if ( startPosIdx == 12 ) {
+        return E_curTimeDisplay.MIDDLE;
+    } else if ( startPosIdx == 24 ) {
+        return E_curTimeDisplay.RIGHT;
+    }
+}
+
+function initReserveDisplayStatus() {
+
+    // 현재 시간에 맞게 display 상태를 나타냅니다.
+    let nowHour = new Date().getHours();
+    // js code에서 binary search
+    if ( nowHour < 12 ) {
+        G_displayStatus = E_curTimeDisplay.LEFT;  //0~12
+    } else if ( nowHour < 18 ) {
+        G_displayStatus = E_curTimeDisplay.MIDDLE; //6~18
+    } else {
+        G_displayStatus = E_curTimeDisplay.RIGHT; //12~24
+    }
+
+
+    // 현재 시간에 맞게 display 상태를 나타냅니다.
+    reserveDisplayStatus( E_curTimeDisplay.NONE , G_displayStatus);
+}
+
 /**
  *    예약페이지의 현재 날짜를 하루 전으로 이동하는 함수
  */
@@ -2220,14 +2352,24 @@ function moveTimeVerticalLine() {
  /**
   *    th-header
   */
-//thTimeHeaderInit();
 thTimeHeaderInitVer2();
 
 /**
  *     예약 시간 grid 만들기
  */
-//reserveTimeGridInit();
 reserveTimeGridInitVer3();
+
+/**
+ *    예약 시간 디스플레이 생성
+ */
+
+ initReserveDisplayStatus();
+
+
+ /**
+ *    시간 개념 세로선 생성
+ */
+  makeTimeVerticalLine();
 
 /**
  *     설비 예약 타이틀 지우기 버튼

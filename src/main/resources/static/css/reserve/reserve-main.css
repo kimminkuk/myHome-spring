@@ -405,22 +405,29 @@ body > div.reserve-main-facility-table > table {
     width: 5%;  
     color: #333;  
 }
+
+.reserve-main-table .reserve-main-table-thead .th-header-time1 .reserve-iter-list-number-header-1 {
+    width: 1%;
+}
+
 .reserve-main-table .reserve-main-table-thead .th-header-time1 .reserve-iter-list-time-header-1 {
     border-top: 1px solid #333;
     border-left: 1px solid #333;
     border-right: 1px solid #333;
+    width: 100%;
 }
 
 .reserve-main-table .reserve-main-table-thead .th-header-time1 .reserve-iter-list-time-header-2 {
     border-bottom: 1px solid #333;
     border-left: 1px solid #333;
     border-right: 1px solid #333;
+    width: 100%;
 }
 
 .reserve-main-table .reserve-main-table-thead .th-header-time1 .th-header-time1-left-btn {
     position: absolute;
     top: 2%;
-    left: 20%;
+    left: 19%;
     font-size: 30px;
     color: #333;
     font-weight: bold;
@@ -429,7 +436,7 @@ body > div.reserve-main-facility-table > table {
 .reserve-main-table .reserve-main-table-thead .th-header-time1 .th-header-time1-right-btn {
     position: absolute;
     top: 2%;
-    left: 100%;
+    left: 101%;
     font-size: 30px;
     color: #333;
     font-weight: bold;
