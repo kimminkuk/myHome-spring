@@ -7,7 +7,8 @@ const E_calendarStatus = {
 
 const E_reserveStatus = {
     CLEAR: 0,
-    RESERVE: 1
+    RESERVE: 1,
+    DAY_CLEAR: 2
 };
 
 const E_curTimeDisplay = {
@@ -402,6 +403,7 @@ function reserveGridMakeAndClear(startDivIdx, endDivIdx, facIdx, status) {
             if ( divResColor.value != "reserve") {
                 divResColor.style.background = "white";
             }
+            //divResColor.value = "nonReserve";
         }
     } else if ( status == E_reserveStatus.RESERVE ) {
         for ( let divIdx = startDivIdx; divIdx < endDivIdx; divIdx++ ) {
@@ -411,7 +413,16 @@ function reserveGridMakeAndClear(startDivIdx, endDivIdx, facIdx, status) {
             divResColor.value = "reserve";
             divResColor.style.background = "lightgray";
         }
-    } else {
+    } else if ( status == E_reserveStatus.DAY_CLEAR ) {
+        for ( let divIdx = startDivIdx; divIdx < endDivIdx; divIdx++ ) {
+            let curDivIdx = divIdx + 1; //div는 1부터 시작
+            let curTrIdx = facIdx + G_topOffsetIdx;
+            let divResColor = document.querySelector("body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + curTrIdx + ") > th.reserve-iter-list-time > div:nth-child(" + curDivIdx + ")");
+            divResColor.style.background = "white";
+            divResColor.value = "nonReserve";
+        }        
+    }
+    else {
         return;
     }
     return;
@@ -503,17 +514,26 @@ function reserveGridMakeAndClear(startDivIdx, endDivIdx, facIdx, status) {
                     divEnd = 48;
                 }
 
+                // 시작하기전에 초기화를 해줘야하나? 그래야하는거같은데 흠..
+                // 아 근데,,, 이게 참 .. 그 특정 부분만 할 수 있게해줘야하는데.. 그러면 어떻게 해야하지?
+                // 날짜 넘어가면 다 클리어 해주는 느낌으로 해야하나??
+                // reserveGridMakeAndClear(0, G_gridColumnLength, facIdx, E_reserveStatus.CLEAR);
+
                 // 0 ~ divStart 까지 div를 Clear한다.
+                // div.style.value 가 reserve이면, Clear를 하지 않습니다.
                 reserveGridMakeAndClear(0, divStart, facIdx, E_reserveStatus.CLEAR);
 
                 //divStart ~ divEnd까지 div를 그린다.
+                // 그리고, div.style.value = "reserve" 로 변경해줍니다.
                 reserveGridMakeAndClear(divStart, divEnd, facIdx, E_reserveStatus.RESERVE);
 
-                // divEnd ~ G_gridColumnLength 까지 div를 Clear한다.
+                // // divEnd ~ G_gridColumnLength 까지 div를 Clear한다.
                 reserveGridMakeAndClear(divEnd, G_gridColumnLength, facIdx, E_reserveStatus.CLEAR);
             } else {
                 // 예약이 없는 경우, div를 Clear해줍니다.
-                reserveGridMakeAndClear(0, G_gridColumnLength, facIdx, E_reserveStatus.CLEAR);
+                // 그리고, div.style.value = "nonReserve" 로 변경해줍니다.
+                //reserveGridMakeAndClear(0, G_gridColumnLength, facIdx, E_reserveStatus.CLEAR);
+                reserveGridMakeAndClear(0, G_gridColumnLength, facIdx, E_reserveStatus.DAY_CLEAR);
             }
         }
     }
@@ -2112,6 +2132,9 @@ function reserveDisplayStatus( nextStatus, curStatus ) {
             reserveDayLeft();
             reserveDisplayStatus( E_curTimeDisplay.NONE, E_curTimeDisplay.RIGHT );
             return;
+        } else {
+            G_displayStatus = getCurDisplayStatus(posIdx[0])
+            moveTimeVerticalLine();
         }
     } else if ( nextStatus == E_curTimeDisplay.RIGHT ) {
         posIdx[0] += 12, posIdx[1] += 12;
@@ -2120,6 +2143,9 @@ function reserveDisplayStatus( nextStatus, curStatus ) {
             reserveDayRight();
             reserveDisplayStatus( E_curTimeDisplay.NONE, E_curTimeDisplay.LEFT );
             return;
+        } else {
+            G_displayStatus = getCurDisplayStatus(posIdx[0])
+            moveTimeVerticalLine();
         }
     }
 
@@ -2140,7 +2166,7 @@ function reserveDisplayStatus( nextStatus, curStatus ) {
         }
     }
     
-    G_displayStatus = getCurDisplayStatus(posIdx[0])
+    //G_displayStatus = getCurDisplayStatus(posIdx[0])
     
     return;
 }
@@ -2327,6 +2353,33 @@ function moveTimeVerticalLine() {
     if ( verticalLine == null ) {
         return;
     }
+
+    let displayTimeOffset = 0;
+    let curHour = curDate.getHours();
+    let curMinute = curDate.getMinutes();
+    if ( curHour < 12 ) {
+        if ( G_displayStatus == E_curTimeDisplay.LEFT ) {
+            displayTimeOffset = 0;
+        } else {
+            verticalLine.style.display = "none";
+            return;
+        }
+    } else if ( curHour < 18 ) {
+        if ( G_displayStatus == E_curTimeDisplay.MIDDLE ) {
+            displayTimeOffset = 360;
+        } else {
+            verticalLine.style.display = "none";
+            return;
+        }
+    } else if ( curHour < 24 ) {
+        if ( G_displayStatus == E_curTimeDisplay.RIGHT ) {
+            displayTimeOffset = 720;
+        } else {
+            verticalLine.style.display = "none";
+            return;
+        }
+    }
+
     if ( curResPageFullDate != curFullDate ) {
         verticalLine.style.display = "none";
         return;
@@ -2337,14 +2390,24 @@ function moveTimeVerticalLine() {
     let curTableOffsetLeft = document.querySelector(".reserve-iter-list-time-header-1").offsetLeft;
     let curTableOffsetWidth = document.querySelector(".reserve-iter-list-time-header-1").offsetWidth;
 
+    // 시간 단위 추가
+    // 현재는 00:00 ~ 24:00 을 나눠서 이동 중
+    // 변경하고 싶은 부분은 00:00 ~ 12:00 | 06:00 ~ 18:00 | 12:00 ~ 24:00 이렇게 나눈다.
+    // 이건, G_displayStatus 의 값에 따라서 나누면 된다.
+    // G_displayStatus == E_curTimeDisplay.LEFT 이면, 00:00 ~ 12:00
+    // G_displayStatus == E_curTimeDisplay.MIDDLE 이면, 06:00 ~ 18:00
+    // G_displayStatus == E_curTimeDisplay.RIGHT 이면, 12:00 ~ 24:00
+    
 
+    let curVerticalPos = curTableOffsetWidth / ( 12 * 60 );
+    verticalLine.style.left = ( curVerticalPos * (curHour * 60 + curMinute - displayTimeOffset) + curTableOffsetLeft ) + "px";
     // row가 00:00 ~ 24:00 까지 48개이다.
     // 1개당 30분이다.
     // 48 * 30 = 1440분
-    let curHour = curDate.getHours();
-    let curMinute = curDate.getMinutes();
-    let curVerticalPos = curTableOffsetWidth / 1440;
-    verticalLine.style.left = ( curVerticalPos * (curHour * 60 + curMinute) + curTableOffsetLeft ) + "px";
+    // let curHour = curDate.getHours();
+    // let curMinute = curDate.getMinutes();
+    // let curVerticalPos = curTableOffsetWidth / 1440;
+    //verticalLine.style.left = ( curVerticalPos * (curHour * 60 + curMinute) + curTableOffsetLeft ) + "px";
     setTimeout(moveTimeVerticalLine, 1000 * 60);
     return;
 }
