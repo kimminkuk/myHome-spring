@@ -607,6 +607,68 @@ function initDispFacReserveTime() {
 }
 
 /**
+ *    예약 Div 클릭시, 생성되는 span 생성
+ *    해당 기능에는 좌, 우로 예약 시간을 늘려주는 기능을 포함한다.
+ */
+function reserveGridPointerClick(curFacTitle, curIdx, curTrIdx) {
+    let facTitles = document.querySelectorAll(".reserve-iter-list-title");
+    let facTitlesLength = facTitles.length;
+    let facTitleStatus = false;
+    for ( let facTitleIdx = 0; facTitleIdx < facTitlesLength; facTitleIdx++ ) {
+        let curReserveTitle = facTitles[facTitleIdx].innerText;
+        if ( curReserveTitle == curFacTitle ) {
+            curTrIdx += facTitleIdx;
+            facTitleStatus = true;
+            break;
+        }
+    }
+    if ( facTitleStatus == false ) {
+        alert("설비를 선택해주세요.");
+        return;
+    }
+    let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + curTrIdx + ") > th.reserve-iter-list-time > ";
+    let curDivChild = "div:nth-child(" + (curIdx + 1) + ")";
+    curDiv += curDivChild;
+    let curDivObj = document.querySelector(curDiv);
+    let gridSpan = document.createElement("span");
+    gridSpan.className = "div-reserve-span-pointer";
+    gridSpan.value = "";
+
+
+    // // gridSpan 왼쪽에 leftArrow div를 넣어준다.
+    // // 클릭도 가능하게 해줘야합니다.
+    // let leftArrow = document.createElement("div");
+    // leftArrow.className = "div-reserve-span-left-arrow";
+    // leftArrow.style.width = "0px";
+    // leftArrow.style.height = "0px";
+    // leftArrow.style.borderLeft = "10px solid #00ff00"; //10px solid #00ff00
+    // leftArrow.style.borderTop = "5px solid transparent";
+    // leftArrow.style.borderBottom = "5px solid transparent";
+    // leftArrow.style.position = "absolute";
+    // leftArrow.style.top = "0px";
+    // //leftArrow.style.left = "-5px";
+    // gridSpan.appendChild(leftArrow);
+
+    // // gridSpan 왼쪽에 leftArrow div를 넣어준다.
+    // // 클릭도 가능하게 해줘야합니다.
+    // let rightArrow = document.createElement("div");
+    // rightArrow.className = "div-reserve-span-right-arrow";
+    // rightArrow.style.width = "0px";
+    // rightArrow.style.height = "0px";
+    // rightArrow.style.borderRight = "10px solid #00ff00"; //10px solid #00ff00
+    // rightArrow.style.borderTop = "5px solid transparent";
+    // rightArrow.style.borderBottom = "5px solid transparent";
+    // rightArrow.style.position = "absolute";
+    // rightArrow.style.top = "0px";
+    // //rightArrow.style.right = "-5px";
+    // gridSpan.appendChild(rightArrow);
+
+
+    curDivObj.appendChild(gridSpan);
+    return;
+}
+
+/**
  *    예약 시간 grid에 div 속성 추가
  *    Ver3.0 : 날짜가 바뀌면, 예약된 시간을 다시 계산해서 div에 넣어준다.
  *           : 예약 grid를 하나의 display에서 48 ->  24  |   24  |   24 로 변경 예정
@@ -618,7 +680,6 @@ function initDispFacReserveTime() {
     var reserveTitlesTimes = document.querySelectorAll(".reserve-iter-list-time");
     var reserveTitlesTimeLength = reserveTitlesTimes.length;
     var curTopIdx = 0;
-
     for (var titleIdx = 0; titleIdx < reserveTitlesTimeLength; titleIdx++) {
         let curFacTitle = facTitles[titleIdx].innerHTML;
         reserveTitlesTimes[titleIdx].style.display = "grid";
@@ -632,6 +693,7 @@ function initDispFacReserveTime() {
             div.style.className = "reserve-time-grid";
             div.style.border = "1px solid black";
             div.style.backgroundColor = "white";
+            div.style.position = "relative";
             //div.style.value = "nonReserve";
             div.value = "nonReserve";
             div.style.width = "100%";
@@ -642,8 +704,11 @@ function initDispFacReserveTime() {
                 this.style.cursor = "pointer";
             })
             div.addEventListener("click", function() {
-                reserveTimeGridClickVer2(curFacTitle, gridIdx, curTopIdx);
+                //reserveGridPointerClick(div, curFacTitle, gridIdx, G_topOffsetIdx);
+                reserveTimeGridClickVer2(curFacTitle, gridIdx, G_topOffsetIdx);
             });
+
+            
             
             reserveTitlesTimes[titleIdx].appendChild(div);
             if ( gridIdx < 24 ) {
@@ -721,21 +786,7 @@ function reserveTimeGridInit() {
             div.style.backgroundColor = "white";
             div.style.value = "nonReserve";
             div.addEventListener("mouseover", function() {
-                //연한 초록색
-                // TODO: DB에서 예약시간을 가져와서 예약된 시간은 빨간색으로 표시해준다.
-                //       그런데, 미리 색을 칠해버리고 mouseout event를 추가해두니
-                //       예상하지 못한 결과들이 발생한다. 그래서 삭제.
-                //this.style.backgroundColor = "#e0ffe0";
-                //this.addEventListener("mouseout", function() {
-                //    this.style.backgroundColor = "white";
-                //});
                 this.style.cursor = "pointer";
-
-                // TODO: 굳이 mouseover -> click 이벤트를 사용할 필요가 있을까?
-                //       click으로만 활용하게 변경
-                // this.addEventListener("click", function() {
-                //     reserveTimeGridClickVer2(curFacTitle, gridIdx, curTopIdx, curUserName);
-                // });
             })
             div.addEventListener("click", function() {
                 reserveTimeGridClickVer2(curFacTitle, gridIdx, curTopIdx);
@@ -872,7 +923,34 @@ function calendarDayClickEvent(curObject, oriColor, curDateInfo, curDayText) {
  */     
 function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     
-    // 변수 선언
+    //reserveGridPointerClick(curFacTitle, gridIdx, curTrIdx);
+
+    // 변수 선언 및 간단한 예외처리
+    let facTitles = document.querySelectorAll(".reserve-iter-list-title");
+    let facTitlesLength = facTitles.length;
+    let facTitleStatus = false;
+    for ( let facTitleIdx = 0; facTitleIdx < facTitlesLength; facTitleIdx++ ) {
+        let curReserveTitle = facTitles[facTitleIdx].innerText;
+        if ( curReserveTitle == curFacTitle ) {
+            curTrIdx += facTitleIdx;
+            facTitleStatus = true;
+            break;
+        }
+    }
+    if ( facTitleStatus == false ) {
+        alert("설비를 선택해주세요.");
+        return;
+    }
+    let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + curTrIdx + ") > th.reserve-iter-list-time > ";
+    let curDivChild = "div:nth-child(" + (curIdx + 1) + ")";
+    curDiv += curDivChild;
+
+    let curDivObj = document.querySelector(curDiv);
+    let gridSpan = document.createElement("span");
+    gridSpan.className = "div-reserve-span-pointer";
+    gridSpan.value = "";
+    curDivObj.appendChild(gridSpan);
+
     let reserveCurDate = document.querySelector(".reserve-cur-date-list");
     let reservePopup = document.querySelector(".reserve-popup-main");
     let reservePopupCloseBtn = document.querySelector(".reserve-popup-main-title-close");
@@ -890,6 +968,19 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
         reservePopup.style.display = "none"; 
         // 예약 이름 삭제
         document.querySelector(".reserve-popup-content-text").value = "";
+        //document.querySelector(curDiv).removeChild(document.querySelector(curDiv).lastChild);
+        //let deleteChildNode = document.querySelector(curDiv).childNodes[0];
+        //document.querySelector(curDiv).removeChild(deleteChildNode);
+        
+        curDivObj.removeChild(gridSpan);
+        
+        
+        //document.querySelector(curDiv).removeChild(document.querySelector(curDiv).children);
+
+        //document.querySelector(curDiv)의 마지막 자식을 삭제
+        
+        //Uncaught TypeError: Failed to execute 'removeChild' on 'Node': parameter 1 is not of type 'Node
+
         
         // 달력 팝업 닫기
         closeCalendar();
@@ -901,7 +992,7 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
 
     reservePopupCloseBtn.addEventListener("click", function() {
         reservePopup.style.display = "none";
-
+        document.querySelector(curDiv).removeChild(document.querySelector(curDiv).lastChild);
         // 달력 팝업 닫기
         closeCalendar();
     });
@@ -915,10 +1006,6 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     }
     let reserveContentInit = reserveUserName + "님의 회의실 예약";
     document.querySelector("#reservePopupContent").placeholder = reserveContentInit;
-
-    let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + curTrIdx + ") > th.reserve-iter-list-time > ";
-    let curDivChild = "div:nth-child(" + (curIdx + 1) + ")";
-    curDiv += curDivChild;
     
     //document.querySelector(curDiv).style.value = "reserve";
     //document.querySelector(curDiv).value = "reserve";
@@ -997,6 +1084,7 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     });
     mouseOnOffStyleMake(reserveStartTimeText, "#000000");
     mouseOnOffStyleMake(reserveEndTimeText, "#000000");
+
     return;
 }
 
@@ -2426,13 +2514,13 @@ reserveTimeGridInitVer3();
  *    예약 시간 디스플레이 생성
  */
 
- initReserveDisplayStatus();
+initReserveDisplayStatus();
 
 
  /**
  *    시간 개념 세로선 생성
  */
-  makeTimeVerticalLine();
+makeTimeVerticalLine();
 
 /**
  *     설비 예약 타이틀 지우기 버튼
