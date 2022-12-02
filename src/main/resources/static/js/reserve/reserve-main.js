@@ -679,7 +679,6 @@ function reserveGridPointerClick(curFacTitle, curIdx, curTrIdx) {
     var facTitles = document.querySelectorAll(".reserve-iter-list-title");
     var reserveTitlesTimes = document.querySelectorAll(".reserve-iter-list-time");
     var reserveTitlesTimeLength = reserveTitlesTimes.length;
-    var curTopIdx = 0;
     for (var titleIdx = 0; titleIdx < reserveTitlesTimeLength; titleIdx++) {
         let curFacTitle = facTitles[titleIdx].innerHTML;
         reserveTitlesTimes[titleIdx].style.display = "grid";
@@ -688,7 +687,6 @@ function reserveGridPointerClick(curFacTitle, curIdx, curTrIdx) {
         reserveTitlesTimes[titleIdx].style.gridAutoFlow = "column";
 
         for (let gridIdx = 0; gridIdx < 48; gridIdx++) {
-            curTopIdx = titleIdx + G_topOffsetIdx;
             var div = document.createElement("div");
             div.style.className = "reserve-time-grid";
             div.style.border = "1px solid black";
@@ -703,9 +701,10 @@ function reserveGridPointerClick(curFacTitle, curIdx, curTrIdx) {
             div.addEventListener("mouseover", function() {
                 this.style.cursor = "pointer";
             })
-            div.addEventListener("click", function() {
+            div.addEventListener("click", function(event) {
                 //reserveGridPointerClick(div, curFacTitle, gridIdx, G_topOffsetIdx);
                 reserveTimeGridClickVer2(curFacTitle, gridIdx, G_topOffsetIdx);
+                //event.stopPropagation();
             });
 
             
@@ -788,9 +787,10 @@ function reserveTimeGridInit() {
             div.addEventListener("mouseover", function() {
                 this.style.cursor = "pointer";
             })
-            div.addEventListener("click", function() {
+            div.addEventListener("click", function(event) {
                 reserveTimeGridClickVer2(curFacTitle, gridIdx, curTopIdx);
             });
+            //div.addEventListener("click", reserveTimeGridClickVer2(curFacTitle, gridIdx, curTopIdx), false);
 
             reserveTitlesTimes[titleIdx].appendChild(div);
         }
@@ -951,51 +951,64 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     gridSpan.value = "";
     curDivObj.appendChild(gridSpan);
 
-    let reserveCurDate = document.querySelector(".reserve-cur-date-list");
-    let reservePopup = document.querySelector(".reserve-popup-main");
-    let reservePopupCloseBtn = document.querySelector(".reserve-popup-main-title-close");
-    let reservePopupBtnSendClose = document.querySelector(".reserve-popup-btn-close");
-    let reservePopupBtnDbSend = document.querySelector(".reserve-popup-btn-db-send");
     let curTitle = document.querySelector(".reserve-popup-main-title-text");
     let curUserName = document.querySelector(".reserve-page-user-name-text").value;
     let reserveUserName = getUserNameSplit(curUserName, "@");
 
-    mouseOnOffStyleMake(reservePopupBtnSendClose, "#737373");
-    mouseOnOffStyleMake(reservePopupBtnDbSend, "#FFFFFF");
-    mouseOnOffStyleMake(reservePopupCloseBtn, "#737373");
+    //let reserveCurDate = document.querySelector(".reserve-cur-date-list");
+    let reservePopup = document.querySelector(".reserve-popup-main");
+    // let reservePopupCloseBtn = document.querySelector(".reserve-popup-main-title-close");
+    // let reservePopupBtnSendClose = document.querySelector(".reserve-popup-btn-close");
+    // let reservePopupBtnDbSend = document.querySelector(".reserve-popup-btn-db-send");
 
-    reservePopupBtnSendClose.addEventListener("click", function() {
-        reservePopup.style.display = "none"; 
-        // 예약 이름 삭제
-        document.querySelector(".reserve-popup-content-text").value = "";
-        //document.querySelector(curDiv).removeChild(document.querySelector(curDiv).lastChild);
-        //let deleteChildNode = document.querySelector(curDiv).childNodes[0];
-        //document.querySelector(curDiv).removeChild(deleteChildNode);
-        
-        curDivObj.removeChild(gridSpan);
-        
-        
-        //document.querySelector(curDiv).removeChild(document.querySelector(curDiv).children);
+    // mouseOnOffStyleMake(reservePopupBtnSendClose, "#737373");
+    // mouseOnOffStyleMake(reservePopupBtnDbSend, "#FFFFFF");
+    // mouseOnOffStyleMake(reservePopupCloseBtn, "#737373");
 
-        //document.querySelector(curDiv)의 마지막 자식을 삭제
+    // reservePopupBtnSendClose.addEventListener("click", function() {
+    //     reservePopup.style.display = "none"; 
+    //     console.log('[1] curIdx:', curIdx);
+    //     // 예약 이름 삭제
+    //     document.querySelector(".reserve-popup-content-text").value = "";
+    //     if ( curDivObj.hasChildNodes() ) {
+    //         curDivObj.removeChild(curDivObj.lastChild);
+    //     }
+    //     // 달력 팝업 닫기
+    //     closeCalendar();
+    // });
+
+    // reservePopupBtnSendClose.addEventListener("click", testPreventDefault, false);
+
+    // function testPreventDefault(event) {
+    //     document.querySelector(".reserve-popup-main").style.display = "none";
+    //     console.log('[1] curIdx:', curIdx);
+    //     // 예약 이름 삭제
+    //     document.querySelector(".reserve-popup-content-text").value = "";
+    //     if ( curDivObj.hasChildNodes() ) {
+    //         curDivObj.removeChild(curDivObj.lastChild);
+    //     }
+    //     // 달력 팝업 닫기
+    //     closeCalendar();
+    //     //e.preventDefault();
+    //     //event.stopPropagation();
+    // }
+
+    // reservePopupBtnDbSend.addEventListener("click", function() {
+    //     makeFacReserveTimeForDbBtn();
+    // });
+
+    // reservePopupCloseBtn.addEventListener("click", function() {
+    //     reservePopup.style.display = "none";
+    //     console.log('[2] curIdx:', curIdx);
+    //     if ( curDivObj.hasChildNodes() ) {
+    //         curDivObj.removeChild(curDivObj.lastChild);
+    //     }
+    //     // 달력 팝업 닫기
+    //     closeCalendar();
         
-        //Uncaught TypeError: Failed to execute 'removeChild' on 'Node': parameter 1 is not of type 'Node
-
+    //     // 버블링 제거하기
         
-        // 달력 팝업 닫기
-        closeCalendar();
-    });
-
-    reservePopupBtnDbSend.addEventListener("click", function() {
-        makeFacReserveTimeForDbBtn();
-    });
-
-    reservePopupCloseBtn.addEventListener("click", function() {
-        reservePopup.style.display = "none";
-        document.querySelector(curDiv).removeChild(document.querySelector(curDiv).lastChild);
-        // 달력 팝업 닫기
-        closeCalendar();
-    });
+    // });
 
     if (curUserName == "" || curUserName == null) {
         curUserName = "테스트@naver.com";
@@ -1034,7 +1047,7 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
             resTimeEnd.value = resTimeHourEnd + ":00";
             
         } else {
-            if ( reserveTimeHour < 10 ) {
+            if ( parseInt(reserveTimeHour) < 10 ) {
                 reserveTimeHour = "0" + reserveTimeHour;
             }
             reserveTimeMin.value = reserveTimeHour + ":00";
@@ -1051,39 +1064,39 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
         //reservePopupClose();
     }
 
-    //[임시] 캘린더 오픈하는 코드
-    let reserveStartTimeText = document.querySelector(".reserve-date-start-text");
-    let reserveEndTimeText = document.querySelector(".reserve-date-end-text");
-    let curFullDate = String(reserveCurDate.innerText);
-    if ( splitCheck(curFullDate, " ") == false ) {
-        return;
-    }
-    let curDate = curFullDate.split(" ")[0];
+    // //[임시] 캘린더 오픈하는 코드
+    // let reserveStartTimeText = document.querySelector(".reserve-date-start-text");
+    // let reserveEndTimeText = document.querySelector(".reserve-date-end-text");
+    // let curFullDate = String(reserveCurDate.innerText);
+    // if ( splitCheck(curFullDate, " ") == false ) {
+    //     return;
+    // }
+    // let curDate = curFullDate.split(" ")[0];
 
-    if ( splitCheck(curDate, "-") == false ) {
-        return;
-    }
-    let curMonth = curDate.split("-")[1];
-    //let curDate = new Date().getFullYear() + "-" + ( new Date().getMonth() + 1 ) + "-" + new Date().getDate();
-    //let curMonth = new Date().getMonth() + 1;
+    // if ( splitCheck(curDate, "-") == false ) {
+    //     return;
+    // }
+    // let curMonth = curDate.split("-")[1];
+    // //let curDate = new Date().getFullYear() + "-" + ( new Date().getMonth() + 1 ) + "-" + new Date().getDate();
+    // //let curMonth = new Date().getMonth() + 1;
 
-    reserveStartTimeText.value = curDate;
-    reserveStartTimeText.innerHTML = curDate;
-    reserveEndTimeText.value = curDate;
-    reserveEndTimeText.innerHTML = curDate;
+    // reserveStartTimeText.value = curDate;
+    // reserveStartTimeText.innerHTML = curDate;
+    // reserveEndTimeText.value = curDate;
+    // reserveEndTimeText.innerHTML = curDate;
     
-    reserveStartTimeText.addEventListener("click", function() {
-        G_calendarStatus = E_calendarStatus.START;
+    // reserveStartTimeText.addEventListener("click", function() {
+    //     G_calendarStatus = E_calendarStatus.START;
     
-        openCalendar(curMonth);
-    });
+    //     openCalendar(curMonth);
+    // });
 
-    reserveEndTimeText.addEventListener("click", function() {
-        G_calendarStatus = E_calendarStatus.END;
-        openCalendar(curMonth);
-    });
-    mouseOnOffStyleMake(reserveStartTimeText, "#000000");
-    mouseOnOffStyleMake(reserveEndTimeText, "#000000");
+    // reserveEndTimeText.addEventListener("click", function() {
+    //     G_calendarStatus = E_calendarStatus.END;
+    //     openCalendar(curMonth);
+    // });
+    // mouseOnOffStyleMake(reserveStartTimeText, "#000000");
+    // mouseOnOffStyleMake(reserveEndTimeText, "#000000");
 
     return;
 }
@@ -2500,6 +2513,94 @@ function moveTimeVerticalLine() {
     return;
 }
 
+function deleteElement(element) {
+    element.parentNode.removeChild(element);
+
+    let temp = document.querySelector(".reserve-vertical-line");
+    
+    
+
+    return;
+}
+
+function initEventListener() {
+    // 예약 grid 내부의 event처리들을 옮겨온다.
+    let reservePopupCloseBtn = document.querySelector(".reserve-popup-main-title-close");
+    let reservePopupBtnSendClose = document.querySelector(".reserve-popup-btn-close");
+    let reservePopupBtnDbSend = document.querySelector(".reserve-popup-btn-db-send")
+    let reservePopup = document.querySelector(".reserve-popup-main");
+
+    mouseOnOffStyleMake(reservePopupBtnSendClose, "#737373");
+    mouseOnOffStyleMake(reservePopupBtnDbSend, "#FFFFFF");
+    mouseOnOffStyleMake(reservePopupCloseBtn, "#737373");
+
+    // 예약 팝업 취소 버튼 Code
+    reservePopupBtnSendClose.addEventListener("click", testPreventDefault, false);
+
+    function testPreventDefault(event) {
+        reservePopup.style.display = "none";
+        console.log('[1] curIdx:');
+        let reserveSpanPointers = document.querySelectorAll(".div-reserve-span-pointer");
+        let reserveSpanPointersLength = reserveSpanPointers.length;
+        for ( let i = 0; i < reserveSpanPointersLength; i++ ) {
+            reserveSpanPointers[i].remove();
+        };
+        // 달력 팝업 닫기
+        closeCalendar();
+    }
+
+    reservePopupBtnDbSend.addEventListener("click", function() {
+        makeFacReserveTimeForDbBtn();
+    });
+
+    reservePopupCloseBtn.addEventListener("click", function() {
+        reservePopup.style.display = "none";
+        console.log('[2] curIdx:');
+        let reserveSpanPointers = document.querySelectorAll(".div-reserve-span-pointer");
+        let reserveSpanPointersLength = reserveSpanPointers.length;
+        for ( let i = 0; i < reserveSpanPointersLength; i++ ) {
+            reserveSpanPointers[i].remove();
+        };
+        // 달력 팝업 닫기
+        closeCalendar();
+    });
+
+    // Calendar Open Code
+    let reserveStartTimeText = document.querySelector(".reserve-date-start-text");
+    let reserveEndTimeText = document.querySelector(".reserve-date-end-text");
+    let reserveCurDate = document.querySelector(".reserve-cur-date-list");
+    let curFullDate = String(reserveCurDate.innerText);
+    if ( splitCheck(curFullDate, " ") == false ) {
+        return;
+    }
+    let curDate = curFullDate.split(" ")[0];
+
+    if ( splitCheck(curDate, "-") == false ) {
+        return;
+    }
+    let curMonth = curDate.split("-")[1];
+
+    reserveStartTimeText.value = curDate;
+    reserveStartTimeText.innerHTML = curDate;
+    reserveEndTimeText.value = curDate;
+    reserveEndTimeText.innerHTML = curDate;
+    
+    reserveStartTimeText.addEventListener("click", function() {
+        G_calendarStatus = E_calendarStatus.START;
+    
+        openCalendar(curMonth);
+    });
+
+    reserveEndTimeText.addEventListener("click", function() {
+        G_calendarStatus = E_calendarStatus.END;
+        openCalendar(curMonth);
+    });
+    mouseOnOffStyleMake(reserveStartTimeText, "#000000");
+    mouseOnOffStyleMake(reserveEndTimeText, "#000000");
+
+    return;
+}
+
  /**
   *    th-header
   */
@@ -2533,3 +2634,9 @@ reserveItemDeleteMakeInit();
 //initDispFacReserveTime();
 
 initDispFacReserveTimeVer2();
+
+/**
+ *    각종 이벤트 리스너 
+ *    버블링 문제로 인해서, 이벤트 리스너를 따로 빼서 관리하도록 한다.
+ */
+initEventListener();
