@@ -18,12 +18,20 @@ const E_curTimeDisplay = {
     NONE: 3
 };
 
+const E_curMouseEventStatus = {
+    NONE: 0,
+    RESERVE_GRID: 1
+};
+
 var G_calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 var G_topOffsetIdx = 5;
 var G_gridColumnLength = 48;
 var G_calendarStatus = E_calendarStatus.NONE;
 var G_displayStatus = E_curTimeDisplay.LEFT;
-
+var G_reserveUr = '';
+var G_curEventX = 0;
+var G_curMouseUpDivIdx = 0;
+var G_curMouseEventStatus = E_curMouseEventStatus.NONE;
 
 function reserveItemMake() {
     //변수 선언
@@ -679,7 +687,7 @@ function reserveGridPointerClick(curFacTitle, curIdx, curTrIdx) {
     var facTitles = document.querySelectorAll(".reserve-iter-list-title");
     var reserveTitlesTimes = document.querySelectorAll(".reserve-iter-list-time");
     var reserveTitlesTimeLength = reserveTitlesTimes.length;
-    for (var titleIdx = 0; titleIdx < reserveTitlesTimeLength; titleIdx++) {
+    for (var titleIdx = 0; titleIdx < reserveTitlesTimeLength; titleIdx++) {    
         let curFacTitle = facTitles[titleIdx].innerHTML;
         reserveTitlesTimes[titleIdx].style.display = "grid";
         reserveTitlesTimes[titleIdx].style.gridTemplateColumns = "repeat(24, 1fr)";
@@ -698,17 +706,58 @@ function reserveGridPointerClick(curFacTitle, curIdx, curTrIdx) {
             div.style.padding = "0px";
             div.style.margin = "0px";
             
-            div.addEventListener("mouseover", function() {
-                this.style.cursor = "pointer";
-            })
+            let gridSpan = document.createElement("span");
+            gridSpan.className = "div-reserve-span-pointer";
+            gridSpan.value = "";
+            div.appendChild(gridSpan);
+        
+            let gridSpanLeft = document.createElement("span");
+            gridSpanLeft.className = "div-reserve-span-pointer-left";
+            gridSpanLeft.value = "";
+            div.appendChild(gridSpanLeft);
+        
+            let gridSpanRight = document.createElement("span");
+            gridSpanRight.className = "div-reserve-span-pointer-right";
+            gridSpanRight.value = "";
+            div.appendChild(gridSpanRight);
+
+            gridSpan.style.display = "none";
+            gridSpanLeft.style.display = "none";
+            gridSpanRight.style.display = "none";
+            
+            //gridSpanLeft를 마우스로 누르고 왼쪽으로 옮길 때 발생하는 이벤트
+            mouseOnOffStyleMakeVer4(gridSpanLeft, "#118c9c", "#00FF00", "left");
+            mouseOnOffStyleMakeVer4(gridSpanRight, "#118c9c", "#00FF00", "right");
+
+            // gridSpanLeft.addEventListener("mousedown", gridSpanLeftMouseDown, false);
+            //gridSpanLeft.addEventListener("mouseup", gridSpanLeftMouseUp, false);
+            gridSpanLeft.addEventListener("mousedown", function() {
+                G_curMouseEventStatus = E_curMouseEventStatus.RESERVE_GRID;
+                G_curEventX = gridSpanLeft.offsetLeft;
+            });
+            // gridSpanLeft.addEventListener("mousemove", function(event) {
+            //     // 마우스 좌표 획득 코드
+            //     let eventX = event.clientX;
+            //     console.log("eventX : " + eventX);
+            //     let reserveGridWidth = gridSpanLeft.parentElement.offsetWidth;
+            //     G_curMouseUpDivIdx = (eventX - G_curEventX) / reserveGridWidth;
+            //     console.log("[1] 현재 div좌표: " + G_curMouseUpDivIdx);
+            // });
+
+            // mouse drag
+            div.addEventListener("mouseup", function(event) {
+                console.log("[2] 결과 div좌표: " + G_curMouseUpDivIdx);
+            });
+            //gridSpanLeft.addEventListener("mousemove", gridSpanLeftMouseMove, false);
+            //gridSpanRight.addEventListener("mousedown", gridSpanRightMouseDown, false);
+            //gridSpanRight.addEventListener("mouseup", gridSpanRightMouseUp, false);
+            //gridSpanRight.addEventListener("mousemove", gridSpanRightMouseMove, false);
+
+
             div.addEventListener("click", function(event) {
-                //reserveGridPointerClick(div, curFacTitle, gridIdx, G_topOffsetIdx);
                 reserveTimeGridClickVer2(curFacTitle, gridIdx, G_topOffsetIdx);
-                //event.stopPropagation();
             });
 
-            
-            
             reserveTitlesTimes[titleIdx].appendChild(div);
             if ( gridIdx < 24 ) {
                 div.style.display = "block";
@@ -828,7 +877,9 @@ function mouseOnOffStyleMakeVer2(curObject, oriColor, mouseOnColor) {
     });
     return;
 }
-
+/** 
+ *    오브젝트, 오리지널 컬러, 마우스on 컬러
+ */
 function mouseOnOffStyleMakeVer3(curObject, oriColor, mouseOnColor) {
     curObject.addEventListener("mouseover", function() {
         this.style.cursor = "pointer";
@@ -838,6 +889,28 @@ function mouseOnOffStyleMakeVer3(curObject, oriColor, mouseOnColor) {
     curObject.addEventListener("mouseout", function() {
         this.style.cursor = "default";
         this.style.backgroundColor = oriColor;
+    });
+    return;
+}
+/** 
+ *    (border-left,right) 오브젝트, 오리지널 컬러, 마우스on 컬러
+ */
+function mouseOnOffStyleMakeVer4(curObject, oriColor, mouseOnColor, direct) {
+    curObject.addEventListener("mouseover", function() {
+        this.style.cursor = "pointer";
+        if (direct == "right") {
+            this.style.borderLeft = "5px solid " + mouseOnColor;
+        } else if (direct == "left") {
+            this.style.borderRight = "5px solid " + mouseOnColor;
+        }
+    });
+    curObject.addEventListener("mouseout", function() {
+        this.style.cursor = "default";
+        if (direct == "right") {
+            this.style.borderLeft = "5px solid " + oriColor;
+        } else if (direct == "left") {
+            this.style.borderRight = "5px solid " + oriColor;
+        }
     });
     return;
 }
@@ -946,69 +1019,38 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     curDiv += curDivChild;
 
     let curDivObj = document.querySelector(curDiv);
-    let gridSpan = document.createElement("span");
-    gridSpan.className = "div-reserve-span-pointer";
-    gridSpan.value = "";
-    curDivObj.appendChild(gridSpan);
+    let curDivObjChildLen = curDivObj.childElementCount;
+    for ( let i = 0; i < curDivObjChildLen; i++ ) {
+        curDivObj.childNodes[i].style.display = "block";
+    }
+    //styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "block");
+    //styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "block");
+    //styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "block");
+    // let gridSpan = document.createElement("span");
+    // gridSpan.className = "div-reserve-span-pointer";
+    // gridSpan.value = "";
+    // curDivObj.appendChild(gridSpan);
+
+    // //gridSpan의 양 옆에 div를 만들어서, 그 div에 이벤트를 걸어서, 그 div를 클릭하면, gridSpan의 value를 변경한다.
+    // let gridSpanLeft = document.createElement("span");
+    // gridSpanLeft.className = "div-reserve-span-pointer-left";
+    // gridSpanLeft.value = "";
+    // //gridSpanLeft는 왼쪽화살표 방향으로 border를 만들어줘.
+
+    // curDivObj.appendChild(gridSpanLeft);
+
+    // let gridSpanRight = document.createElement("span");
+    // gridSpanRight.className = "div-reserve-span-pointer-right";
+    // gridSpanRight.value = "";
+    // curDivObj.appendChild(gridSpanRight);
+
+
 
     let curTitle = document.querySelector(".reserve-popup-main-title-text");
     let curUserName = document.querySelector(".reserve-page-user-name-text").value;
     let reserveUserName = getUserNameSplit(curUserName, "@");
-
-    //let reserveCurDate = document.querySelector(".reserve-cur-date-list");
     let reservePopup = document.querySelector(".reserve-popup-main");
-    // let reservePopupCloseBtn = document.querySelector(".reserve-popup-main-title-close");
-    // let reservePopupBtnSendClose = document.querySelector(".reserve-popup-btn-close");
-    // let reservePopupBtnDbSend = document.querySelector(".reserve-popup-btn-db-send");
 
-    // mouseOnOffStyleMake(reservePopupBtnSendClose, "#737373");
-    // mouseOnOffStyleMake(reservePopupBtnDbSend, "#FFFFFF");
-    // mouseOnOffStyleMake(reservePopupCloseBtn, "#737373");
-
-    // reservePopupBtnSendClose.addEventListener("click", function() {
-    //     reservePopup.style.display = "none"; 
-    //     console.log('[1] curIdx:', curIdx);
-    //     // 예약 이름 삭제
-    //     document.querySelector(".reserve-popup-content-text").value = "";
-    //     if ( curDivObj.hasChildNodes() ) {
-    //         curDivObj.removeChild(curDivObj.lastChild);
-    //     }
-    //     // 달력 팝업 닫기
-    //     closeCalendar();
-    // });
-
-    // reservePopupBtnSendClose.addEventListener("click", testPreventDefault, false);
-
-    // function testPreventDefault(event) {
-    //     document.querySelector(".reserve-popup-main").style.display = "none";
-    //     console.log('[1] curIdx:', curIdx);
-    //     // 예약 이름 삭제
-    //     document.querySelector(".reserve-popup-content-text").value = "";
-    //     if ( curDivObj.hasChildNodes() ) {
-    //         curDivObj.removeChild(curDivObj.lastChild);
-    //     }
-    //     // 달력 팝업 닫기
-    //     closeCalendar();
-    //     //e.preventDefault();
-    //     //event.stopPropagation();
-    // }
-
-    // reservePopupBtnDbSend.addEventListener("click", function() {
-    //     makeFacReserveTimeForDbBtn();
-    // });
-
-    // reservePopupCloseBtn.addEventListener("click", function() {
-    //     reservePopup.style.display = "none";
-    //     console.log('[2] curIdx:', curIdx);
-    //     if ( curDivObj.hasChildNodes() ) {
-    //         curDivObj.removeChild(curDivObj.lastChild);
-    //     }
-    //     // 달력 팝업 닫기
-    //     closeCalendar();
-        
-    //     // 버블링 제거하기
-        
-    // });
 
     if (curUserName == "" || curUserName == null) {
         curUserName = "테스트@naver.com";
@@ -1019,9 +1061,6 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     }
     let reserveContentInit = reserveUserName + "님의 회의실 예약";
     document.querySelector("#reservePopupContent").placeholder = reserveContentInit;
-    
-    //document.querySelector(curDiv).style.value = "reserve";
-    //document.querySelector(curDiv).value = "reserve";
 
     curTitle.innerHTML = curFacTitle;
 
@@ -1061,42 +1100,10 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
 
     } else {
         reservePopup.style.display = "none";
-        //reservePopupClose();
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none");
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none");
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "none");
     }
-
-    // //[임시] 캘린더 오픈하는 코드
-    // let reserveStartTimeText = document.querySelector(".reserve-date-start-text");
-    // let reserveEndTimeText = document.querySelector(".reserve-date-end-text");
-    // let curFullDate = String(reserveCurDate.innerText);
-    // if ( splitCheck(curFullDate, " ") == false ) {
-    //     return;
-    // }
-    // let curDate = curFullDate.split(" ")[0];
-
-    // if ( splitCheck(curDate, "-") == false ) {
-    //     return;
-    // }
-    // let curMonth = curDate.split("-")[1];
-    // //let curDate = new Date().getFullYear() + "-" + ( new Date().getMonth() + 1 ) + "-" + new Date().getDate();
-    // //let curMonth = new Date().getMonth() + 1;
-
-    // reserveStartTimeText.value = curDate;
-    // reserveStartTimeText.innerHTML = curDate;
-    // reserveEndTimeText.value = curDate;
-    // reserveEndTimeText.innerHTML = curDate;
-    
-    // reserveStartTimeText.addEventListener("click", function() {
-    //     G_calendarStatus = E_calendarStatus.START;
-    
-    //     openCalendar(curMonth);
-    // });
-
-    // reserveEndTimeText.addEventListener("click", function() {
-    //     G_calendarStatus = E_calendarStatus.END;
-    //     openCalendar(curMonth);
-    // });
-    // mouseOnOffStyleMake(reserveStartTimeText, "#000000");
-    // mouseOnOffStyleMake(reserveEndTimeText, "#000000");
 
     return;
 }
@@ -2050,6 +2057,28 @@ function makeFacReserveTimeForDbBtn() {
         return;
     }
 
+    let startTimeSplit = reserveStartTime.split(" ");
+    let endTimeSplit = reserveEndTime.split(" ");
+    let confirmPlaceText = document.querySelector(".reserve-confirm-page-place-text");
+    let confirmReserveTitleText = document.querySelector(".reserve-confirm-page-title-text");
+
+    let confirmReserveStartTimeDate = document.querySelector(".reserve-confirm-page-time-div-start-date-text");
+    let confirmReserveStartTimeMinute = document.querySelector(".reserve-confirm-page-time-div-start-minute-text");
+    let confirmReserveEndTimeDate = document.querySelector(".reserve-confirm-page-time-div-end-date-text");
+    let confirmReserveEndTimeMinute = document.querySelector(".reserve-confirm-page-time-div-end-minute-text");    
+    let reserveConfirmPagePopup = document.querySelector(".reserve-confirm-page-main");
+
+    confirmReserveStartTimeDate.value = startTimeSplit[0];
+    confirmReserveStartTimeMinute.value = startTimeSplit[1];
+    confirmReserveEndTimeDate.value = endTimeSplit[0];
+    confirmReserveEndTimeMinute.value = endTimeSplit[1];
+    confirmPlaceText.value = curFacTitle;
+    confirmReserveTitleText.value = reserveContent;
+
+    if ( reserveConfirmPagePopup.style.display == "none" ) {
+        reserveConfirmPagePopup.style.display = "block";
+    }
+
     //step3 code
     let data = 'facilityTitle=' + encodeURIComponent(curFacTitle)
                 + '&reserveContent=' + encodeURIComponent(reserveContent)
@@ -2062,62 +2091,65 @@ function makeFacReserveTimeForDbBtn() {
 
     //step 4 예약확인 페이지를 띄운다.
     //       확인 버튼을 누르면 DB로 예약 데이터를 전송하고, redirect해준다.
-    reserveConfirmPage(reserveUr, reserveStartTime, reserveEndTime, curFacTitle, reserveContent);
+    //reserveConfirmPage(reserveStartTime, reserveEndTime, curFacTitle, reserveContent);
 
-    return;
+    return reserveUr;
 }
 
 /**
  *    예약 확인 페이지
  */
-function reserveConfirmPage(reserveUr, startTime, endTime, curFacTitle, reserveContent) {
+function reserveConfirmPage(startTime, endTime, curFacTitle, reserveContent) {
     //step0 초기 설정 및 변수 선언
-    let startTimeSplit = startTime.split(" ");
-    let endTimeSplit = endTime.split(" ");
-    let reserveConfirmPagePopup = document.querySelector(".reserve-confirm-page-main");
-    let closeBtn = document.querySelector(".reserve-confirm-page-close-btn");
-    let confirmBtnOk = document.querySelector(".reserve-confirm-page-btn-ok");
-    let confirmBtnCancel = document.querySelector(".reserve-confirm-page-btn-cancel");
-    let confirmPlaceText = document.querySelector(".reserve-confirm-page-place-text");
-    let confirmReserveTitleText = document.querySelector(".reserve-confirm-page-title-text");
+    // let startTimeSplit = startTime.split(" ");
+    // let endTimeSplit = endTime.split(" ");
+    //let reserveConfirmPagePopup = document.querySelector(".reserve-confirm-page-main");
+    //let closeBtn = document.querySelector(".reserve-confirm-page-close-btn");
+    //let confirmBtnOk = document.querySelector(".reserve-confirm-page-btn-ok");
+    //let confirmBtnCancel = document.querySelector(".reserve-confirm-page-btn-cancel");
+    // let confirmPlaceText = document.querySelector(".reserve-confirm-page-place-text");
+    // let confirmReserveTitleText = document.querySelector(".reserve-confirm-page-title-text");
 
-    let confirmReserveStartTimeDate = document.querySelector(".reserve-confirm-page-time-div-start-date-text");
-    let confirmReserveStartTimeMinute = document.querySelector(".reserve-confirm-page-time-div-start-minute-text");
-    let confirmReserveEndTimeDate = document.querySelector(".reserve-confirm-page-time-div-end-date-text");
-    let confirmReserveEndTimeMinute = document.querySelector(".reserve-confirm-page-time-div-end-minute-text");    
+    // let confirmReserveStartTimeDate = document.querySelector(".reserve-confirm-page-time-div-start-date-text");
+    // let confirmReserveStartTimeMinute = document.querySelector(".reserve-confirm-page-time-div-start-minute-text");
+    // let confirmReserveEndTimeDate = document.querySelector(".reserve-confirm-page-time-div-end-date-text");
+    // let confirmReserveEndTimeMinute = document.querySelector(".reserve-confirm-page-time-div-end-minute-text");    
 
-    confirmReserveStartTimeDate.value = startTimeSplit[0];
-    confirmReserveStartTimeMinute.value = startTimeSplit[1];
-    confirmReserveEndTimeDate.value = endTimeSplit[0];
-    confirmReserveEndTimeMinute.value = endTimeSplit[1];
-    confirmPlaceText.value = curFacTitle;
-    confirmReserveTitleText.value = reserveContent;
+    // confirmReserveStartTimeDate.value = startTimeSplit[0];
+    // confirmReserveStartTimeMinute.value = startTimeSplit[1];
+    // confirmReserveEndTimeDate.value = endTimeSplit[0];
+    // confirmReserveEndTimeMinute.value = endTimeSplit[1];
+    // confirmPlaceText.value = curFacTitle;
+    // confirmReserveTitleText.value = reserveContent;
 
 
-    mouseOnOffStyleMakeVer2(closeBtn, "#ff0000", "#00ff00");
-    mouseOnOffStyleMakeVer3(confirmBtnOk, "#00BFFF", "#00ff00");
-    mouseOnOffStyleMakeVer3(confirmBtnCancel, "#ffffff", "#f0f0f0");
+    //mouseOnOffStyleMakeVer2(closeBtn, "#ff0000", "#00ff00");
+    //mouseOnOffStyleMakeVer3(confirmBtnOk, "#00BFFF", "#00ff00");
+    //mouseOnOffStyleMakeVer3(confirmBtnCancel, "#ffffff", "#f0f0f0");
 
-    closeBtn.addEventListener("click", function() {
-        reserveConfirmPagePopup.style.display = "none";
-    });
+    // closeBtn.addEventListener("click", function() {
+    //     console.log("closeBtn.addEventListener");
+    //     reserveConfirmPagePopup.style.display = "none";
+    // });
     
     //step1 예약 내용을 띄운다.
-    if ( reserveConfirmPagePopup.style.display == "none" ) {
-        reserveConfirmPagePopup.style.display = "block";
-    }
+    // if ( reserveConfirmPagePopup.style.display == "none" ) {
+    //     reserveConfirmPagePopup.style.display = "block";
+    // }
 
     //step2 예약 취소 버튼 누를 시, 해당 예약 삭제
-    confirmBtnCancel.addEventListener("click", function() {
-        reserveConfirmPagePopup.style.display = "none";
-        deleteCurReserve();
-    });
+    // confirmBtnCancel.addEventListener("click", function() {
+    //     console.log("confirmBtnCancel.addEventListener");
+    //     reserveConfirmPagePopup.style.display = "none";
+    //     deleteCurReserve();
+    // });
     
     //step2-1 확인 버튼 누를 시, 예약 완료
-    confirmBtnOk.addEventListener("click", function() {
-        reserveConfirmPagePopup.style.display = "none";
-        location.href = reserveUr;        
-    });
+    // confirmBtnOk.addEventListener("click", function() {
+    //     console.log("confirmBtnOk.addEventListener");
+    //     reserveConfirmPagePopup.style.display = "none";
+    //     location.href = reserveUr;        
+    // });
 
     return;
 }
@@ -2515,11 +2547,40 @@ function moveTimeVerticalLine() {
 
 function deleteElement(element) {
     element.parentNode.removeChild(element);
-
     let temp = document.querySelector(".reserve-vertical-line");
-    
-    
+    return;
+}
 
+function deleteElementsByQuerySelectorAll(elementQueryName) {
+    let elements = document.querySelectorAll(elementQueryName);
+    let elementsLength = elements.length;
+    for ( let i = 0; i < elementsLength; i++ ) {
+        elements[i].remove();
+    }
+    return;
+}
+
+function styleNoneOrBlockElementByQuerySelectorAll(elementQueryName, styleStatus) {
+    let elements = document.querySelectorAll(elementQueryName);
+    let elementsLength = elements.length;
+    if ( styleStatus == "none" ) {
+        for ( let i = 0; i < elementsLength; i++ ) {
+            elements[i].style.display = "none";
+        }
+    } else if ( styleStatus == "block" ) {
+        for ( let i = 0; i < elementsLength; i++ ) {
+            elements[i].style.display = "block";
+        }
+    }
+    return;
+}
+
+function deleteElementsByQuerySelector(elementQueryName) {
+    let elements = document.querySelector(elementQueryName);
+    let elementsLength = elements.length;
+    for ( let i = 0; i < elementsLength; i++ ) {
+        elements[i].remove();
+    }
     return;
 }
 
@@ -2539,29 +2600,21 @@ function initEventListener() {
 
     function testPreventDefault(event) {
         reservePopup.style.display = "none";
-        console.log('[1] curIdx:');
-        let reserveSpanPointers = document.querySelectorAll(".div-reserve-span-pointer");
-        let reserveSpanPointersLength = reserveSpanPointers.length;
-        for ( let i = 0; i < reserveSpanPointersLength; i++ ) {
-            reserveSpanPointers[i].remove();
-        };
-        // 달력 팝업 닫기
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none");
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none");
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "none");
         closeCalendar();
     }
 
     reservePopupBtnDbSend.addEventListener("click", function() {
-        makeFacReserveTimeForDbBtn();
+        G_reserveUr = makeFacReserveTimeForDbBtn();
     });
 
     reservePopupCloseBtn.addEventListener("click", function() {
         reservePopup.style.display = "none";
-        console.log('[2] curIdx:');
-        let reserveSpanPointers = document.querySelectorAll(".div-reserve-span-pointer");
-        let reserveSpanPointersLength = reserveSpanPointers.length;
-        for ( let i = 0; i < reserveSpanPointersLength; i++ ) {
-            reserveSpanPointers[i].remove();
-        };
-        // 달력 팝업 닫기
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none");
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none");
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "none");        
         closeCalendar();
     });
 
@@ -2598,8 +2651,115 @@ function initEventListener() {
     mouseOnOffStyleMake(reserveStartTimeText, "#000000");
     mouseOnOffStyleMake(reserveEndTimeText, "#000000");
 
+
+    // 예약 확인 페이지
+    let reserveConfirmPagePopup = document.querySelector(".reserve-confirm-page-main");
+    let closeBtn = document.querySelector(".reserve-confirm-page-close-btn");
+    let confirmBtnOk = document.querySelector(".reserve-confirm-page-btn-ok");
+    let confirmBtnCancel = document.querySelector(".reserve-confirm-page-btn-cancel");
+    
+    mouseOnOffStyleMakeVer2(closeBtn, "#ff0000", "#00ff00");
+    mouseOnOffStyleMakeVer3(confirmBtnCancel, "#ffffff", "#f0f0f0");
+    mouseOnOffStyleMakeVer3(confirmBtnOk, "#00BFFF", "#00ff00");
+
+    closeBtn.addEventListener("click", function() {
+        console.log("closeBtn.addEventListener");
+        reserveConfirmPagePopup.style.display = "none";
+    });    
+
+    confirmBtnCancel.addEventListener("click", function() {
+        console.log("confirmBtnCancel.addEventListener");
+        reserveConfirmPagePopup.style.display = "none";
+        deleteCurReserve();
+    });
+
+    confirmBtnOk.addEventListener("click", function() {
+        console.log("confirmBtnOk.addEventListener");
+        reserveConfirmPagePopup.style.display = "none";
+        if ( G_reserveUr == null || G_reserveUr == '' ) {
+            alert("예약 정보가 없습니다.");
+            return;
+        }
+        location.href = G_reserveUr;        
+    });    
+
+    
+    // 테스트
+    let curPageWidth100 = ( document.body.clientWidth / 100 );
+    let curTableOffsetLeft = document.querySelector(".reserve-iter-list-time-header-1").offsetLeft;
+    let curTableOffsetWidth = document.querySelector(".reserve-iter-list-time-header-1").offsetWidth; //44 -> 42.33
+    var reserveTitlesTimes = document.querySelectorAll(".reserve-iter-list-time");
+    var reserveTitlesTimesLength = reserveTitlesTimes.length;
+    // 1020 일때는 1.67이다.
+    // 761 일때는 34 -> 31.56 
+    //let reserveDivWidthCalOffset = ( 1.67 / 1020 ) * curTableOffsetWidth ;
+    let curPageReserveDivWidth = curTableOffsetWidth / 24;
+    for ( let titleIdx = 0; titleIdx < reserveTitlesTimesLength; titleIdx++ ) {
+        reserveTitlesTimes[titleIdx].addEventListener("mousemove", function(event) {
+            let curDivLeftPos = Math.ceil( curPageWidth100 * 5 + curTableOffsetLeft );
+            //let curReserveGridWidth = reserveTitlesTimes[titleIdx].lastElementChild.offsetWidth - reserveDivWidthCalOffset; // 2는 border 값
+            let curReserveGridWidth = curPageReserveDivWidth;
+            
+            // 마우스 좌표 획득 코드
+            let eventX = event.clientX;
+            console.log("eventX : " + eventX);
+            
+            G_curMouseUpDivIdx = Math.ceil( ( eventX - curDivLeftPos ) / curReserveGridWidth ) - 1;
+            switch ( G_displayStatus ) {
+                case E_curTimeDisplay.LEFT:
+                    G_curMouseUpDivIdx = G_curMouseUpDivIdx;
+                    break;
+                case E_curTimeDisplay.MIDDLE:
+                    G_curMouseUpDivIdx = G_curMouseUpDivIdx + 12;
+                    break;
+                case E_curTimeDisplay.RIGHT:
+                    G_curMouseUpDivIdx = G_curMouseUpDivIdx + 24;
+                    break;
+            }
+            if ( G_curMouseUpDivIdx < 0 ) {
+                G_curMouseUpDivIdx = 0;
+            }
+            if ( G_curMouseUpDivIdx > 47 ) {
+                G_curMouseUpDivIdx = 47;
+            }
+            console.log("[1] 현재 div좌표: " + G_curMouseUpDivIdx);
+        });        
+    }
     return;
 }
+
+function initReserveGridRangeEvent() {
+    let reserveGridRangeLeftBtn = document.querySelector(".div-reserve-span-pointer-left");
+    let reserveGridRangeRightBtn = document.querySelector(".div-reserve-span-pointer-right");
+    return;
+}
+
+function getMousePosition(event) {
+    let x = event.clientX;
+    let y = event.clientY;
+    return {x, y};
+}
+
+function gridSpanLeftMouseDown(event) {
+    G_curEventX = event.clientX;
+    return;
+}
+
+function gridSpanLeftMouseMove(event) {
+    // mouse move detected code
+    // let eventX = event.clientX;
+    // console.log("eventX : " + eventX);
+    // let reserveGridWidth = event.parentElement.offsetWidth;
+    // console.log("rslt: " + (eventX - G_curEventX) / reserveGridWidth);
+
+    // mouseDown 했을 때의 x좌표 가져와서,
+    // 현재 x좌표와 비교해서,
+
+    return;
+}
+
+
+
 
  /**
   *    th-header
@@ -2640,3 +2800,8 @@ initDispFacReserveTimeVer2();
  *    버블링 문제로 인해서, 이벤트 리스너를 따로 빼서 관리하도록 한다.
  */
 initEventListener();
+
+/**
+ *    예약 Grid 범위 증가시키는 이벤트
+ */
+initReserveGridRangeEvent();
