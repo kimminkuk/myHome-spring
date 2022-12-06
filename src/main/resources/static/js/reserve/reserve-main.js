@@ -20,7 +20,14 @@ const E_curTimeDisplay = {
 
 const E_curMouseEventStatus = {
     NONE: 0,
-    RESERVE_GRID: 1
+    RESERVE_GRID: 1,
+    RESERVE_GRID_WAIT: 2
+};
+
+const E_reserveDivChild = {
+    MAIN: 0,
+    LEFT_BTN: 1,
+    RIGHT_BTN: 2
 };
 
 var G_calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
@@ -31,6 +38,7 @@ var G_displayStatus = E_curTimeDisplay.LEFT;
 var G_reserveUr = '';
 var G_curEventX = 0;
 var G_curMouseUpDivIdx = 0;
+var G_curReserveDivIdx = 0;
 var G_curMouseEventStatus = E_curMouseEventStatus.NONE;
 
 function reserveItemMake() {
@@ -703,12 +711,15 @@ function reserveGridPointerClick(curFacTitle, curIdx, curTrIdx) {
             //div.style.value = "nonReserve";
             div.value = "nonReserve";
             div.style.width = "100%";
+            
             div.style.padding = "0px";
             div.style.margin = "0px";
             
             let gridSpan = document.createElement("span");
             gridSpan.className = "div-reserve-span-pointer";
             gridSpan.value = "";
+            // gridSpan.style.left = "20%";
+            // gridSpan.style.width = "60%";
             div.appendChild(gridSpan);
         
             let gridSpanLeft = document.createElement("span");
@@ -729,30 +740,17 @@ function reserveGridPointerClick(curFacTitle, curIdx, curTrIdx) {
             mouseOnOffStyleMakeVer4(gridSpanLeft, "#118c9c", "#00FF00", "left");
             mouseOnOffStyleMakeVer4(gridSpanRight, "#118c9c", "#00FF00", "right");
 
-            // gridSpanLeft.addEventListener("mousedown", gridSpanLeftMouseDown, false);
-            //gridSpanLeft.addEventListener("mouseup", gridSpanLeftMouseUp, false);
             gridSpanLeft.addEventListener("mousedown", function() {
-                G_curMouseEventStatus = E_curMouseEventStatus.RESERVE_GRID;
-                G_curEventX = gridSpanLeft.offsetLeft;
+                G_curMouseEventStatus = E_curMouseEventStatus.RESERVE_GRID;                
+                console.log("[2-1] gridSpanLeft mouseDown div좌표: " + G_curMouseUpDivIdx);
             });
-            // gridSpanLeft.addEventListener("mousemove", function(event) {
-            //     // 마우스 좌표 획득 코드
-            //     let eventX = event.clientX;
-            //     console.log("eventX : " + eventX);
-            //     let reserveGridWidth = gridSpanLeft.parentElement.offsetWidth;
-            //     G_curMouseUpDivIdx = (eventX - G_curEventX) / reserveGridWidth;
-            //     console.log("[1] 현재 div좌표: " + G_curMouseUpDivIdx);
-            // });
 
             // mouse drag
             div.addEventListener("mouseup", function(event) {
-                console.log("[2] 결과 div좌표: " + G_curMouseUpDivIdx);
+                if ( G_curMouseEventStatus == E_curMouseEventStatus.RESERVE_GRID ) {
+                    console.log("[2-2] gridSpanLeft mouseUp 결과 div좌표: " + G_curMouseUpDivIdx);
+                }
             });
-            //gridSpanLeft.addEventListener("mousemove", gridSpanLeftMouseMove, false);
-            //gridSpanRight.addEventListener("mousedown", gridSpanRightMouseDown, false);
-            //gridSpanRight.addEventListener("mouseup", gridSpanRightMouseUp, false);
-            //gridSpanRight.addEventListener("mousemove", gridSpanRightMouseMove, false);
-
 
             div.addEventListener("click", function(event) {
                 reserveTimeGridClickVer2(curFacTitle, gridIdx, G_topOffsetIdx);
@@ -1099,10 +1097,12 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
         reservePopup.style.display = "block";
 
     } else {
-        reservePopup.style.display = "none";
-        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none");
-        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none");
-        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "none");
+        if ( G_curMouseEventStatus == E_curMouseEventStatus.NONE ) {
+            reservePopup.style.display = "none";
+            styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none", E_reserveDivChild.MAIN);
+            styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none", E_reserveDivChild.LEFT_BTN);
+            styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "none", E_reserveDivChild.RIGHT_BTN);
+        }
     }
 
     return;
@@ -2417,7 +2417,9 @@ function makeTimeVerticalLine() {
     verticalLine.style.width = "1px";
 
     //진한 초록색
-    verticalLine.style.backgroundColor = "#00ff00";
+    //하늘색
+
+    verticalLine.style.backgroundColor = "#003CFF";
     verticalLine.style.position = "absolute";
 
     // line의 top을 tableInitTop의 top으로 설정한다.
@@ -2432,7 +2434,7 @@ function makeTimeVerticalLine() {
     topArrow.style.height = "0px";
     topArrow.style.borderLeft = "5px solid transparent";
     topArrow.style.borderRight = "5px solid transparent";
-    topArrow.style.borderTop = "10px solid #00ff00";
+    topArrow.style.borderTop = "10px solid #003CFF";
     topArrow.style.position = "absolute";
     topArrow.style.top = "0px";
     topArrow.style.left = "-5px";
@@ -2444,7 +2446,7 @@ function makeTimeVerticalLine() {
     bottomArrow.style.height = "0px";
     bottomArrow.style.borderLeft = "5px solid transparent";
     bottomArrow.style.borderRight = "5px solid transparent";
-    bottomArrow.style.borderBottom = "10px solid #00ff00";
+    bottomArrow.style.borderBottom = "10px solid #003CFF";
     bottomArrow.style.position = "absolute";
     bottomArrow.style.bottom = "-3px";
     bottomArrow.style.left = "-5px";
@@ -2560,12 +2562,22 @@ function deleteElementsByQuerySelectorAll(elementQueryName) {
     return;
 }
 
-function styleNoneOrBlockElementByQuerySelectorAll(elementQueryName, styleStatus) {
+function styleNoneOrBlockElementByQuerySelectorAll(elementQueryName, styleStatus, styleStatus2) {
+    let initPointerStyleArr = new Array( "60%", "80%", "80%" );
+    let initPointerStyleArr2 = new Array ( "20%" );
     let elements = document.querySelectorAll(elementQueryName);
     let elementsLength = elements.length;
     if ( styleStatus == "none" ) {
         for ( let i = 0; i < elementsLength; i++ ) {
             elements[i].style.display = "none";
+            if ( styleStatus2 == E_reserveDivChild.MAIN ) {
+                elements[i].style.width = initPointerStyleArr[styleStatus2];
+                elements[i].style.left = initPointerStyleArr2[styleStatus2];
+            } else if ( styleStatus2 == E_reserveDivChild.LEFT_BTN ) {
+                elements[i].style.right = initPointerStyleArr[styleStatus2];
+            } else if ( styleStatus2 == E_reserveDivChild.RIGHT_BTN ) {
+                elements[i].style.left = initPointerStyleArr[styleStatus2];
+            }
         }
     } else if ( styleStatus == "block" ) {
         for ( let i = 0; i < elementsLength; i++ ) {
@@ -2599,10 +2611,11 @@ function initEventListener() {
     reservePopupBtnSendClose.addEventListener("click", testPreventDefault, false);
 
     function testPreventDefault(event) {
+        G_curMouseEventStatus = E_curMouseEventStatus.NONE;
         reservePopup.style.display = "none";
-        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none");
-        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none");
-        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "none");
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none", E_reserveDivChild.MAIN);
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none", E_reserveDivChild.LEFT_BTN);
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "none", E_reserveDivChild.RIGHT_BTN);
         closeCalendar();
     }
 
@@ -2612,9 +2625,10 @@ function initEventListener() {
 
     reservePopupCloseBtn.addEventListener("click", function() {
         reservePopup.style.display = "none";
-        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none");
-        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none");
-        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "none");        
+        G_curMouseEventStatus = E_curMouseEventStatus.NONE;
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none", E_reserveDivChild.MAIN);
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none", E_reserveDivChild.LEFT_BTN);
+        styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "none", E_reserveDivChild.RIGHT_BTN);       
         closeCalendar();
     });
 
@@ -2690,42 +2704,135 @@ function initEventListener() {
     let curTableOffsetWidth = document.querySelector(".reserve-iter-list-time-header-1").offsetWidth; //44 -> 42.33
     var reserveTitlesTimes = document.querySelectorAll(".reserve-iter-list-time");
     var reserveTitlesTimesLength = reserveTitlesTimes.length;
+
     // 1020 일때는 1.67이다.
     // 761 일때는 34 -> 31.56 
     //let reserveDivWidthCalOffset = ( 1.67 / 1020 ) * curTableOffsetWidth ;
     let curPageReserveDivWidth = curTableOffsetWidth / 24;
     for ( let titleIdx = 0; titleIdx < reserveTitlesTimesLength; titleIdx++ ) {
         reserveTitlesTimes[titleIdx].addEventListener("mousemove", function(event) {
-            let curDivLeftPos = Math.ceil( curPageWidth100 * 5 + curTableOffsetLeft );
-            //let curReserveGridWidth = reserveTitlesTimes[titleIdx].lastElementChild.offsetWidth - reserveDivWidthCalOffset; // 2는 border 값
-            let curReserveGridWidth = curPageReserveDivWidth;
             
-            // 마우스 좌표 획득 코드
-            let eventX = event.clientX;
-            console.log("eventX : " + eventX);
-            
-            G_curMouseUpDivIdx = Math.ceil( ( eventX - curDivLeftPos ) / curReserveGridWidth ) - 1;
-            switch ( G_displayStatus ) {
-                case E_curTimeDisplay.LEFT:
-                    G_curMouseUpDivIdx = G_curMouseUpDivIdx;
-                    break;
-                case E_curTimeDisplay.MIDDLE:
-                    G_curMouseUpDivIdx = G_curMouseUpDivIdx + 12;
-                    break;
-                case E_curTimeDisplay.RIGHT:
-                    G_curMouseUpDivIdx = G_curMouseUpDivIdx + 24;
-                    break;
+            if ( G_curMouseEventStatus == E_curMouseEventStatus.RESERVE_GRID ) {
+
+                G_curMouseUpDivIdx = getCurMouseDivIdx(event, curPageWidth100, curTableOffsetLeft, curPageReserveDivWidth);
+
+                if ( G_curReserveDivIdx > G_curMouseUpDivIdx ) {
+                    console.log("왼쪽으로 드래그 중..");
+                    // gridSpan을 이어 붙이고 싶은데..
+                    // 기본값: left 20%, width 60%;
+                    // gridSpan: 왼쪽 한칸에 left -80%, width 160%;
+                    // gridSpanLeftBtn: right 80% -> 180%;
+                    let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + ( titleIdx + G_topOffsetIdx ) + ") > th.reserve-iter-list-time > ";
+                    let curDivChild = "div:nth-child(" + (G_curReserveDivIdx + 1) + ")";
+                    curDiv += curDivChild;
+                
+                    let curDivObj = document.querySelector(curDiv);
+                    let diff = G_curReserveDivIdx - G_curMouseUpDivIdx;
+                    if ( diff > 0 ) {
+                        let width = diff * 100 + 60;
+                        let left = 20 - ( diff * 100 );
+                        let right = diff * 100 + 80;
+                        curDivObj.childNodes[0].style.width = String(width) + "%";
+                        curDivObj.childNodes[0].style.left = String(left) + "%";
+                        curDivObj.childNodes[1].style.right = String(right) + "%";
+                    }
+                    // for ( let i = 0; i < curDivObjChildLen; i++ ) {
+                    //     curDivObj.childNodes[i].style.display = "block";
+                    // }
+                    
+                }
             }
-            if ( G_curMouseUpDivIdx < 0 ) {
-                G_curMouseUpDivIdx = 0;
+        });
+
+        reserveTitlesTimes[titleIdx].addEventListener("mousedown", function(event) {
+            if ( G_curMouseEventStatus == E_curMouseEventStatus.NONE ) {
+                G_curReserveDivIdx = getCurMouseDivIdx(event, curPageWidth100, curTableOffsetLeft, curPageReserveDivWidth);
             }
-            if ( G_curMouseUpDivIdx > 47 ) {
-                G_curMouseUpDivIdx = 47;
+         });
+
+        reserveTitlesTimes[titleIdx].addEventListener("mouseup", function(event) {
+            if ( G_curMouseEventStatus == E_curMouseEventStatus.RESERVE_GRID ) {
+                G_curMouseEventStatus = E_curMouseEventStatus.RESERVE_GRID_WAIT;
             }
-            console.log("[1] 현재 div좌표: " + G_curMouseUpDivIdx);
-        });        
+        });
     }
     return;
+}
+
+function getCurMouseDivIdx(event, curPageWidth100, curTableOffsetLeft, curPageReserveDivWidth) {
+    let rsltDiv = 0;
+    //Table의 시작이 Left 5%입니다.
+    // 예약 div칸들의 왼쪽 시작 pos
+    let curDivLeftPos = Math.ceil( curPageWidth100 * 5 + curTableOffsetLeft );
+    let curReserveGridWidth = curPageReserveDivWidth;
+    
+    // 마우스 좌표 획득 코드
+    let eventX = event.clientX;
+    
+    // 글씨를 맨 왼쪽으로 쓰기
+    
+
+    // 칸을 거의 정확하게 계산하니 조금 부자연스러운 감이 있습니다.
+    // 그래서, 예약 칸의 중앙을 기준으로 계산하도록 하겠습니다.
+    rsltDiv = Math.ceil( ( eventX - curDivLeftPos ) / curReserveGridWidth ) - 1;
+    switch ( G_displayStatus ) {
+        case E_curTimeDisplay.LEFT:
+            rsltDiv = rsltDiv;
+            break;
+        case E_curTimeDisplay.MIDDLE:
+            rsltDiv = rsltDiv + 12;
+            break;
+        case E_curTimeDisplay.RIGHT:
+            rsltDiv = rsltDiv + 24;
+            break;
+    }
+    if ( rsltDiv < 0 ) {
+        rsltDiv = 0;
+    }
+    if ( rsltDiv > 47 ) {
+        rsltDiv = 47;
+    }    
+    return rsltDiv;
+}
+
+/**
+ * 단순하게 event좌표로, div를 구하면 조금 문제가 있나..
+ * 어떻게 하지?
+ * @param { 이벤트 } event 
+ * @param { 웹페이지 가로 100등분 } curPageWidth100 
+ * @param { 예약 테이블의 맨 왼쪽 좌표 } curTableOffsetLeft 
+ * @param { Reserve Div Width } curPageReserveDivWidth 
+ * @returns 
+ */
+function getCurMouseDivIdxVer2(event, curPageWidth100, curTableOffsetLeft, curPageReserveDivWidth) {
+    let rsltDiv = 0;
+    // Table의 시작이 Left 5%입니다. (curPageWidth100 * 5)
+    
+    let curReserveGridWidth = curPageReserveDivWidth;
+    let curDivLeftPos = Math.ceil( curPageWidth100 * 5 + curTableOffsetLeft + curReserveGridWidth );
+
+    // 마우스 좌표 획득 코드
+    let eventX = event.clientX;
+    
+    rsltDiv = Math.ceil( ( eventX - curDivLeftPos  ) / curReserveGridWidth ) - 1;
+    switch ( G_displayStatus ) {
+        case E_curTimeDisplay.LEFT:
+            rsltDiv = rsltDiv;
+            break;
+        case E_curTimeDisplay.MIDDLE:
+            rsltDiv = rsltDiv + 12;
+            break;
+        case E_curTimeDisplay.RIGHT:
+            rsltDiv = rsltDiv + 24;
+            break;
+    }
+    if ( rsltDiv < 0 ) {
+        rsltDiv = 0;
+    }
+    if ( rsltDiv > 47 ) {
+        rsltDiv = 47;
+    }    
+    return rsltDiv;
 }
 
 function initReserveGridRangeEvent() {
@@ -2741,7 +2848,7 @@ function getMousePosition(event) {
 }
 
 function gridSpanLeftMouseDown(event) {
-    G_curEventX = event.clientX;
+    //G_curEventX = event.clientX;
     return;
 }
 
