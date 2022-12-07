@@ -40,6 +40,9 @@ var G_curEventX = 0;
 var G_curMouseUpDivIdx = 0;
 var G_curReserveDivIdx = 0;
 var G_curMouseEventStatus = E_curMouseEventStatus.NONE;
+var G_reserveLeftWidth = 0;
+var G_reserveRightWidth = 0;
+var G_reserveSpanBtnPos = new Array(0, 80, 80);
 
 function reserveItemMake() {
     //변수 선언
@@ -740,20 +743,30 @@ function reserveGridPointerClick(curFacTitle, curIdx, curTrIdx) {
             mouseOnOffStyleMakeVer4(gridSpanLeft, "#118c9c", "#00FF00", "left");
             mouseOnOffStyleMakeVer4(gridSpanRight, "#118c9c", "#00FF00", "right");
 
-            gridSpanLeft.addEventListener("mousedown", function() {
-                G_curMouseEventStatus = E_curMouseEventStatus.RESERVE_GRID;                
+            gridSpanLeft.addEventListener("mousedown", function(event) {
+                G_curMouseEventStatus = E_curMouseEventStatus.RESERVE_GRID;
+                G_curMouseUpDivIdx = getCurMouseDivIdx(event);
                 console.log("[2-1] gridSpanLeft mouseDown div좌표: " + G_curMouseUpDivIdx);
+            });
+            
+            gridSpanRight.addEventListener("mousedown", function(event) {
+                G_curMouseEventStatus = E_curMouseEventStatus.RESERVE_GRID;
+                G_curMouseUpDivIdx = getCurMouseDivIdx(event);
+                console.log("[2-3] gridSpanRight mouseDown div좌표: " + G_curMouseUpDivIdx);
             });
 
             // mouse drag
             div.addEventListener("mouseup", function(event) {
                 if ( G_curMouseEventStatus == E_curMouseEventStatus.RESERVE_GRID ) {
+                    G_curMouseUpDivIdx = getCurMouseDivIdx(event);
                     console.log("[2-2] gridSpanLeft mouseUp 결과 div좌표: " + G_curMouseUpDivIdx);
                 }
             });
 
             div.addEventListener("click", function(event) {
-                reserveTimeGridClickVer2(curFacTitle, gridIdx, G_topOffsetIdx);
+                if ( G_curMouseEventStatus != E_curMouseEventStatus.RESERVE_GRID_WAIT ) {
+                    reserveTimeGridClickVer2(curFacTitle, gridIdx, G_topOffsetIdx);
+                }
             });
 
             reserveTitlesTimes[titleIdx].appendChild(div);
@@ -1099,6 +1112,8 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     } else {
         if ( G_curMouseEventStatus == E_curMouseEventStatus.NONE ) {
             reservePopup.style.display = "none";
+            G_reserveLeftWidth = 0;
+            G_reserveRightWidth = 0;            
             styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none", E_reserveDivChild.MAIN);
             styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none", E_reserveDivChild.LEFT_BTN);
             styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "none", E_reserveDivChild.RIGHT_BTN);
@@ -2612,6 +2627,8 @@ function initEventListener() {
 
     function testPreventDefault(event) {
         G_curMouseEventStatus = E_curMouseEventStatus.NONE;
+        G_reserveLeftWidth = 0;
+        G_reserveRightWidth = 0;
         reservePopup.style.display = "none";
         styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none", E_reserveDivChild.MAIN);
         styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none", E_reserveDivChild.LEFT_BTN);
@@ -2625,6 +2642,8 @@ function initEventListener() {
 
     reservePopupCloseBtn.addEventListener("click", function() {
         reservePopup.style.display = "none";
+        G_reserveLeftWidth = 0;
+        G_reserveRightWidth = 0;        
         G_curMouseEventStatus = E_curMouseEventStatus.NONE;
         styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none", E_reserveDivChild.MAIN);
         styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none", E_reserveDivChild.LEFT_BTN);
@@ -2714,7 +2733,12 @@ function initEventListener() {
             
             if ( G_curMouseEventStatus == E_curMouseEventStatus.RESERVE_GRID ) {
 
-                G_curMouseUpDivIdx = getCurMouseDivIdx(event, curPageWidth100, curTableOffsetLeft, curPageReserveDivWidth);
+                G_curMouseUpDivIdx = getCurMouseDivIdx(event);
+                
+                let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + ( titleIdx + G_topOffsetIdx ) + ") > th.reserve-iter-list-time > ";
+                let curDivChild = "div:nth-child(" + (G_curReserveDivIdx + 1) + ")";
+                curDiv += curDivChild;
+                let curDivObj = document.querySelector(curDiv);
 
                 if ( G_curReserveDivIdx > G_curMouseUpDivIdx ) {
                     console.log("왼쪽으로 드래그 중..");
@@ -2722,31 +2746,62 @@ function initEventListener() {
                     // 기본값: left 20%, width 60%;
                     // gridSpan: 왼쪽 한칸에 left -80%, width 160%;
                     // gridSpanLeftBtn: right 80% -> 180%;
-                    let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + ( titleIdx + G_topOffsetIdx ) + ") > th.reserve-iter-list-time > ";
-                    let curDivChild = "div:nth-child(" + (G_curReserveDivIdx + 1) + ")";
-                    curDiv += curDivChild;
-                
-                    let curDivObj = document.querySelector(curDiv);
                     let diff = G_curReserveDivIdx - G_curMouseUpDivIdx;
                     if ( diff > 0 ) {
-                        let width = diff * 100 + 60;
+                        let width = 0;
+                        if ( G_reserveRightWidth > 0 ) {
+                            width = diff * 100;
+                        } else {
+                            width = diff * 100 + 60;
+                        }
+                        G_reserveLeftWidth = width;
+                        G_reserveLeftWidth += G_reserveRightWidth;
+                        //width = G_reserveLeftWidth + G_reserveRightWidth;
                         let left = 20 - ( diff * 100 );
                         let right = diff * 100 + 80;
-                        curDivObj.childNodes[0].style.width = String(width) + "%";
-                        curDivObj.childNodes[0].style.left = String(left) + "%";
-                        curDivObj.childNodes[1].style.right = String(right) + "%";
+                        G_reserveSpanBtnPos[E_reserveDivChild.LEFT_BTN] = right;
+                        curDivObj.childNodes[E_reserveDivChild.MAIN].style.width = String(G_reserveLeftWidth) + "%";
+                        curDivObj.childNodes[E_reserveDivChild.MAIN].style.left = String(left) + "%";
+                        curDivObj.childNodes[E_reserveDivChild.LEFT_BTN].style.right = String(G_reserveSpanBtnPos[E_reserveDivChild.LEFT_BTN]) + "%";
+                        curDivObj.childNodes[E_reserveDivChild.RIGHT_BTN].style.left = String(G_reserveSpanBtnPos[E_reserveDivChild.RIGHT_BTN]) + "%";
+                        
                     }
-                    // for ( let i = 0; i < curDivObjChildLen; i++ ) {
-                    //     curDivObj.childNodes[i].style.display = "block";
-                    // }
-                    
+                } else if ( G_curReserveDivIdx < G_curMouseUpDivIdx ) {
+                    console.log("오른쪽으로 드래그 중..");
+                    // gridSpan을 이어 붙이고 싶은데..
+                    // 기본값: left 20%, width 60%;
+                    // gridSpan: 오른쪽 한칸에 left 80%, width 160%;
+                    // gridSpanRightBtn: left 80% -> 180%;
+                    let diff = G_curMouseUpDivIdx - G_curReserveDivIdx;
+                    if ( diff > 0 ) {
+                        let width = 0;
+                        if ( G_reserveLeftWidth > 0 ) {
+                            width = diff * 100;
+                        } else {
+                            width = diff * 100 + 60;
+                        }
+                        G_reserveRightWidth = width;
+                        G_reserveRightWidth += G_reserveLeftWidth
+                        //width = G_reserveLeftWidth + G_reserveRightWidth;
+                        let rightBtnStyleLeft = diff * 100 + 80;
+                        G_reserveSpanBtnPos[E_reserveDivChild.RIGHT_BTN] = rightBtnStyleLeft;
+                        curDivObj.childNodes[E_reserveDivChild.MAIN].style.width = String(G_reserveRightWidth) + "%";
+                        curDivObj.childNodes[E_reserveDivChild.LEFT_BTN].style.right = String(G_reserveSpanBtnPos[E_reserveDivChild.LEFT_BTN]) + "%";
+                        curDivObj.childNodes[E_reserveDivChild.RIGHT_BTN].style.left = String(G_reserveSpanBtnPos[E_reserveDivChild.RIGHT_BTN]) + "%";
+                    }
+                }
+                else {
+                    curDivObj.childNodes[E_reserveDivChild.MAIN].style.width = "60%";
+                    curDivObj.childNodes[E_reserveDivChild.MAIN].style.left = "20%";
+                    curDivObj.childNodes[E_reserveDivChild.LEFT_BTN].style.right = "80%";
+                    curDivObj.childNodes[E_reserveDivChild.RIGHT_BTN].style.left = "80%";
                 }
             }
         });
 
         reserveTitlesTimes[titleIdx].addEventListener("mousedown", function(event) {
             if ( G_curMouseEventStatus == E_curMouseEventStatus.NONE ) {
-                G_curReserveDivIdx = getCurMouseDivIdx(event, curPageWidth100, curTableOffsetLeft, curPageReserveDivWidth);
+                G_curReserveDivIdx = getCurMouseDivIdx(event);
             }
          });
 
@@ -2759,7 +2814,17 @@ function initEventListener() {
     return;
 }
 
-function getCurMouseDivIdx(event, curPageWidth100, curTableOffsetLeft, curPageReserveDivWidth) {
+function getCurMouseDivIdx(event) {
+
+    let curPageWidth100 = ( document.body.clientWidth / 100 );
+    let curTableOffsetLeft = document.querySelector(".reserve-iter-list-time-header-1").offsetLeft;
+    let curTableOffsetWidth = document.querySelector(".reserve-iter-list-time-header-1").offsetWidth; //44 -> 42.33
+
+    // 1020 일때는 1.67이다.
+    // 761 일때는 34 -> 31.56 
+    //let reserveDivWidthCalOffset = ( 1.67 / 1020 ) * curTableOffsetWidth ;
+    let curPageReserveDivWidth = curTableOffsetWidth / 24;    
+
     let rsltDiv = 0;
     //Table의 시작이 Left 5%입니다.
     // 예약 div칸들의 왼쪽 시작 pos
