@@ -812,7 +812,7 @@ function reserveGridPointerClick(curFacTitle, curIdx, curTrIdx) {
             });
 
             div.addEventListener("click", function(event) {
-                if ( G_curMouseEventStatus != E_curMouseEventStatus.RESERVE_GRID_WAIT || G_curMouseEventStatus != E_curMouseEventStatus.RESERVE_GRID_MOVE) {
+                if ( G_curMouseEventStatus == E_curMouseEventStatus.NONE ) {
                     reserveTimeGridClickVer2(curFacTitle, gridIdx, G_topOffsetIdx);
                 }
             });
@@ -1112,6 +1112,7 @@ function calCulateCurReserveTimeVer2(startTimeDiv, endTimeDiv) {
         reserveTimeMin.value = reserveTimeHour + ":00";
     }
 
+    reserveTimeHour = String(endTimeDiv >> 1);
     if ( endTimeDiv & 0x1 ) {
         if ( parseInt(reserveTimeHour) < 10 ) {
             reserveTimeHour = "0" + reserveTimeHour;
@@ -2789,6 +2790,7 @@ function reserveAllSettingClose() {
     G_curMouseEventStatus = E_curMouseEventStatus.NONE;
     G_curReserveDirectionStatus = E_curMouseEventStatus.NONE;    
     G_curReserveDivIdx = 0;
+
     styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none", E_reserveDivChild.MAIN);
     styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none", E_reserveDivChild.LEFT_BTN);
     styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "none", E_reserveDivChild.RIGHT_BTN);
@@ -2974,24 +2976,16 @@ function initEventListener() {
                 let moveDiv = 0;
                 moveDiv = G_curReserveMoveSpanDivIdx - G_curReserveSpanDivIdx;
                 if ( moveDiv != 0 ) {
-                    let curReserveLeftRightPos = new Array(0, 0);
-
                     if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] == 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] == 0 ) {
-                        
-                        curReserveLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
-                        curReserveLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
-    
-                    } else if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] != 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] == 0 ) {
-                        curReserveLeftRightPos[E_reserveDirectionStatus.LEFT] = G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT];
-                        curReserveLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
+                        G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
+                        G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
+                    } 
+                    else if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] != 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] == 0 ) {
+                        G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
                     } else if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] == 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] != 0 ) {
-                        curReserveLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
-                        curReserveLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT];
-                    } else {
-                        curReserveLeftRightPos[E_reserveDirectionStatus.LEFT] = G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT];
-                        curReserveLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT];
+                        G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
                     }
-
+                    
                     console.log("[3-5] reserveGridMove: " + moveDiv);
                     let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + ( titleIdx + G_topOffsetIdx ) + ") > th.reserve-iter-list-time > ";
                     let curDivChild = "div:nth-child(" + ( G_curReserveDivIdx + 1 ) + ")";
@@ -3002,9 +2996,12 @@ function initEventListener() {
                     let nextDivObjPath = curDiv + nextDivChild;
                     let nextDivObj = document.querySelector(nextDivObjPath);
                     moveReserveRange(curDivObj, nextDivObj);
-                    calCulateCurReserveTimeVer2(G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] + moveDiv, G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] + moveDiv);
+
+                    G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] += moveDiv;
+                    G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] += moveDiv;                    
+                    calCulateCurReserveTimeVer2(G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT], G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT]);
                     G_curReserveSpanDivIdx = G_curReserveMoveSpanDivIdx;
-                    G_curReserveDivIdx += moveDiv; 
+                    G_curReserveDivIdx += moveDiv;
                 }
               
             }
