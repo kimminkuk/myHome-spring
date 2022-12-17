@@ -53,6 +53,13 @@ const E_reserveDirectionStatus = {
     RIGHT : 1
 }
 
+const E_reserveDivTableInfo = {
+    X_START : 0,
+    X_END : 47,
+    X_LEFT_RNG_OUT : true,
+    NONE_RNG_OUT : false
+}
+
 var G_calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 var G_topOffsetIdx = 5;
 var G_gridColumnLength = 48;
@@ -67,11 +74,14 @@ var G_curReserveMoveSpanDivIdx = 0;
 var G_curMouseEventStatus = E_curMouseEventStatus.NONE;
 var G_curReserveDirectionStatus = E_curMouseEventStatus.NONE; 
 var G_curReserveWidth = 0;
+var G_curReserveLeftRngCheck = E_reserveDivTableInfo.NONE_RNG_OUT;
 var G_reserveLeftWidth = 0;
 var G_reserveRightWidth = 0;
 var G_reserveSpanLeftPos = 20;
 var G_reserveSpanBtnPos = new Array(0, 80, 80);
 var G_reserveCurDivXYpos = new Array(0, 0);
+
+
 var G_reserveDivLeftRightPos = new Array(0, 0);
 
 function reserveItemMake() {
@@ -1190,28 +1200,6 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     for ( let i = 0; i < curDivObjChildLen; i++ ) {
         curDivObj.childNodes[i].style.display = "block";
     }
-    //styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "block");
-    //styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "block");
-    //styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "block");
-    // let gridSpan = document.createElement("span");
-    // gridSpan.className = "div-reserve-span-pointer";
-    // gridSpan.value = "";
-    // curDivObj.appendChild(gridSpan);
-
-    // //gridSpan의 양 옆에 div를 만들어서, 그 div에 이벤트를 걸어서, 그 div를 클릭하면, gridSpan의 value를 변경한다.
-    // let gridSpanLeft = document.createElement("span");
-    // gridSpanLeft.className = "div-reserve-span-pointer-left";
-    // gridSpanLeft.value = "";
-    // //gridSpanLeft는 왼쪽화살표 방향으로 border를 만들어줘.
-
-    // curDivObj.appendChild(gridSpanLeft);
-
-    // let gridSpanRight = document.createElement("span");
-    // gridSpanRight.className = "div-reserve-span-pointer-right";
-    // gridSpanRight.value = "";
-    // curDivObj.appendChild(gridSpanRight);
-
-
 
     let curTitle = document.querySelector(".reserve-popup-main-title-text");
     let curUserName = document.querySelector(".reserve-page-user-name-text").value;
@@ -2790,7 +2778,7 @@ function reserveAllSettingClose() {
     G_curMouseEventStatus = E_curMouseEventStatus.NONE;
     G_curReserveDirectionStatus = E_curMouseEventStatus.NONE;    
     G_curReserveDivIdx = 0;
-
+    G_curReserveLeftRngCheck = E_reserveDivTableInfo.NONE_RNG_OUT;
     styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none", E_reserveDivChild.MAIN);
     styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none", E_reserveDivChild.LEFT_BTN);
     styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "none", E_reserveDivChild.RIGHT_BTN);
@@ -2802,19 +2790,27 @@ function reserveAllSettingClose() {
 function moveReserveRange( curObject, nextObject ) {
     let curObjectLen = curObject.childNodes.length;
 
-    nextObject.childNodes[E_reserveDivChild.MAIN].style.width = String(curObject.childNodes[E_reserveDivChild.MAIN].style.width);
-    nextObject.childNodes[E_reserveDivChild.MAIN].style.left = String(curObject.childNodes[E_reserveDivChild.MAIN].style.left);
-    nextObject.childNodes[E_reserveDivChild.LEFT_BTN].style.right = String(curObject.childNodes[E_reserveDivChild.LEFT_BTN].style.right);
-    nextObject.childNodes[E_reserveDivChild.RIGHT_BTN].style.left = String(curObject.childNodes[E_reserveDivChild.RIGHT_BTN].style.left);    
+    let curObjectCondArr = new Array( 
+        String(curObject.childNodes[E_reserveDivChild.MAIN].style.width),
+        String(curObject.childNodes[E_reserveDivChild.MAIN].style.left),
+        String(curObject.childNodes[E_reserveDivChild.LEFT_BTN].style.right),
+        String(curObject.childNodes[E_reserveDivChild.RIGHT_BTN].style.left)
+    );
+    
+    curObject.childNodes[E_reserveDivChild.MAIN].style.width = String(E_reserveSpanInitValue.SPAN_WIDTH) + "%";
+    curObject.childNodes[E_reserveDivChild.MAIN].style.left = String(E_reserveSpanInitValue.LEFT_POS) + "%";
+    curObject.childNodes[E_reserveDivChild.LEFT_BTN].style.right = String(E_reserveSpanInitValue.BTN_LEFT_POS) + "%";
+    curObject.childNodes[E_reserveDivChild.RIGHT_BTN].style.left = String(E_reserveSpanInitValue.BTN_RIGHT_POS) + "%";
+
+    nextObject.childNodes[E_reserveDivChild.MAIN].style.width = curObjectCondArr[0];
+    nextObject.childNodes[E_reserveDivChild.MAIN].style.left = curObjectCondArr[1];
+    nextObject.childNodes[E_reserveDivChild.LEFT_BTN].style.right = curObjectCondArr[2];
+    nextObject.childNodes[E_reserveDivChild.RIGHT_BTN].style.left = curObjectCondArr[3];
+  
     for ( let i = 0; i < curObjectLen; i++ ) {
         curObject.childNodes[i].style.display = "none";
         nextObject.childNodes[i].style.display = "block";
     }
-    curObject.childNodes[E_reserveDivChild.MAIN].style.width = String(E_reserveSpanInitValue.SPAN_WIDTH) + "%";
-    curObject.childNodes[E_reserveDivChild.MAIN].style.left = String(E_reserveSpanInitValue.LEFT_POS) + "%";
-    curObject.childNodes[E_reserveDivChild.LEFT_BTN].style.right = String(E_reserveSpanInitValue.BTN_LEFT_POS) + "%";
-    curObject.childNodes[E_reserveDivChild.RIGHT_BTN].style.left = String(E_reserveSpanInitValue.BTN_RIGHT_POS) + "%";    
-    
 
     return;
 }
@@ -2825,6 +2821,7 @@ function initEventListener() {
     let reservePopupBtnSendClose = document.querySelector(".reserve-popup-btn-close");
     let reservePopupBtnDbSend = document.querySelector(".reserve-popup-btn-db-send")
     let reserveTitlesTimes = document.querySelectorAll(".reserve-iter-list-time");
+    let reserveFacTitles = document.querySelectorAll(".reserve-iter-list-title");
     let reserveTitlesTimesLength = reserveTitlesTimes.length;
     
 
@@ -2916,9 +2913,11 @@ function initEventListener() {
         reserveTitlesTimes[titleIdx].addEventListener("mousemove", function(event) {
             
             if ( G_curMouseEventStatus == E_curMouseEventStatus.RESERVE_GRID ) {
+                
+                G_reserveCurDivXYpos[1] = titleIdx;
+                
                 // G_reserveCurDivXYpos[0] = G_curReserveDivIdx + 1;
                 // G_reserveCurDivXYpos[1] = titleIdx + G_topOffsetIdx;
-
                 G_curMouseUpDivIdx = getCurMouseDivIdx(event);
                 
                 let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + ( titleIdx + G_topOffsetIdx ) + ") > th.reserve-iter-list-time > ";
@@ -2942,6 +2941,7 @@ function initEventListener() {
                         curDivObj.childNodes[E_reserveDivChild.LEFT_BTN].style.right = String(G_reserveSpanBtnPos[E_reserveDivChild.LEFT_BTN]) + "%";
                         curDivObj.childNodes[E_reserveDivChild.RIGHT_BTN].style.left = String(G_reserveSpanBtnPos[E_reserveDivChild.RIGHT_BTN]) + "%";
                         G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curMouseUpDivIdx;
+                        console.log("G_reserveDivLeftRightPos[LEFT]: ", G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT]);
                         calCulateCurReserveTime(G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT]);
                     }
                 } else if ( G_curReserveDivIdx <= G_curMouseUpDivIdx && G_curReserveDirectionStatus == E_curMouseEventStatus.RESERVE_GRID_RIGHT_SIDE) {
@@ -2959,6 +2959,7 @@ function initEventListener() {
                         curDivObj.childNodes[E_reserveDivChild.LEFT_BTN].style.right = String(G_reserveSpanBtnPos[E_reserveDivChild.LEFT_BTN]) + "%";
                         curDivObj.childNodes[E_reserveDivChild.RIGHT_BTN].style.left = String(G_reserveSpanBtnPos[E_reserveDivChild.RIGHT_BTN]) + "%";
                         G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curMouseUpDivIdx;
+                        console.log("G_reserveDivLeftRightPos[RIGHT]: ", G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT]);
                         calCulateCurReserveTime(G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT]);
                     } 
                 }
@@ -2971,39 +2972,101 @@ function initEventListener() {
                     }
                 }
             } else if ( G_curMouseEventStatus == E_curMouseEventStatus.RESERVE_GRID_MOVE ) {
-                
+
                 G_curReserveMoveSpanDivIdx = getCurMouseDivIdx(event);
-                let moveDiv = 0;
-                moveDiv = G_curReserveMoveSpanDivIdx - G_curReserveSpanDivIdx;
+                let moveDiv = G_curReserveMoveSpanDivIdx - G_curReserveSpanDivIdx;
+
                 if ( moveDiv != 0 ) {
+                    console.log("[2] G_reserveDivLeftRightPos[LEFT]: ", G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT]);
+                    console.log("[2] G_reserveDivLeftRightPos[RIGHT]: ", G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT]);
                     if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] == 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] == 0 ) {
-                        G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
-                        G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
+                        if ( G_curReserveLeftRngCheck == E_reserveDivTableInfo.NONE_RNG_OUT ) {
+                            console.log("[1] G_curReserveLeftRngCheck: ", G_curReserveLeftRngCheck);
+                            G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
+                            G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
+                        }
                     } 
                     else if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] != 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] == 0 ) {
                         G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
+
                     } else if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] == 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] != 0 ) {
-                        G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
+                        if ( G_curReserveLeftRngCheck == E_reserveDivTableInfo.NONE_RNG_OUT ) {
+                            G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
+                            console.log("[2] G_curReserveLeftRngCheck: ", G_curReserveLeftRngCheck);
+                        }
                     }
                     
-                    console.log("[3-5] reserveGridMove: " + moveDiv);
-                    let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + ( titleIdx + G_topOffsetIdx ) + ") > th.reserve-iter-list-time > ";
+                    moveDiv = reserveDivRangeCheckAndSetting(moveDiv);
+
+                    console.log("[3-5-1] reserveGridMove: " + moveDiv);
+                    let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + ( G_reserveCurDivXYpos[1] + G_topOffsetIdx ) + ") > th.reserve-iter-list-time > ";
                     let curDivChild = "div:nth-child(" + ( G_curReserveDivIdx + 1 ) + ")";
                     let curDivObjPath = curDiv + curDivChild;
                     let curDivObj = document.querySelector(curDivObjPath);
-
+                    
+                    let nextDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + ( G_reserveCurDivXYpos[1] + G_topOffsetIdx ) + ") > th.reserve-iter-list-time > ";
                     let nextDivChild = "div:nth-child(" + ( G_curReserveDivIdx + 1 + moveDiv ) + ")";
-                    let nextDivObjPath = curDiv + nextDivChild;
+                    let nextDivObjPath = nextDiv + nextDivChild;
                     let nextDivObj = document.querySelector(nextDivObjPath);
                     moveReserveRange(curDivObj, nextDivObj);
 
                     G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] += moveDiv;
-                    G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] += moveDiv;                    
+                    G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] += moveDiv;
+                    
+                    calCulateCurReserveTimeVer2(G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT], G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT]);
+                    G_curReserveSpanDivIdx = G_curReserveMoveSpanDivIdx;
+                    G_curReserveDivIdx += moveDiv;
+                
+                }
+
+                else if ( moveDiv == 0 && G_reserveCurDivXYpos[1] != titleIdx ) {
+
+                    /**
+                     *     예약 타이틀이 변경 되는 경우, 예약 창에서 타이틀을 변경한다.
+                     */
+                    document.querySelector(".reserve-popup-main-title-text").innerHTML = reserveFacTitles[titleIdx].innerText;
+
+                    if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] == 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] == 0 ) {
+                        if ( G_curReserveLeftRngCheck == E_reserveDivTableInfo.NONE_RNG_OUT ) {
+                            G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
+                            G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
+                        }
+                    }
+                    else if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] != 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] == 0 ) {
+                        G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
+
+                    } else if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] == 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] != 0 ) {
+                        G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
+                    }
+                    
+                    moveDiv = reserveDivRangeCheckAndSetting(moveDiv);
+
+                    console.log("[3-5-2] reserveGridMove: " + moveDiv);
+                    let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + ( G_reserveCurDivXYpos[1] + G_topOffsetIdx ) + ") > th.reserve-iter-list-time > ";
+                    let curDivChild = "div:nth-child(" + ( G_curReserveDivIdx + 1 ) + ")";
+                    let curDivObjPath = curDiv + curDivChild;
+                    let curDivObj = document.querySelector(curDivObjPath);
+
+                    /**
+                     *    titleIdx가 curDiv와 nextDiv가 다르면 갱신한다.
+                     */ 
+                    if ( G_reserveCurDivXYpos[1] != titleIdx ) {
+                        G_reserveCurDivXYpos[1] = titleIdx;
+                    }
+
+                    let nextDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + ( G_reserveCurDivXYpos[1] + G_topOffsetIdx ) + ") > th.reserve-iter-list-time > ";
+                    let nextDivChild = "div:nth-child(" + ( G_curReserveDivIdx + 1 + moveDiv ) + ")";
+                    let nextDivObjPath = nextDiv + nextDivChild;
+                    let nextDivObj = document.querySelector(nextDivObjPath);
+                    moveReserveRange(curDivObj, nextDivObj);
+
+                    G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] += moveDiv;
+                    G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] += moveDiv;
+                    
                     calCulateCurReserveTimeVer2(G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT], G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT]);
                     G_curReserveSpanDivIdx = G_curReserveMoveSpanDivIdx;
                     G_curReserveDivIdx += moveDiv;
                 }
-              
             }
         });
 
@@ -3018,6 +3081,23 @@ function initEventListener() {
         });
     }
     return;
+}
+
+function reserveDivRangeCheckAndSetting(moveDiv) {
+    let moveDivReturn = moveDiv;
+    if ( ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] + moveDiv ) < E_reserveDivTableInfo.X_START ) {
+        G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = E_reserveDivTableInfo.X_START;
+        G_curMouseEventStatus = E_curMouseEventStatus.RESERVE_GRID_WAIT;
+        G_curReserveLeftRngCheck = E_reserveDivTableInfo.X_LEFT_RNG_OUT;
+        console.log("[3] G_curReserveLeftRngCheck: ", G_curReserveLeftRngCheck);
+        moveDivReturn = 0;
+    }
+    if ( ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] + moveDiv ) > E_reserveDivTableInfo.X_END ) {
+        G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = E_reserveDivTableInfo.X_END;
+        G_curMouseEventStatus = E_curMouseEventStatus.RESERVE_GRID_WAIT;
+        moveDivReturn = 0;
+    }
+    return moveDivReturn;
 }
 
 function getCurMouseDivTopIdx(event) {

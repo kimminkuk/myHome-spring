@@ -93,13 +93,13 @@
 
 .reserve-page-user-name {
     position: absolute;
-    top: 90%;
-    height: 5%;
-    left: 80%;
+    /* height: 5%; */
+    top : 0%;
+    left: 70%;
     width: 15%;
 
     /* border 1px 검은색 */
-    border: 1px solid #333;
+    /* border: 1px solid #333; */
     /* font는 굵은 검은색 */
     font-weight: 700;
     color: #333;
@@ -426,7 +426,7 @@ body > div.reserve-main-facility-table > table {
 
 .reserve-main-table .reserve-main-table-thead .th-header-time1 .th-header-time1-left-btn {
     position: absolute;
-    top: 2%;
+    top: 1%;
     left: 19%;
     font-size: 30px;
     color: #333;
@@ -435,7 +435,7 @@ body > div.reserve-main-facility-table > table {
 
 .reserve-main-table .reserve-main-table-thead .th-header-time1 .th-header-time1-right-btn {
     position: absolute;
-    top: 2%;
+    top: 1%;
     left: 101%;
     font-size: 30px;
     color: #333;
