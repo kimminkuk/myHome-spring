@@ -182,8 +182,8 @@
 .reserve-popup-main {
     display: none;
     position: absolute;
-    top : 100px;
-    left : 500px;
+    /* top : 100px; */
+    /* left : 500px; */
     width: 400px;
     height: 170px;
     /*연한 회색으로*/
@@ -1011,3 +1011,12 @@ body > div.reserve-main-facility-table > table {
     z-index: 2;
     opacity: 1.0;
 }
+
+::-moz-selection {
+    background: #000;
+    color: #000;
+ }
+ ::selection {
+    background: #000;
+    color: #000;
+ }

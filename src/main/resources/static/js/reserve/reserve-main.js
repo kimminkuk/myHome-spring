@@ -57,7 +57,20 @@ const E_reserveDivTableInfo = {
     X_START : 0,
     X_END : 47,
     X_LEFT_RNG_OUT : true,
-    NONE_RNG_OUT : false
+    NONE_RNG_OUT : false,
+    DISP_LEFT_LEFT : 0,
+    DISP_LEFT_RIGHT : 23,
+    DISP_MIDDLE_LEFT : 12,
+    DISP_MIDDLE_RIGHT : 35,
+    DISP_RIGHT_LEFT : 24,
+    DISP_RIGHT_RIGHT : 47,
+    IDX_DIV_TOP_START : 0,
+    IDX_DIV_HEIGHT : 1,
+    IDX_DIV_WIDTH : 2,
+    IDX_DISP_BOTTOM_END : 3,
+    IDX_DISP_LEFT_START : 4,
+    IDX_RESERVE_POPUP_HEIGHT : 5,
+    RESERVE_POPUP_STYLE_HEIGHT : 170
 }
 
 var G_calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
@@ -80,7 +93,7 @@ var G_reserveRightWidth = 0;
 var G_reserveSpanLeftPos = 20;
 var G_reserveSpanBtnPos = new Array(0, 80, 80);
 var G_reserveCurDivXYpos = new Array(0, 0);
-
+var G_reserveTablePosInfo = new Array(0, 0, 0, 0, 0, 0);
 
 var G_reserveDivLeftRightPos = new Array(0, 0);
 
@@ -1144,6 +1157,34 @@ function calCulateCurReserveTimeVer2(startTimeDiv, endTimeDiv) {
 }
 
 /**
+ *    예약 시간 선택 시, 예약 POPUP창을 띄워준다.
+ *    위치를 보정해준다.
+ */
+function reservePopupPosUpdate(rowIdx, colIdx, reservePopup ) {
+    let curPosMax = curReservePageTableWidthMax();
+    let curLeftOffset = 0;
+    let curTopOffset = 0;
+    // 현재 화면의 윈도우 높이
+    let curWindowHeight = window.innerHeight;
+    // 현재 화면의 스크롤 높이
+    let curScrollHeight = window.scrollY;
+    // 현재 화면의 스크롤 높이 + 현재 화면의 윈도우 높이
+    let curScrollHeightWindowHeight = curScrollHeight + curWindowHeight;
+    curLeftOffset = ( rowIdx - curPosMax[E_reserveDirectionStatus.LEFT] ) * G_reserveTablePosInfo[E_reserveDivTableInfo.IDX_DIV_WIDTH];
+    curTopOffset = G_reserveTablePosInfo[E_reserveDivTableInfo.IDX_DIV_TOP_START] + G_reserveTablePosInfo[E_reserveDivTableInfo.IDX_DIV_HEIGHT] * ( colIdx - G_topOffsetIdx + 1 );
+    
+    // 아래로 내려가면서 높이가 넘어가면 위로 올라가게
+    if ( curScrollHeightWindowHeight - ( curTopOffset + E_reserveDivTableInfo.RESERVE_POPUP_STYLE_HEIGHT ) < 0 ) {
+        curTopOffset -= ( E_reserveDivTableInfo.RESERVE_POPUP_STYLE_HEIGHT + G_reserveTablePosInfo[E_reserveDivTableInfo.IDX_DIV_HEIGHT] );
+    } 
+    reservePopup.style.left =  + curLeftOffset + "px";
+    reservePopup.style.top = curTopOffset + "px";
+    reservePopup.style.display = "block";
+
+    return;
+}
+
+/**
  *    아.. 이거 음...왜?
  *    DB로 연결하는게 아니라 해당 칸이 이미 설정 (true?) 되어있는지 확인하고 설정 해야함.
  *    DB연결이 아닌가??? 그러면 어떻게 날짜가 기록되어있지??
@@ -1224,7 +1265,7 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
     let resTimeHourEnd = '';
     let resTimeEnd = document.querySelector("#reservePopupMinuteScrollEnd");
 
-    if (reservePopup.style.display == "none") {
+    if ( reservePopup.style.display == "none" ) {
         reserveTimeHour = String(curIdx >> 1);
         if ( curIdx & 0x1 ) {
             if ( parseInt(reserveTimeHour) < 10 ) {
@@ -1247,11 +1288,8 @@ function reserveTimeGridClickVer2(curFacTitle, curIdx, curTrIdx) {
             reserveTimeMin.value = reserveTimeHour + ":00";
             resTimeEnd.value = reserveTimeHour + ":30";
         }
-        let curLeft = curIdx * 15;
-        let curTop = 3 * 100       
-        reservePopup.style.left = curLeft + "px";
-        reservePopup.style.top = curTop + "px";
-        reservePopup.style.display = "block";
+        
+        reservePopupPosUpdate(curIdx, curTrIdx, reservePopup);
 
     } else {
         if ( G_curMouseEventStatus == E_curMouseEventStatus.NONE ) {
@@ -1780,6 +1818,7 @@ function thTimeHeaderInit() {
 /**
  *    예약 배열을 만드는 함수 (현재는 시간, 분 단위만 처리했다.)
  *    배열을 48 -> 00:00 ~ 12:00 | 6:00 ~ 18:00 | 12:00 ~ 24:00 로 변경해본다.
+ *    그 외, 여러가지 초반 설정들을 제어한다.
  */
  function thTimeHeaderInitVer2() {
     // TODO:  버튼 눌러서 현재 날짜 좌, 우 이동도 시킬거임
@@ -1924,6 +1963,23 @@ function thTimeHeaderInit() {
     mouseOnOffStyleAndClickMake(calendarDateLeftBtn, "#333", "#00ff00", reserveDayLeft);
     mouseOnOffStyleAndClickMake(calendarDateRightBtn, "#333", "#00ff00", reserveDayRight);
     mouseOnOffStyleAndClickMake(calendarDateClick, "#333", "#00ff00", reserveDaySelect);
+
+
+    // 현재 예약 페이지의 정보를 저장한다.
+    let curReserveTable = document.querySelector(".reserve-main-table");
+    let curReserveDivWidth = document.querySelector(".reserve-iter-list-time");
+    let curReservePageTitles = document.querySelectorAll(".reserve-iter-list-title");
+    
+    G_reserveTablePosInfo[E_reserveDivTableInfo.IDX_DIV_TOP_START] = curReservePageTitles[0].offsetTop + curReserveTable.offsetTop;
+    G_reserveTablePosInfo[E_reserveDivTableInfo.IDX_DISP_BOTTOM_END] = window.innerHeight;
+    G_reserveTablePosInfo[E_reserveDivTableInfo.IDX_DIV_HEIGHT] = curReservePageTitles[0].offsetHeight;
+    G_reserveTablePosInfo[E_reserveDivTableInfo.IDX_DIV_WIDTH] = Math.round(curReserveDivWidth.offsetWidth / 24);
+    G_reserveTablePosInfo[E_reserveDivTableInfo.IDX_RESERVE_POPUP_HEIGHT] = document.querySelector(".reserve-popup-main").offsetHeight;
+    
+    let curPageWidth100 = ( document.body.clientWidth / 100 );
+    let curTableOffsetLeft = document.querySelector(".reserve-iter-list-time-header-1").offsetLeft;
+    let curDivLeftPos = Math.ceil( curPageWidth100 * 5 + curTableOffsetLeft );
+    G_reserveTablePosInfo[E_reserveDivTableInfo.IDX_DISP_LEFT_START] = curDivLeftPos;
 
     return;
 }
@@ -2915,9 +2971,7 @@ function initEventListener() {
             if ( G_curMouseEventStatus == E_curMouseEventStatus.RESERVE_GRID ) {
                 
                 G_reserveCurDivXYpos[1] = titleIdx;
-                
-                // G_reserveCurDivXYpos[0] = G_curReserveDivIdx + 1;
-                // G_reserveCurDivXYpos[1] = titleIdx + G_topOffsetIdx;
+
                 G_curMouseUpDivIdx = getCurMouseDivIdx(event);
                 
                 let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + ( titleIdx + G_topOffsetIdx ) + ") > th.reserve-iter-list-time > ";
@@ -2941,6 +2995,7 @@ function initEventListener() {
                         curDivObj.childNodes[E_reserveDivChild.LEFT_BTN].style.right = String(G_reserveSpanBtnPos[E_reserveDivChild.LEFT_BTN]) + "%";
                         curDivObj.childNodes[E_reserveDivChild.RIGHT_BTN].style.left = String(G_reserveSpanBtnPos[E_reserveDivChild.RIGHT_BTN]) + "%";
                         G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curMouseUpDivIdx;
+                        
                         console.log("G_reserveDivLeftRightPos[LEFT]: ", G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT]);
                         calCulateCurReserveTime(G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT]);
                     }
@@ -2976,27 +3031,29 @@ function initEventListener() {
                 G_curReserveMoveSpanDivIdx = getCurMouseDivIdx(event);
                 let moveDiv = G_curReserveMoveSpanDivIdx - G_curReserveSpanDivIdx;
 
-                if ( moveDiv != 0 ) {
-                    console.log("[2] G_reserveDivLeftRightPos[LEFT]: ", G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT]);
-                    console.log("[2] G_reserveDivLeftRightPos[RIGHT]: ", G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT]);
-                    if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] == 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] == 0 ) {
-                        if ( G_curReserveLeftRngCheck == E_reserveDivTableInfo.NONE_RNG_OUT ) {
-                            console.log("[1] G_curReserveLeftRngCheck: ", G_curReserveLeftRngCheck);
-                            G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
-                            G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
-                        }
-                    } 
-                    else if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] != 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] == 0 ) {
-                        G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
+                /**
+                 *    좌, 우 를 늘리지 않고 이동만 할 경우
+                 *    좌, 우 Global 변수를 갱신한다.
+                 */
+                if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] == 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] == 0 ) {
+                    G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
+                    G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
+                } 
+                else if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] != 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] == 0 ) {
+                    G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
+                } else if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] == 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] != 0 ) {
+                    G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
+                }
 
-                    } else if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] == 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] != 0 ) {
-                        if ( G_curReserveLeftRngCheck == E_reserveDivTableInfo.NONE_RNG_OUT ) {
-                            G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
-                            console.log("[2] G_curReserveLeftRngCheck: ", G_curReserveLeftRngCheck);
-                        }
+                if ( moveDiv != 0 ) {
+                    let curReservePageDivMax = curReservePageTableWidthMax();
+                    if ( ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] + moveDiv ) < curReservePageDivMax[E_reserveDirectionStatus.LEFT] ||
+                         ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] + moveDiv ) > curReservePageDivMax[E_reserveDirectionStatus.RIGHT] ) {
+                        console.log("예약 범위가 현재 페이지에서 벗어나는 경우 ( 조금 복잡해져서 여기서 처리를 마무리했습니다.");
+                        return;
                     }
                     
-                    moveDiv = reserveDivRangeCheckAndSetting(moveDiv);
+                    //moveDiv = reserveDivRangeCheckAndSetting(moveDiv);
 
                     console.log("[3-5-1] reserveGridMove: " + moveDiv);
                     let curDiv = "body > div.reserve-main-facility-table > table > thead > tr:nth-child(" + ( G_reserveCurDivXYpos[1] + G_topOffsetIdx ) + ") > th.reserve-iter-list-time > ";
@@ -3008,15 +3065,22 @@ function initEventListener() {
                     let nextDivChild = "div:nth-child(" + ( G_curReserveDivIdx + 1 + moveDiv ) + ")";
                     let nextDivObjPath = nextDiv + nextDivChild;
                     let nextDivObj = document.querySelector(nextDivObjPath);
-                    moveReserveRange(curDivObj, nextDivObj);
 
                     G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] += moveDiv;
                     G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] += moveDiv;
-                    
+
+                    if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] < 0 ) {
+                        G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = 0;
+                    }
+                    moveReserveRange(curDivObj, nextDivObj);
                     calCulateCurReserveTimeVer2(G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT], G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT]);
+                    reservePopupPosUpdate(G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT], G_reserveCurDivXYpos[1] + G_topOffsetIdx, document.querySelector(".reserve-popup-main"));
                     G_curReserveSpanDivIdx = G_curReserveMoveSpanDivIdx;
                     G_curReserveDivIdx += moveDiv;
-                
+                    
+                    // 마우스 드래그할 때, 화면에 드래그 표시 안나오게 하기
+                    
+
                 }
 
                 else if ( moveDiv == 0 && G_reserveCurDivXYpos[1] != titleIdx ) {
@@ -3025,19 +3089,6 @@ function initEventListener() {
                      *     예약 타이틀이 변경 되는 경우, 예약 창에서 타이틀을 변경한다.
                      */
                     document.querySelector(".reserve-popup-main-title-text").innerHTML = reserveFacTitles[titleIdx].innerText;
-
-                    if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] == 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] == 0 ) {
-                        if ( G_curReserveLeftRngCheck == E_reserveDivTableInfo.NONE_RNG_OUT ) {
-                            G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
-                            G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
-                        }
-                    }
-                    else if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] != 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] == 0 ) {
-                        G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = G_curReserveDivIdx;
-
-                    } else if ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] == 0 && G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] != 0 ) {
-                        G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = G_curReserveDivIdx;
-                    }
                     
                     moveDiv = reserveDivRangeCheckAndSetting(moveDiv);
 
@@ -3064,6 +3115,7 @@ function initEventListener() {
                     G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] += moveDiv;
                     
                     calCulateCurReserveTimeVer2(G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT], G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT]);
+                    reservePopupPosUpdate(G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT], G_reserveCurDivXYpos[1] + G_topOffsetIdx, document.querySelector(".reserve-popup-main"));
                     G_curReserveSpanDivIdx = G_curReserveMoveSpanDivIdx;
                     G_curReserveDivIdx += moveDiv;
                 }
@@ -3085,13 +3137,13 @@ function initEventListener() {
 
 function reserveDivRangeCheckAndSetting(moveDiv) {
     let moveDivReturn = moveDiv;
-    if ( ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] + moveDiv ) < E_reserveDivTableInfo.X_START ) {
-        G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = E_reserveDivTableInfo.X_START;
-        G_curMouseEventStatus = E_curMouseEventStatus.RESERVE_GRID_WAIT;
-        G_curReserveLeftRngCheck = E_reserveDivTableInfo.X_LEFT_RNG_OUT;
-        console.log("[3] G_curReserveLeftRngCheck: ", G_curReserveLeftRngCheck);
-        moveDivReturn = 0;
-    }
+    // if ( ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] + moveDiv ) < E_reserveDivTableInfo.X_START ) {
+    //     G_reserveDivLeftRightPos[E_reserveDirectionStatus.LEFT] = E_reserveDivTableInfo.X_START;
+    //     G_curMouseEventStatus = E_curMouseEventStatus.RESERVE_GRID_WAIT;
+    //     G_curReserveLeftRngCheck = E_reserveDivTableInfo.X_LEFT_RNG_OUT;
+    //     console.log("[3] G_curReserveLeftRngCheck: ", G_curReserveLeftRngCheck);
+    //     moveDivReturn = 0;
+    // }
     if ( ( G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] + moveDiv ) > E_reserveDivTableInfo.X_END ) {
         G_reserveDivLeftRightPos[E_reserveDirectionStatus.RIGHT] = E_reserveDivTableInfo.X_END;
         G_curMouseEventStatus = E_curMouseEventStatus.RESERVE_GRID_WAIT;
@@ -3145,6 +3197,29 @@ function getCurMouseDivIdx(event) {
         rsltDiv = 47;
     }    
     return rsltDiv;
+}
+
+/**
+ *    현재 시간대의 좌, 우 Max값을 구합니다.
+ */
+function curReservePageTableWidthMax() {
+    let pos = new Array(0, 0);
+    switch ( G_displayStatus ) {
+        case E_curTimeDisplay.LEFT:
+            pos[0] = E_reserveDivTableInfo.DISP_LEFT_LEFT;
+            pos[1] = E_reserveDivTableInfo.DISP_LEFT_RIGHT;
+            break;
+        case E_curTimeDisplay.MIDDLE:
+            pos[0] = E_reserveDivTableInfo.DISP_MIDDLE_LEFT;
+            pos[1] = E_reserveDivTableInfo.DISP_MIDDLE_RIGHT;
+            break;
+        case E_curTimeDisplay.RIGHT:
+            pos[0] = E_reserveDivTableInfo.DISP_RIGHT_LEFT;
+            pos[1] = E_reserveDivTableInfo.DISP_RIGHT_RIGHT;
+            break;
+    }
+
+    return pos;
 }
 
 /**
