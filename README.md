@@ -42,7 +42,9 @@
       100% 3. 취소 시, 선택한 예약 데이터들 초기화
       
    #### 시연 영상
-![예약페이지Ver2 0](https://user-images.githubusercontent.com/27074717/204533480-cad8eb9a-68d1-4421-bf6b-0ecafeebed8d.gif)
+   ![예약페이지Ver3 0](https://user-images.githubusercontent.com/27074717/208299666-1e7ed3c1-0a3d-4930-8268-1625316b0a07.gif)
+
+
 
 
 
