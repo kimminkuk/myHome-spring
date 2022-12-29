@@ -44,6 +44,7 @@
    #### 시연 영상
    ![예약페이지Ver3 0](https://user-images.githubusercontent.com/27074717/208299666-1e7ed3c1-0a3d-4930-8268-1625316b0a07.gif)
 
+---------
 
 ### 1-4. 콴트 페이지
    #### 기본 틀 생성
@@ -76,7 +77,8 @@
 
 
 # 완료 목록
-1. gamePage
+1. Page
+2. 예약Page
 
 # 자주 사용하는 사이트
 1. 영상 gif 변환: https://ezgif.com/maker
