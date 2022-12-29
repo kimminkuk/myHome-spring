@@ -5,7 +5,7 @@
    - 1.1 예약페이지 만들던거 ( 부스트캠프 하다가 실패, https://github.com/kimminkuk/boostcourse ) (todolist 이쁘게 만들기)
    - 1.2 상품 올리는 페이지 구현하던거 (https://github.com/kimminkuk/item-service 여기거 옮기기)
    - 1.3 게시판 글쓰기 만들던거 ( 부스트캠프에서 하던거 리팩토링, https://github.com/kimminkuk/boostcourse )
-   - 1.4 콴트 조사한 페이지 ( https://github.com/kimminkuk/220501_ver1)   
+   - 1.4 콴트 페이지 ( https://github.com/kimminkuk/220501_ver1)   
    - 1.5 동영상   
    - 1.6 설비예약 페이지 만들기
    - 1.7 광고 페이지 (블록?) 만들기
@@ -45,7 +45,19 @@
    ![예약페이지Ver3 0](https://user-images.githubusercontent.com/27074717/208299666-1e7ed3c1-0a3d-4930-8268-1625316b0a07.gif)
 
 
-
+### 1-4. 콴트 페이지
+   #### 기본 틀 생성
+      1. 버튼 기능들 활성화
+      2. ...
+   #### 기업 데이터 생성
+      1. In-Memory ( 파이썬으로 데이터 만들어서 넘겨줄거임 )
+      2. 파싱
+      3. ...
+   #### DB
+      1. H2 DataBase 사용
+      2. 아직 멤버들은 구상 중...
+   #### 초안 이미지
+   <img width="458" alt="콴트 페이지 초안" src="https://user-images.githubusercontent.com/27074717/209965774-6f67342a-2dd0-4170-ab48-640ba1273cb2.png">
 
 
 ---------   
