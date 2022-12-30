@@ -21,6 +21,12 @@ function goReservePageHtml() {
     return;
 }
 
+function goQuantHtml() {
+    let ur = 'http://localhost:8080/quant/quant-main';
+    window.location.replace(ur);
+    return;
+}
+
 function btnLight() {
     let liBtnList = document.querySelectorAll(".li-menu-btn");
     liBtnListLen = liBtnList.length;
