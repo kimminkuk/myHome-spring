@@ -59,6 +59,7 @@
       2. 아직 멤버들은 구상 중...
    #### 초안 이미지
    <img width="458" alt="콴트 페이지 초안" src="https://user-images.githubusercontent.com/27074717/209965774-6f67342a-2dd0-4170-ab48-640ba1273cb2.png">
+   <img width="1440" alt="myHome-spring 콴트페이지 초안1" src="https://user-images.githubusercontent.com/27074717/210174159-1ed7995a-1260-4df1-9594-14b3ae2ca2dd.png">
 
 
 ---------   
