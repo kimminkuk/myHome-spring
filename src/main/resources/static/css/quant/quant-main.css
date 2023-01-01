@@ -1,0 +1,694 @@
+/**
+*    group-quant-top-1 영역    
+*    top 10% 고정
+*/
+.group-quant-top-1 {
+    display: inline;
+    position: absolute;
+    width: 100%;
+    height: 5%;
+    top: 10%;
+}
+
+.group-quant-top-1 .strategy-text {
+    display: inline;
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    width: 5%;
+    height: 5%;
+    padding-right: 1px;
+}
+
+.group-quant-top-1 .strategy-list {
+    display: inline;
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    width: 20%;
+    padding-right: 1px;
+    
+    /* font를 center */
+    text-align: center;
+}
+
+.group-quant-top-1 .strategy-description {
+    display: inline;
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    width: 5%;
+    height: 5%;
+    padding-right: 1px;
+    border: 1px solid black;
+}
+
+.group-quant-top-1 .status-save-text {
+    display: inline;
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    left: 5%;
+    width: 15%;
+    padding-right: 1px;    
+}
+
+.group-quant-top-1 .status-save {
+    display: inline;
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    left: 5%;
+    width: 5%;
+    height: 5%;
+    padding-right: 1px;
+    border: 1px solid black;
+}
+
+/**
+*    group-quant-top-2 영역    
+*    group-quant-top-1 영역보다 아래에 위치
+*    top 15% 고정
+*/
+.group-quant-top-2 {
+    display: inline;
+    position: absolute;
+    width: 100%;
+    height: 5%;
+    top: 15%;    
+}
+
+.group-quant-top-2 .search-parsing {
+    display: inline;
+    position: absolute;
+    left: 70%;
+    width: 6%;
+    padding-right: 1px;
+    
+}
+
+.group-quant-top-2 .search-parsing .search-parsing-btn {
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    border: 1px solid black;
+}
+
+.group-quant-top-2 .search-parsing .search-parsing-update-date-text {
+    position: relative;
+    font-size: 7px;
+    font-weight: bold;
+    color: red;
+    padding-right: 1px;
+}
+
+.group-quant-top-2 .search-memory {
+    display: inline;
+    position: absolute;
+    left: 76%;
+    width: 7%;
+    padding-right: 1px;
+    padding-left: 1%;
+}
+
+.group-quant-top-2 .search-memory .search-memory-btn {
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    border: 1px solid black;
+}
+
+.group-quant-top-2 .search-memory .search-memory-update-date-text {
+    position: relative;
+    font-size: 7px;
+    font-weight: bold;
+    color: red;
+    padding-right: 1px;
+}
+
+.group-quant-top-2 .search-load-data {
+    display: inline;
+    position: absolute;
+    left: 84%;
+    width: 9%;
+    padding-right: 1px;
+    padding-left: 1%;
+}
+
+.group-quant-top-2 .search-load-data .search-load-data-btn {
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    border: 1px solid black;
+}
+
+.group-quant-top-2 .search-load-data .search-load-data-update-date-text {
+    position: relative;
+    font-size: 7px;
+    font-weight: bold;
+    color: red;
+    padding-right: 1px;
+}
+
+/**
+*    group-quant-mid-1 영역
+*    group-quant-top-2 영역보다 아래에 위치하고, 
+*    left-1 30프로 left-2 50% 사용할 예정임
+*    group-quant-mid-1-left-1의 위 아래 간격은 5% 정도로 유지하고싶음
+*/
+
+.group-quant-mid-1 {
+    display: inline;
+    position: absolute;
+    width: 100%;
+    height: 70%;
+    top: 20%;
+    left: 0%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 {
+    display: inline;
+    position: absolute;
+    width: 30%;
+    height: 100%;
+    top: 0%;
+    left: 1%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-market-capitalization-ranking-high {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-market-capitalization-ranking-high .market-capitalization-ranking-high-text{
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-market-capitalization-ranking-high .market-capitalization-ranking-high-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-market-capitalization-ranking-low {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 5%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-market-capitalization-ranking-low .market-capitalization-ranking-low-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-market-capitalization-ranking-low .market-capitalization-ranking-low-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-market-capitalization-percent-high {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 10%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-market-capitalization-percent-high .market-capitalization-percent-high-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-market-capitalization-percent-high .market-capitalization-percent-high-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-market-capitalization-percent-low {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 15%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-market-capitalization-percent-low .market-capitalization-percent-low-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-market-capitalization-percent-low .market-capitalization-percent-low-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-operating-profit-ratio {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 20%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-operating-profit-ratio .operating-profit-ratio-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-operating-profit-ratio .operating-profit-ratio-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-net-profit-ration {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 25%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-net-profit-ration .net-profit-ration-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-net-profit-ration .net-profit-ration-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-roe {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 30%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-roe .roe-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-roe .roe-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-roa {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 35%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-roa .roa-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-roa .roa-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-debt-ratio {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 40%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-debt-ratio .debt-ratio {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-debt-ratio .debt-ratio-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-capital-retention-rate {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 45%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-capital-retention-rate .capital-retention-rate-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-capital-retention-rate .capital-retention-rate-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-eps {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 50%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-eps .eps-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-eps .eps-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-per {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 55%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-per .per-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-per .per-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-bps {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 60%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-bps .bps-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-bps .bps-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-pbr {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 65%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-pbr .pbr-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-pbr .pbr-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-cash-dps {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 70%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-cash-dps .cash-dps-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-cash-dps .cash-dps-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-dividend-yield {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 75%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-dividend-yield .dividend-yield-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1 
+.company-info-dividend-yield .dividend-yield-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-2 {
+    display: inline;
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    top: 0%;
+    left: 49%;
+    border: 1px solid black;
+}

@@ -97,3 +97,17 @@ function moreBtnUnderLine() {
     }
     return;
 }
+
+/** 
+ *    오브젝트, 오리지널 컬러, 마우스on 컬러
+ */
+function mouseOnOffStyle(curObject) {
+    curObject.addEventListener("mouseover", function() {
+        this.style.cursor = "pointer";
+    });
+
+    curObject.addEventListener("mouseout", function() {
+        this.style.cursor = "default";
+    });
+    return;
+}
