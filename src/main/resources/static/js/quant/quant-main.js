@@ -44,6 +44,8 @@ function quantPageInit() {
     let infoPbrInputData = document.querySelector(".pbr-input-data");
     let infoCashDpsInputData = document.querySelector(".cash-dps-input-data");
     let infoDividendYieldInputData = document.querySelector(".dividend-yield-input-data");
+    let statusSaveInputData = document.querySelector(".status-save");
+    let strategyDescription = document.querySelector(".strategy-description");
 
     let infoOperationProfitRatioText = document.querySelector(".operating-profit-ratio-text");
     let infoNetProfitRatioText = document.querySelector(".net-profit-ration-text");
@@ -57,7 +59,7 @@ function quantPageInit() {
     let infoPbrText = document.querySelector(".pbr-text");
     let infoCashDpsText = document.querySelector(".cash-dps-text");
     let infoDividendYieldText = document.querySelector(".dividend-yield-text");
-
+    let statusSaveText = document.querySelector(".status-save-text");
 
     let marketRankingArr = new Array( martketRankingHighInputData, martketRankingLowInputData, martketRankingHighPercentInputData, martketRankingLowPercentInputData );
     let infoArr = new Array( 
@@ -75,11 +77,22 @@ function quantPageInit() {
     );
 
     
+    let searchParsingBtn = document.querySelector(".search-parsing-btn");
+    let searchMemoryBtn = document.querySelector(".search-memory-btn");
+    let searchLoadDataBtn = document.querySelector(".search-load-data-btn");
+
+    let divColorArr = new Array( strategyDescription, statusSaveInputData, searchParsingBtn, searchMemoryBtn, searchLoadDataBtn );
+
     marketRankingOperation(marketRankingArr);
     infoStyleAdjustment(infoArr);
     infoStyleAdjustment(infoArr2);
     mouseOnOffStyleListVer(infoArr);
+    objectClearText(statusSaveText);
+    mouseOnOffStyleListVer3(divColorArr, "#FFFFFF", "#00FF00");
 
+    // 네이버 금융 파싱 버튼 클릭 이벤트
+    naverFinanceParsingBtn(strategyDescription);
+    
     return;
 }
 
@@ -129,7 +142,7 @@ function mouseOnOffStyleListVer(curObjects) {
 }
 
 /** 
- *    오브젝트, 오리지널 컬러, 마우스on 컬러
+ *    오브젝트, 오리지널 컬러, 마우스on 컬러 추가
  */
 function mouseOnOffStyleVer2(curObject) {
     curObject.addEventListener("mouseover", function() {
@@ -140,6 +153,44 @@ function mouseOnOffStyleVer2(curObject) {
         this.style.cursor = "default";
     });
     return;
+}
+
+/**
+ *    클릭하면 텍스트를 지운다.
+ */
+function objectClearText(Object) {
+    Object.addEventListener("click", function() {
+        Object.value = "";
+    });
+    return;
+}
+
+ /**
+  *    리스트로 마우스 오버, 색 추가 (originalColor, mouseOnColor)
+  */
+function mouseOnOffStyleListVer3(curObjects, originalColor, mouseOnColor) {
+    let curObjectsLen = curObjects.length;
+    for (let i = 0; i < curObjectsLen; i++) {
+        curObjects[i].addEventListener("mouseover", function() {
+            this.style.cursor = "pointer";
+            this.style.backgroundColor = mouseOnColor;
+        });
+    
+        curObjects[i].addEventListener("mouseout", function() {
+            this.style.cursor = "default";
+            this.style.backgroundColor = originalColor;
+        });        
+    }    
+    return;
+}
+
+/**
+ *    네이버 금융 파싱 버튼 클릭 이벤트
+ */
+function naverFinanceParsingBtn(object) {
+    object.addEventListener("click", function() {
+        
+    }
 }
 
 quantPageInit();

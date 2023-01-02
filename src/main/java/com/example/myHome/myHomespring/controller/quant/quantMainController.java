@@ -12,4 +12,12 @@ public class quantMainController {
         System.out.println("[DEBUG END] quantMain Call()");
         return "quant/quant-main.html";
     }
+
+    @GetMapping("/quant/naver-finance-parsing")
+    public String naverFinanceParsing() {
+        System.out.println("[DEBUG START] naverFinanceParsing Call()");
+
+        System.out.println("[DEBUG END] naverFinanceParsing Call()");
+        return "quant/quant-main.html";
+    }
 }
