@@ -18,7 +18,6 @@ public class QuantStrategyMemberRepository implements QuantStrategyRepository {
 
     @Override
     public Optional<QuantStrategyMember> findById(Long id) {
-
         return Optional.ofNullable(store.get(id));
     }
 
@@ -37,4 +36,9 @@ public class QuantStrategyMemberRepository implements QuantStrategyRepository {
 
     @Override
     public List<QuantStrategyMember> findAll() { return new ArrayList<>(store.values()); }
+
+    public void clearStore() {
+        store.clear();
+        return;
+    }
 }

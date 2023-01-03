@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class quantMainController {
+public class quantMainContr정oller {
     @GetMapping("/quant/quant-main")
     public String quantMain() {
         System.out.println("[DEBUG START] quantMain Call()");

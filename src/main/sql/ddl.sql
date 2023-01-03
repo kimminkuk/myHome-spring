@@ -78,6 +78,8 @@ create table FACILITY_RESERVE_TIME_V3
 -- Language: sql
 -- Path: sql/ddl.sql
 -- 전략 저장 및 현재 상태 저장 DB
+-- strategy_info:
+-- 시가총액 상위 순위, 시가총액 하위 순위, 시가총액 상위 퍼센트, 시가총액 하위 퍼센트, 영업이익률, 순이익률, ROE, ROA, 부채비율, 자본유보율, EPS, PER, BPS, PBR, 현금배당수익률, 배당수익률
 drop table if exists QUANT_STRATEGY_INFO CASCADE;
 create table QUANT_STRATEGY_INFO
 (
