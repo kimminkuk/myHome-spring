@@ -52,6 +52,14 @@ class QuantStrategyServiceTest {
     }
 
     @Test
+    void 전략가져오기() throws Exception {
+        String strategyTitle = "전략2";
+        QuantStrategyMember quantStrategyMember = quantStrategyService.findStrategy(strategyTitle).get();
+        assertThat(quantStrategyMember.getStrategyTitle()).isEqualTo(strategyTitle);
+        System.out.println("quantStrategyMember.getStrategyInfo() = " + quantStrategyMember.getStrategyInfo());
+    }
+
+    @Test
     void 전략삭제() throws Exception {
         //given
         int curStrategies = quantStrategyService.findStrategies().size();

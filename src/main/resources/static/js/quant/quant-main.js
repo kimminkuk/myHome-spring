@@ -44,7 +44,7 @@ function quantPageInit() {
     let infoPbrInputData = document.querySelector(".pbr-input-data");
     let infoCashDpsInputData = document.querySelector(".cash-dps-input-data");
     let infoDividendYieldInputData = document.querySelector(".dividend-yield-input-data");
-    let statusSaveInputData = document.querySelector(".status-save");
+    let strategySaveInputData = document.querySelector(".strategy-save");
     let strategyDescription = document.querySelector(".strategy-description");
 
     let infoOperationProfitRatioText = document.querySelector(".operating-profit-ratio-text");
@@ -59,17 +59,17 @@ function quantPageInit() {
     let infoPbrText = document.querySelector(".pbr-text");
     let infoCashDpsText = document.querySelector(".cash-dps-text");
     let infoDividendYieldText = document.querySelector(".dividend-yield-text");
-    let statusSaveText = document.querySelector(".status-save-text");
+    let strategySaveText = document.querySelector(".strategy-save-text");
 
     let marketRankingArr = new Array( martketRankingHighInputData, martketRankingLowInputData, martketRankingHighPercentInputData, martketRankingLowPercentInputData );
-    let infoArr = new Array( 
+    let infoDataArr = new Array( 
         martketRankingHighInputData, martketRankingLowInputData, martketRankingHighPercentInputData, martketRankingLowPercentInputData, 
         infoOperationProfitRatioInputData, infoNetProfitRatioInputData, infoRoeInputData, infoRoaInputData, 
         infoDebtRatioInputData, infoCapitalRetentionRateInputData, infoEpsInputData, infoPerInputData, 
         infoBpsInputData, infoPbrInputData, infoCashDpsInputData, infoDividendYieldInputData 
     );
 
-    let infoArr2 = new Array( 
+    let infoTextArr = new Array( 
         martketRankingHighText, martketRankingLowText, martketRankingHighPercentText, martketRankingLowPercentText, 
         infoOperationProfitRatioText, infoNetProfitRatioText, infoRoeText, infoRoaText, 
         infoDebtRatioText, infoCapitalRetentionRateText, infoEpsText, infoPerText, 
@@ -81,18 +81,20 @@ function quantPageInit() {
     let searchMemoryBtn = document.querySelector(".search-memory-btn");
     let searchLoadDataBtn = document.querySelector(".search-load-data-btn");
 
-    let divColorArr = new Array( strategyDescription, statusSaveInputData, searchParsingBtn, searchMemoryBtn, searchLoadDataBtn );
+    let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, searchLoadDataBtn );
 
     marketRankingOperation(marketRankingArr);
-    infoStyleAdjustment(infoArr);
-    infoStyleAdjustment(infoArr2);
-    mouseOnOffStyleListVer(infoArr);
-    objectClearText(statusSaveText);
+    infoStyleAdjustment(infoDataArr);
+    infoStyleAdjustment(infoTextArr);
+    mouseOnOffStyleListVer(infoDataArr);
+    objectClearText(strategySaveText);
     mouseOnOffStyleListVer3(divColorArr, "#FFFFFF", "#00FF00");
 
     // 네이버 금융 파싱 버튼 클릭 이벤트
-    naverFinanceParsingBtn(strategyDescription);
+    //naverFinanceParsingBtn(strategyDescription);
     
+    // 현재 전략을 저장합니다.
+    strategySaveBtn(strategySaveText, strategySaveInputData, infoDataArr);
     return;
 }
 
@@ -187,10 +189,33 @@ function mouseOnOffStyleListVer3(curObjects, originalColor, mouseOnColor) {
 /**
  *    네이버 금융 파싱 버튼 클릭 이벤트
  */
-function naverFinanceParsingBtn(object) {
-    object.addEventListener("click", function() {
+// function naverFinanceParsingBtn(object) {
+//     object.addEventListener("click", function() {
         
-    }
+//     }
+    
+// }
+
+/**
+ *    현재 전략을 저장합니다.
+ *    @param 전략 이름
+ *    @param 전략 저장 버튼
+ *    @param 재무제표 리스트
+ */
+function strategySaveBtn( strategyTitle, strategySaveInputData, infoDataArr ) {
+    let quantUr = 'http://localhost:8080/quant/save-strategy';
+    let data = '';
+    strategySaveInputData.addEventListener("click", function() {
+        let userName = "mk.yoda@nklcb.com";
+        let strategyInfo = ""
+        for ( let infoDataIdx = 0; infoDataIdx < infoDataArr.length - 1; infoDataIdx++ ) {
+            strategyInfo += String(infoDataArr[infoDataIdx].value) + "/";
+        }
+        strategyInfo += String(infoDataArr[infoDataArr.length - 1].value);
+        data = 'userName=' + userName + '&strategyTitle=' + strategyTitle.value + '&strategyInfo=' + strategyInfo;
+        location.href = quantUr + '?' + data;
+    });
+    return;
 }
 
 quantPageInit();

@@ -25,8 +25,8 @@ public class QuantStrategyService {
     /**
      *   전략 찾기
      */
-    public Optional<QuantStrategyMember> findOne(Long id) {
-        return quantStrategyRepository.findById(id);
+    public Optional<QuantStrategyMember> findStrategy(String strategyTitle) {
+        return quantStrategyRepository.findByTitle(strategyTitle);
     }
 
     /**

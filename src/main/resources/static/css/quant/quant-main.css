@@ -46,7 +46,7 @@
     border: 1px solid black;
 }
 
-.group-quant-top-1 .status-save-text {
+.group-quant-top-1 .strategy-save-text {
     display: inline;
     position: relative;
     font-size: 14px;
@@ -57,7 +57,7 @@
     padding-right: 1px;    
 }
 
-.group-quant-top-1 .status-save {
+.group-quant-top-1 .strategy-save {
     display: inline;
     position: relative;
     font-size: 14px;
