@@ -32,7 +32,7 @@ public class QuantStrategyService {
     /**
      *   전략 전체 조회
      */
-    List<QuantStrategyMember> findStrategies() {
+    public List<QuantStrategyMember> findStrategies() {
         return quantStrategyRepository.findAll();
     }
 

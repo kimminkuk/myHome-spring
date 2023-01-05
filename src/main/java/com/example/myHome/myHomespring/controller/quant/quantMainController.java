@@ -21,25 +21,58 @@ public class quantMainController {
     }
 
     @GetMapping("quant/quant-main")
-    public String quantMain() {
+    public String quantMain(Model model) {
         System.out.println("[DEBUG] quantMain START");
 
+        List<QuantStrategyMember> quantStrategyMembers = quantStrategyService.findStrategies();
+        model.addAttribute("quantStrategyMembers", quantStrategyMembers);
+
+        // 처음 화면에서는 전략 정보 더미를 던집니다.
+        String companyInfoDummy = "x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x";
+        QuantStrategyInfoMember quantStrategyInfoMember = splitStrategy(companyInfoDummy);
+        model.addAttribute("strategyInfo", quantStrategyInfoMember);
+
+        // html option 더미를 던집니다.
+        QuantStrategyMember quantStrategyMember = new QuantStrategyMember("dummy", getCurDate(), "전략을 선택해주세요.", companyInfoDummy);
+        model.addAttribute("quantStrategyMember", quantStrategyMember);
 
         System.out.println("[DEBUG] quantMain END");
         return "quant/quant-main";
     }
 
+    @GetMapping("quant/load-strategies")
+    public String loadStrategies(Model model) {
+        System.out.println("[DEBUG] loadStrategies START");
+
+        List<QuantStrategyMember> quantStrategyMembers = quantStrategyService.findStrategies();
+        model.addAttribute("quantStrategyMembers", quantStrategyMembers);
+
+        System.out.println("[DEBUG] loadStrategies END");
+        return "quant/quant-main";
+    }
+
     @GetMapping("quant/load-strategy")
     public String loadStrategy(Model model,
-                               @RequestParam("strategyName") String strategyName) {
-        System.out.println("[DEBUG] loadStrategy START + strategyName: " + strategyName);
+                               @RequestParam("strategyTitle") String strategyTitle) {
+        System.out.println("[DEBUG] loadStrategy START + strategyTitle: " + strategyTitle);
 
-        QuantStrategyMember quantStrategyMember = quantStrategyService.findStrategy(strategyName).get();
+        List<QuantStrategyMember> quantStrategyMembers = quantStrategyService.findStrategies();
+        model.addAttribute("quantStrategyMembers", quantStrategyMembers);
+
+        // findStrategy null 경우에 대한 예외처리 필요
+        QuantStrategyMember quantStrategyMember = quantStrategyService.findStrategy(strategyTitle).get();
+        if ( quantStrategyMember == null ) {
+            System.out.println("[DEBUG] loadStrategy END + quantStrategyMember is null");
+            return "quant/quant-main";
+        }
 
         // 1. back 쪽에서 전략을 split해서 front로 보내주는 방법
         //    아 타임리프로 보내야하니깐 클래스로 묶어서 보내주자
         QuantStrategyInfoMember quantStrategyInfoMember = splitStrategy(quantStrategyMember.getStrategyInfo());
         model.addAttribute("strategyInfo", quantStrategyInfoMember);
+
+        // html option에 로드한 전략이 나오게 합니다.
+        model.addAttribute("quantStrategyMember", quantStrategyMember);
 
         // 2. back 쪽에서 리스트로 보내서 front에서 split 하는 방법
 
@@ -52,7 +85,7 @@ public class quantMainController {
                                @RequestParam("userName") String userName,
                                @RequestParam("strategyTitle") String strategyTitle,
                                @RequestParam("strategyInfo") String strategyInfo) {
-        System.out.println("[DEBUG] saveStrategy START + strategyTitle: " + strategyTitle + ", strategyInfo: " + strategyInfo);
+        System.out.println("[DEBUG] saveStrategy START");
         QuantStrategyMember quantStrategyMember = new QuantStrategyMember();
         quantStrategyMember.setUserName(userName);
         quantStrategyMember.setSaveTime(getCurDate());
@@ -60,7 +93,20 @@ public class quantMainController {
         quantStrategyMember.setStrategyInfo(strategyInfo);
         quantStrategyService.strategySave(quantStrategyMember);
 
+        List<QuantStrategyMember> quantStrategyMembers = quantStrategyService.findStrategies();
+        model.addAttribute("quantStrategyMembers", quantStrategyMembers);
+
         System.out.println("[DEBUG] saveStrategy END");
+        return "quant/quant-main";
+    }
+
+    @GetMapping("quant/delete-strategy")
+    public String deleteStrategy(Model model,
+                                 @RequestParam("strategyTitle") String strategyTitle) {
+        System.out.println("[DEBUG] deleteStrategy START + strategyTitle: " + strategyTitle);
+        quantStrategyService.delStrategy(strategyTitle);
+
+        System.out.println("[DEBUG] deleteStrategy END");
         return "quant/quant-main";
     }
 

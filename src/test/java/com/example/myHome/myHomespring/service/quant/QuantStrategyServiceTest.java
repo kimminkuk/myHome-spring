@@ -90,4 +90,20 @@ class QuantStrategyServiceTest {
         //then
         org.junit.jupiter.api.Assertions.assertEquals(e.getMessage(), "이미 존재하는 전략입니다.");
     }
+
+    @Test
+    void 전체_전략_조회() throws Exception {
+        //given
+        int curStrategies = quantStrategyService.findStrategies().size();
+
+        //when
+        List<QuantStrategyMember> strategies = quantStrategyService.findStrategies();
+
+        //then
+        assertThat(strategies.size()).isEqualTo(curStrategies);
+
+        for (QuantStrategyMember strategy : strategies) {
+            System.out.println("strategy.Title = " + strategy.getStrategyTitle() + "  strategy.Info = " + strategy.getStrategyInfo());
+        }
+    }
 }

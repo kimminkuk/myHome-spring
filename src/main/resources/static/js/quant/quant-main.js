@@ -10,16 +10,7 @@ const E_quantStrategy = {
  *    1. 버튼 구성
  */
 function quantPageInit() {
-    // 전략 목록 생성
-    let strategyList = document.querySelector(".strategy-list");
-    let quantStrategyLen = Object.keys(E_quantStrategy).length;
-    for (let strategyIdx = 0; strategyIdx < quantStrategyLen; strategyIdx++) {
-        let strategyOptionItem = document.createElement("option");
-        strategyOptionItem.value = E_quantStrategy[strategyIdx];
-        strategyOptionItem.innerHTML = E_quantStrategy[strategyIdx];
-        strategyList.appendChild(strategyOptionItem);
-    }
-    
+
     // 시가총액 상위 순위, 하위 순위, 상위 퍼센트, 하위 퍼센트는 and연산임
     let martketRankingHighInputData = document.querySelector(".market-capitalization-ranking-high-input-data");
     let martketRankingLowInputData = document.querySelector(".market-capitalization-ranking-low-input-data");
@@ -44,8 +35,11 @@ function quantPageInit() {
     let infoPbrInputData = document.querySelector(".pbr-input-data");
     let infoCashDpsInputData = document.querySelector(".cash-dps-input-data");
     let infoDividendYieldInputData = document.querySelector(".dividend-yield-input-data");
+    let strategyList = document.querySelector(".strategy-list");
     let strategySaveInputData = document.querySelector(".strategy-save");
     let strategyDescription = document.querySelector(".strategy-description");
+    let strategyDeleteBtn = document.querySelector(".strategy-delete");
+    
 
     let infoOperationProfitRatioText = document.querySelector(".operating-profit-ratio-text");
     let infoNetProfitRatioText = document.querySelector(".net-profit-ration-text");
@@ -81,7 +75,7 @@ function quantPageInit() {
     let searchMemoryBtn = document.querySelector(".search-memory-btn");
     let searchLoadDataBtn = document.querySelector(".search-load-data-btn");
 
-    let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, searchLoadDataBtn );
+    let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, searchLoadDataBtn, strategyDeleteBtn );
 
     marketRankingOperation(marketRankingArr);
     infoStyleAdjustment(infoDataArr);
@@ -89,12 +83,18 @@ function quantPageInit() {
     mouseOnOffStyleListVer(infoDataArr);
     objectClearText(strategySaveText);
     mouseOnOffStyleListVer3(divColorArr, "#FFFFFF", "#00FF00");
-
+    mouseOnOffStyleVer2(strategyList);
     // 네이버 금융 파싱 버튼 클릭 이벤트
     //naverFinanceParsingBtn(strategyDescription);
     
     // 현재 전략을 저장합니다.
     strategySaveBtn(strategySaveText, strategySaveInputData, infoDataArr);
+
+    // 현재 전략을 삭제합니다.
+    strategyDeleteBtnFunc(strategyDeleteBtn);
+
+    // 선택한 전략을 불러옵니다.
+    loadOneStrategy(strategyList);
     return;
 }
 
@@ -198,9 +198,9 @@ function mouseOnOffStyleListVer3(curObjects, originalColor, mouseOnColor) {
 
 /**
  *    현재 전략을 저장합니다.
- *    @param 전략 이름
- *    @param 전략 저장 버튼
- *    @param 재무제표 리스트
+ *    @param 전략이름
+ *    @param 전략저장버튼
+ *    @param 재무제표리스트
  */
 function strategySaveBtn( strategyTitle, strategySaveInputData, infoDataArr ) {
     let quantUr = 'http://localhost:8080/quant/save-strategy';
@@ -213,9 +213,76 @@ function strategySaveBtn( strategyTitle, strategySaveInputData, infoDataArr ) {
         }
         strategyInfo += String(infoDataArr[infoDataArr.length - 1].value);
         data = 'userName=' + userName + '&strategyTitle=' + strategyTitle.value + '&strategyInfo=' + strategyInfo;
+
+        // 전략 리스트를 갱신 필요   
+        // ajax로 전략 리스트를 갱신해볼까?
         location.href = quantUr + '?' + data;
     });
     return;
+}
+
+/**
+ *    전략을 삭제합니다.
+ *    @Param 전략삭제버튼
+ */
+function strategyDeleteBtnFunc(strategyDeleteBtn) {
+    strategyDeleteBtn.addEventListener("click", function() {
+        //alert로 경고하고, 삭제하시겠습니까? 물어보기
+        let confirmResult = confirm("현재 전략을 삭제하시겠습니까?");
+        if (confirmResult == false) {
+            return;
+        }
+        let quantUr = 'http://localhost:8080/quant/delete-strategy';
+        let curStrategyTitle = document.querySelector(".strategy-list").value;
+        let data = 'strategyTitle=' + curStrategyTitle;
+        location.href = quantUr + '?' + data;
+    });
+    return;
+}
+
+/**
+ *    전략을 가져옵니다.
+ *    @param 전략이름
+ */
+function loadOneStrategy(strategyList) {
+
+    // 1. 처음에 DB에서 전체 데이터를 조회해서 가져온다.
+    //    그리고, 전략 정보들을 리스트에 저장해둔다.
+    //    전략을 선택하면, 전략 정보를 가져와서, 화면에 뿌려준다.
+
+    // 2. 전략을 선택하면, DB에서 해당 전략을 조회해서 가져온다.
+    //    그리고, 전략 정보를 화면에 뿌려준다.
+
+    // 1번으로 하려고 했는데, 리스트로 데이터들을 가져와서 select로 나누긴했는데..
+    // 이 많은 데이터들을 전부 HTML에 작성한다??
+    // 음.... 이건 처음부터 설계를 잘못한거같은데??
+    // 지금이라도 한번 시도는 해보자
+
+    // select strategyList의 value가 변경되면 실행한다.
+    strategyList.addEventListener("change", function() {
+        let strategyTitle = strategyList.value;
+        let quantUr = 'http://localhost:8080/quant/load-strategy';
+        let data = 'strategyTitle=' + strategyTitle;
+        location.href = quantUr + '?' + data;
+
+        // let xhr = new XMLHttpRequest();
+        // xhr.open('GET', quantUr + '?' + data);
+        // xhr.send();
+    });
+
+    // ajax 통신 코드
+    
+    // xhr.open('GET', quantUr + '?' + data);
+    // xhr.send();
+    // xhr.onload = function() {
+    //     if (xhr.status === 200 || xhr.status === 201) {
+    //         console.log(xhr.responseText);
+    //     } else {
+    //         console.error(xhr.responseText);
+    //     }
+    // };
+
+    return
 }
 
 quantPageInit();

@@ -41,4 +41,132 @@ public class QuantStrategyInfoMember {
     public QuantStrategyInfoMember() {
 
     }
+
+    public String getCapitalRankingHigh() {
+        return capitalRankingHigh;
+    }
+
+    public void setCapitalRankingHigh(String capitalRankingHigh) {
+        this.capitalRankingHigh = capitalRankingHigh;
+    }
+
+    public String getCapitalRankingLow() {
+        return capitalRankingLow;
+    }
+
+    public void setCapitalRankingLow(String capitalRankingLow) {
+        this.capitalRankingLow = capitalRankingLow;
+    }
+
+    public String getCapitalPercentHigh() {
+        return capitalPercentHigh;
+    }
+
+    public void setCapitalPercentHigh(String capitalPercentHigh) {
+        this.capitalPercentHigh = capitalPercentHigh;
+    }
+
+    public String getCapitalPercentLow() {
+        return capitalPercentLow;
+    }
+
+    public void setCapitalPercentLow(String capitalPercentLow) {
+        this.capitalPercentLow = capitalPercentLow;
+    }
+
+    public String getOperatingProfitRatio() {
+        return operatingProfitRatio;
+    }
+
+    public void setOperatingProfitRatio(String operatingProfitRatio) {
+        this.operatingProfitRatio = operatingProfitRatio;
+    }
+
+    public String getNetProfitRation() {
+        return netProfitRation;
+    }
+
+    public void setNetProfitRation(String netProfitRation) {
+        this.netProfitRation = netProfitRation;
+    }
+
+    public String getRoe() {
+        return roe;
+    }
+
+    public void setRoe(String roe) {
+        this.roe = roe;
+    }
+
+    public String getRoa() {
+        return roa;
+    }
+
+    public void setRoa(String roa) {
+        this.roa = roa;
+    }
+
+    public String getDebtRatio() {
+        return debtRatio;
+    }
+
+    public void setDebtRatio(String debtRatio) {
+        this.debtRatio = debtRatio;
+    }
+
+    public String getCapitalRetentionRate() {
+        return capitalRetentionRate;
+    }
+
+    public void setCapitalRetentionRate(String capitalRetentionRate) {
+        this.capitalRetentionRate = capitalRetentionRate;
+    }
+
+    public String getEps() {
+        return eps;
+    }
+
+    public void setEps(String eps) {
+        this.eps = eps;
+    }
+
+    public String getPer() {
+        return per;
+    }
+
+    public void setPer(String per) {
+        this.per = per;
+    }
+
+    public String getBps() {
+        return bps;
+    }
+
+    public void setBps(String bps) {
+        this.bps = bps;
+    }
+
+    public String getPbr() {
+        return pbr;
+    }
+
+    public void setPbr(String pbr) {
+        this.pbr = pbr;
+    }
+
+    public String getCashDps() {
+        return cashDps;
+    }
+
+    public void setCashDps(String cashDps) {
+        this.cashDps = cashDps;
+    }
+
+    public String getDividendYield() {
+        return dividendYield;
+    }
+
+    public void setDividendYield(String dividendYield) {
+        this.dividendYield = dividendYield;
+    }
 }

@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
-    <link rel="stylesheet" href="../css/quant/quant-main.css?ver=220104-01">
+    <link rel="stylesheet" href="../css/quant/quant-main.css?ver=230105-03">
 </head>
 <body>
     <div id="header">
@@ -20,12 +20,19 @@
 
     <div class="group-quant-top-1">
         <div class="strategy-text">전략 설정</div>
-        <select class="strategy-list"></select>
+        <select class="strategy-list">
+            <option th:value="${quantStrategyMember.strategyTitle}" th:text="${quantStrategyMember.strategyTitle}">전략을 선택해주세요.</option>
+            <option th:each="strategy : ${quantStrategyMembers}" th:value="${strategy.strategyTitle}" th:text="${strategy.strategyTitle}"></option>
+            
+        </select>
+        
 
         <div class="strategy-description">전략 설명</div>
 
         <input type="text" class="strategy-save-text" value="저장할 내용을 설정해주세요.">
         <div class="strategy-save">전략 저장</div>
+
+        <div class="strategy-delete">전략 삭제</div>
     </div>
     
     <div class="group-quant-top-2">
@@ -46,7 +53,7 @@
     <div class="group-quant-mid-1">
         <div class="group-quant-mid-1-left-1">
             <div class="company-info-market-capitalization-ranking-high">
-                <input type="text" class="market-capitalization-ranking-high-input-data" value="x">
+                <input type="text" class="market-capitalization-ranking-high-input-data" value="x" th:value="${strategyInfo.capitalRankingHigh}">
                 <div class="market-capitalization-ranking-high-text">시가총액 상위 순위</div>
             </div>
             <div class="company-info-market-capitalization-ranking-low">
@@ -116,6 +123,6 @@
         </div>
     </div>
 </body>
-<script type="text/javascript" src="../js/quant/quant-main.js?ver=230104-04"></script>
+<script type="text/javascript" src="../js/quant/quant-main.js?ver=230105-10"></script>
 <script type="text/javascript" src="../js/common.js?ver=2230101-15"></script>
 </html>

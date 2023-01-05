@@ -70,6 +70,20 @@
     border: 1px solid black;
 }
 
+.group-quant-top-1 .strategy-delete {
+    display: inline;
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    left: 10%;
+    width: 5%;
+    height: 5%;
+    padding-right: 1px;
+    border: 1px solid black;
+}
+
+
 /**
 *    group-quant-top-2 영역    
 *    group-quant-top-1 영역보다 아래에 위치

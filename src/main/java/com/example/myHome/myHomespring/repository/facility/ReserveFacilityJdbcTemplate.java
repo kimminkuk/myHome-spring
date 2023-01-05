@@ -94,6 +94,13 @@ public class ReserveFacilityJdbcTemplate implements ReserveFacilityRepository {
     public Optional<ReserveFacilityTitle> delFacility(String delTitle) {
         // 삭제 sql query
         String sql = "delete from FACILITY_TITLE_V1 where title = ?";
+
+        //h2 delete sql query 실패하는 경우 리턴 작성
+        Optional<ReserveFacilityTitle> result = findByTitle(delTitle);
+        if( result.isEmpty() ) {
+            return result;
+        }
+
         jdbcTemplate.update(sql, delTitle);
         return Optional.empty();
     }

@@ -1,5 +1,6 @@
 package com.example.myHome.myHomespring.repository.quant;
 
+import com.example.myHome.myHomespring.domain.facility.ReserveFacilityTitle;
 import com.example.myHome.myHomespring.domain.quant.QuantStrategyMember;
 import org.apache.catalina.util.ParameterMap;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -52,6 +53,12 @@ public class QuantStrategyJdbcTemplate implements QuantStrategyRepository {
     public Optional<QuantStrategyMember> delStrategy(String delTitle) {
         String sql = "delete from QUANT_STRATEGY_INFO where strategy_title = ?";
         jdbcTemplate.update(sql, delTitle);
+
+        //h2 delete sql query 실패하는 경우 리턴 작성
+        Optional<QuantStrategyMember> result = findByTitle(delTitle);
+        if( result.isEmpty() ) {
+            return result;
+        }
         return Optional.empty();
     }
 
