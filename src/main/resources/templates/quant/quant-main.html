@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
-    <link rel="stylesheet" href="../css/quant/quant-main.css?ver=230105-03">
+    <link rel="stylesheet" href="../css/quant/quant-main.css?ver=230106-03">
 </head>
 <body>
     <div id="header">
@@ -57,63 +57,69 @@
                 <div class="market-capitalization-ranking-high-text">시가총액 상위 순위</div>
             </div>
             <div class="company-info-market-capitalization-ranking-low">
-                <input type="text" class="market-capitalization-ranking-low-input-data" value="x">
+                <input type="text" class="market-capitalization-ranking-low-input-data" value="x" th:value="${strategyInfo.capitalRankingLow}">
                 <div class="market-capitalization-ranking-low-text">시가총액 하위 순위</div>
             </div>            
             <div class="company-info-market-capitalization-percent-high">
-                <input type="text" class="market-capitalization-percent-high-input-data" value="x">
+                <input type="text" class="market-capitalization-percent-high-input-data" value="x" th:value="${strategyInfo.capitalPercentHigh}">
                 <div class="market-capitalization-percent-high-text">시가총액 상위 페센트</div>
             </div>
             <div class="company-info-market-capitalization-percent-low">
-                <input type="text" class="market-capitalization-percent-low-input-data" value="x" >
+                <input type="text" class="market-capitalization-percent-low-input-data" value="x" th:value="${strategyInfo.capitalPercentLow}">
                 <div class="market-capitalization-percent-low-text">시가총액 하위 퍼센트</div>
-            </div>            
+            </div>
+            
+            <div class="company-info-market-capitalization">
+                <input type="text" class="market-capitalization-input-data" value="x" th:value="${strategyInfo.marketCapitalization}">
+                <div class="market-capitalization-text">시가총액</div>
+            </div>
+
             <div class="company-info-operating-profit-ratio">
-                <input type="text" class="operating-profit-ratio-input-data" value="x">
+                <input type="text" class="operating-profit-ratio-input-data" value="x" th:value="${strategyInfo.operatingProfitRatio}">
                 <div class="operating-profit-ratio-text">영업이익률</div>
             </div>
             <div class="company-info-net-profit-ration">
-                <input type="text" class="net-profit-ration-input-data" value="x">
+                <input type="text" class="net-profit-ration-input-data" value="x" th:value="${strategyInfo.netProfitRation}">
                 <div class="net-profit-ration-text">순이익률</div>
             </div>
             <div class="company-info-roe">
-                <input type="text" class="roe-input-data" value="x">
+                <input type="text" class="roe-input-data" value="x" th:value="${strategyInfo.roe}">
                 <div class="roe-text">ROE</div>
             </div>
             <div class="company-info-roa">
-                <input type="text" class="roa-input-data" value="x">
+                <input type="text" class="roa-input-data" value="x" th:value="${strategyInfo.roa}">
                 <div class="roa-text">ROA</div>
             </div>
             <div class="company-info-debt-ratio">
-                <input type="text" class="debt-ratio-input-data" value="x">
+                <input type="text" class="debt-ratio-input-data" value="x" th:value="${strategyInfo.debtRatio}">
                 <div class="debt-ratio-text">부채비율</div>
             </div>
             <div class="company-info-capital-retention-rate">
-                <input type="text" class="capital-retention-rate-input-data" value="x">
+                <input type="text" class="capital-retention-rate-input-data" value="x" th:value="${strategyInfo.capitalRetentionRate}">
                 <div class="capital-retention-rate-text">자본유보율</div>
             </div>
             <div class="company-info-eps">
-                <input type="text" class="eps-input-data" value="x">
+                <input type="text" class="eps-input-data" value="x" th:value="${strategyInfo.eps}">
                 <div class="eps-text">EPS</div>
             </div>
             <div class="company-info-per">
-                <input type="text" class="per-input-data" value="x">
+                <input type="text" class="per-input-data" value="x" th:value="${strategyInfo.per}">
                 <div class="per-text">PER</div>
             </div>
             <div class="company-info-bps">
-                <input type="text" class="bps-input-data" value="x">
+                <input type="text" class="bps-input-data" value="x" th:value="${strategyInfo.bps}">
                 <div class="bps-text">BPS</div>
             </div>
             <div class="company-info-pbr">
-                <input type="text" class="pbr-input-data" value="x">
+                <input type="text" class="pbr-input-data" value="x" th:value="${strategyInfo.pbr}">
                 <div class="pbr-text">PBR</div>
             </div>
             <div class="company-info-cash-dps">
-                <input type="text" class="cash-dps-input-data" value="x">
+                <input type="text" class="cash-dps-input-data" value="x" th:value="${strategyInfo.cashDps}">
                 <div class="cash-dps-text">현금배당수익률</div>
             </div>
             <div class="company-info-dividend-yield">
-                <input type="text" class="dividend-yield-input-data" value="x">
+                <input type="text" class="dividend-yield-input-data" value="x" th:value="${strategyInfo.dividendYield}">
                 <div class="dividend-yield-text">배당수익률</div>
             </div>
         </div>
@@ -123,6 +129,6 @@
         </div>
     </div>
 </body>
-<script type="text/javascript" src="../js/quant/quant-main.js?ver=230105-10"></script>
+<script type="text/javascript" src="../js/quant/quant-main.js?ver=230106-04"></script>
 <script type="text/javascript" src="../js/common.js?ver=2230101-15"></script>
 </html>

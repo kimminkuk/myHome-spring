@@ -5,6 +5,7 @@ public class QuantStrategyInfoMember {
     private String capitalRankingLow;
     private String capitalPercentHigh;
     private String capitalPercentLow;
+    private String marketCapitalization;
     private String operatingProfitRatio;
     private String netProfitRation;
     private String roe;
@@ -19,11 +20,15 @@ public class QuantStrategyInfoMember {
     private String dividendYield;
 
     //16 개
-    public QuantStrategyInfoMember(String capitalRankingHigh, String capitalRankingLow, String capitalPercentHigh, String capitalPercentLow, String operatingProfitRatio, String netProfitRation, String roe, String roa, String debtRatio, String capitalRetentionRate, String eps, String per, String bps, String pbr, String cashDps, String dividendYield) {
+    public QuantStrategyInfoMember(String capitalRankingHigh, String capitalRankingLow, String capitalPercentHigh, String capitalPercentLow, String marketCapitalization,
+                                   String operatingProfitRatio, String netProfitRation, String roe, String roa, String debtRatio, String capitalRetentionRate, String eps,
+                                   String per, String bps, String pbr, String cashDps, String dividendYield) {
+
         this.capitalRankingHigh = capitalRankingHigh;
         this.capitalRankingLow = capitalRankingLow;
         this.capitalPercentHigh = capitalPercentHigh;
         this.capitalPercentLow = capitalPercentLow;
+        this.marketCapitalization = marketCapitalization;
         this.operatingProfitRatio = operatingProfitRatio;
         this.netProfitRation = netProfitRation;
         this.roe = roe;
@@ -36,6 +41,14 @@ public class QuantStrategyInfoMember {
         this.pbr = pbr;
         this.cashDps = cashDps;
         this.dividendYield = dividendYield;
+    }
+
+    public String getMarketCapitalization() {
+        return marketCapitalization;
+    }
+
+    public void setMarketCapitalization(String marketCapitalization) {
+        this.marketCapitalization = marketCapitalization;
     }
 
     public QuantStrategyInfoMember() {

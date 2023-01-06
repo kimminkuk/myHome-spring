@@ -28,7 +28,7 @@ public class quantMainController {
         model.addAttribute("quantStrategyMembers", quantStrategyMembers);
 
         // 처음 화면에서는 전략 정보 더미를 던집니다.
-        String companyInfoDummy = "x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x";
+        String companyInfoDummy = "x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x";
         QuantStrategyInfoMember quantStrategyInfoMember = splitStrategy(companyInfoDummy);
         model.addAttribute("strategyInfo", quantStrategyInfoMember);
 
@@ -96,6 +96,15 @@ public class quantMainController {
         List<QuantStrategyMember> quantStrategyMembers = quantStrategyService.findStrategies();
         model.addAttribute("quantStrategyMembers", quantStrategyMembers);
 
+        // 처음 화면에서는 전략 정보 더미를 던집니다.
+        String companyInfoDummy = "x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x";
+        QuantStrategyInfoMember quantStrategyInfoMember = splitStrategy(companyInfoDummy);
+        model.addAttribute("strategyInfo", quantStrategyInfoMember);
+
+        // html option 더미를 던집니다.
+        QuantStrategyMember initPageDummyStrategyMember = new QuantStrategyMember("dummy", getCurDate(), "전략을 선택해주세요.", companyInfoDummy);
+        model.addAttribute("quantStrategyMember", initPageDummyStrategyMember);
+
         System.out.println("[DEBUG] saveStrategy END");
         return "quant/quant-main";
     }
@@ -116,7 +125,8 @@ public class quantMainController {
                 strategyInfoList[0], strategyInfoList[1], strategyInfoList[2], strategyInfoList[3],
                 strategyInfoList[4], strategyInfoList[5], strategyInfoList[6], strategyInfoList[7],
                 strategyInfoList[8], strategyInfoList[9], strategyInfoList[10], strategyInfoList[11],
-                strategyInfoList[12], strategyInfoList[13], strategyInfoList[14], strategyInfoList[15]
+                strategyInfoList[12], strategyInfoList[13], strategyInfoList[14], strategyInfoList[15],
+                strategyInfoList[16]
         );
         return quantStrategyInfoMember;
     }

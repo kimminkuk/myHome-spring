@@ -23,6 +23,7 @@ function quantPageInit() {
     let martketRankingLowPercentText = document.querySelector(".market-capitalization-percent-low-text");
     
     // 정보들을 변수에 담은 후, mouseover, mouseout 이벤트를 등록
+    let marketCapitalizationInputData = document.querySelector(".market-capitalization-input-data");
     let infoOperationProfitRatioInputData = document.querySelector(".operating-profit-ratio-input-data");
     let infoNetProfitRatioInputData = document.querySelector(".net-profit-ration-input-data");
     let infoRoeInputData = document.querySelector(".roe-input-data");
@@ -41,6 +42,7 @@ function quantPageInit() {
     let strategyDeleteBtn = document.querySelector(".strategy-delete");
     
 
+    let marketCapitalizationText = document.querySelector(".market-capitalization-text");
     let infoOperationProfitRatioText = document.querySelector(".operating-profit-ratio-text");
     let infoNetProfitRatioText = document.querySelector(".net-profit-ration-text");
     let infoRoeText = document.querySelector(".roe-text");
@@ -55,21 +57,47 @@ function quantPageInit() {
     let infoDividendYieldText = document.querySelector(".dividend-yield-text");
     let strategySaveText = document.querySelector(".strategy-save-text");
 
-    let marketRankingArr = new Array( martketRankingHighInputData, martketRankingLowInputData, martketRankingHighPercentInputData, martketRankingLowPercentInputData );
+    // 정보들의 div class
+    let martketRankingHighDiv = document.querySelector(".company-info-market-capitalization-ranking-high");
+    let martketRankingLowDiv = document.querySelector(".company-info-market-capitalization-ranking-low");
+    let martketRankingHighPercentDiv = document.querySelector(".company-info-market-capitalization-percent-high");
+    let martketRankingLowPercentDiv = document.querySelector(".company-info-market-capitalization-percent-low");
+    let marketCapitalizationDiv = document.querySelector(".company-info-market-capitalization");    
+    let infoOperationProfitRatioDiv = document.querySelector(".company-info-operating-profit-ratio");
+    let infoNetProfitRatioDiv = document.querySelector(".company-info-net-profit-ration");
+    let infoRoeDiv = document.querySelector(".company-info-roe");
+    let infoRoaDiv = document.querySelector(".company-info-roa");
+    let infoDebtRatioDiv = document.querySelector(".company-info-debt-ratio");
+    let infoCapitalRetentionRateDiv = document.querySelector(".company-info-capital-retention-rate");
+    let infoEpsDiv = document.querySelector(".company-info-eps");
+    let infoPerDiv = document.querySelector(".company-info-per");
+    let infoBpsDiv = document.querySelector(".company-info-bps");
+    let infoPbrDiv = document.querySelector(".company-info-pbr");
+    let infoCashDpsDiv = document.querySelector(".company-info-cash-dps");
+    let infoDividendYieldDiv = document.querySelector(".company-info-dividend-yield");
+    let strategySaveDiv = document.querySelector(".strategy-save");    
+
+    let marketRankingArr = new Array( martketRankingHighInputData, martketRankingLowInputData, martketRankingHighPercentInputData, martketRankingLowPercentInputData, marketCapitalizationInputData );
     let infoDataArr = new Array( 
-        martketRankingHighInputData, martketRankingLowInputData, martketRankingHighPercentInputData, martketRankingLowPercentInputData, 
+        martketRankingHighInputData, martketRankingLowInputData, martketRankingHighPercentInputData, martketRankingLowPercentInputData, marketCapitalizationInputData,
         infoOperationProfitRatioInputData, infoNetProfitRatioInputData, infoRoeInputData, infoRoaInputData, 
         infoDebtRatioInputData, infoCapitalRetentionRateInputData, infoEpsInputData, infoPerInputData, 
         infoBpsInputData, infoPbrInputData, infoCashDpsInputData, infoDividendYieldInputData 
     );
 
     let infoTextArr = new Array( 
-        martketRankingHighText, martketRankingLowText, martketRankingHighPercentText, martketRankingLowPercentText, 
+        martketRankingHighText, martketRankingLowText, martketRankingHighPercentText, martketRankingLowPercentText, marketCapitalizationText,
         infoOperationProfitRatioText, infoNetProfitRatioText, infoRoeText, infoRoaText, 
         infoDebtRatioText, infoCapitalRetentionRateText, infoEpsText, infoPerText, 
         infoBpsText, infoPbrText, infoCashDpsText, infoDividendYieldText 
     );
 
+    let infoDivArr = new Array(
+        martketRankingHighDiv, martketRankingLowDiv, martketRankingHighPercentDiv, martketRankingLowPercentDiv, marketCapitalizationDiv,
+        infoOperationProfitRatioDiv, infoNetProfitRatioDiv, infoRoeDiv, infoRoaDiv,
+        infoDebtRatioDiv, infoCapitalRetentionRateDiv, infoEpsDiv, infoPerDiv,
+        infoBpsDiv, infoPbrDiv, infoCashDpsDiv, infoDividendYieldDiv
+    );
     
     let searchParsingBtn = document.querySelector(".search-parsing-btn");
     let searchMemoryBtn = document.querySelector(".search-memory-btn");
@@ -77,7 +105,10 @@ function quantPageInit() {
 
     let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, searchLoadDataBtn, strategyDeleteBtn );
 
+
+
     marketRankingOperation(marketRankingArr);
+    infoStyleTopAdjustment(infoDivArr);
     infoStyleAdjustment(infoDataArr);
     infoStyleAdjustment(infoTextArr);
     mouseOnOffStyleListVer(infoDataArr);
@@ -120,6 +151,16 @@ function marketRankingOperation(marketRankingArr) {
     return;
 }
 
+/**
+ *    정보 리스트들의 탑 위치를 조정
+ */
+function infoStyleTopAdjustment(infoArrDiv) {
+    let infoArrDivLen = infoArrDiv.length;
+    for (let infoIdx = 0; infoIdx < infoArrDivLen; infoIdx++) {
+        infoArrDiv[infoIdx].style.top = (infoIdx * 5) + "%";
+    }
+    return;
+}
 
 /**
  *    정보 리스트들의 스타일을 추가 조정
