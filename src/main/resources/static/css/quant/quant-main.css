@@ -100,7 +100,7 @@
 .group-quant-top-2 .search-parsing {
     display: inline;
     position: absolute;
-    left: 70%;
+    left: 60%;
     width: 6%;
     padding-right: 1px;
     
@@ -126,7 +126,7 @@
 .group-quant-top-2 .search-memory {
     display: inline;
     position: absolute;
-    left: 76%;
+    left: 66%;
     width: 7%;
     padding-right: 1px;
     padding-left: 1%;
@@ -149,16 +149,16 @@
     padding-right: 1px;
 }
 
-.group-quant-top-2 .search-load-data {
+.group-quant-top-2 .load-data-parsing {
     display: inline;
     position: absolute;
-    left: 84%;
+    left: 75%;
     width: 9%;
     padding-right: 1px;
     padding-left: 1%;
 }
 
-.group-quant-top-2 .search-load-data .search-load-data-btn {
+.group-quant-top-2 .load-data-parsing .load-data-parsing-btn {
     position: relative;
     font-size: 14px;
     font-weight: bold;
@@ -167,7 +167,33 @@
     border: 1px solid black;
 }
 
-.group-quant-top-2 .search-load-data .search-load-data-update-date-text {
+.group-quant-top-2 .load-data-parsing .load-data-parsing-update-date-text {
+    position: relative;
+    font-size: 7px;
+    font-weight: bold;
+    color: red;
+    padding-right: 1px;
+}
+
+.group-quant-top-2 .load-data-memory {
+    display: inline;
+    position: absolute;
+    left: 85%;
+    width: 9%;
+    padding-right: 1px;
+    padding-left: 1%;
+}
+
+.group-quant-top-2 .load-data-memory .load-data-memory-btn {
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    border: 1px solid black;
+}
+
+.group-quant-top-2 .load-data-memory .load-data-memory-update-date-text {
     position: relative;
     font-size: 7px;
     font-weight: bold;

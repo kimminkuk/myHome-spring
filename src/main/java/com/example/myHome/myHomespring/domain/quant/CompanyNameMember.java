@@ -1,6 +1,10 @@
 package com.example.myHome.myHomespring.domain.quant;
 
 public class CompanyNameMember {
+    public String[] getCompanyName() {
+        return companyName;
+    }
+
     //22년 4분기
     String[] companyName = {
             "옵티코어",

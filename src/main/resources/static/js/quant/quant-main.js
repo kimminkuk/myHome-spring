@@ -74,8 +74,7 @@ function quantPageInit() {
     let infoBpsDiv = document.querySelector(".company-info-bps");
     let infoPbrDiv = document.querySelector(".company-info-pbr");
     let infoCashDpsDiv = document.querySelector(".company-info-cash-dps");
-    let infoDividendYieldDiv = document.querySelector(".company-info-dividend-yield");
-    let strategySaveDiv = document.querySelector(".strategy-save");    
+    let infoDividendYieldDiv = document.querySelector(".company-info-dividend-yield");  
 
     let marketRankingArr = new Array( martketRankingHighInputData, martketRankingLowInputData, martketRankingHighPercentInputData, martketRankingLowPercentInputData, marketCapitalizationInputData );
     let infoDataArr = new Array( 
@@ -101,9 +100,10 @@ function quantPageInit() {
     
     let searchParsingBtn = document.querySelector(".search-parsing-btn");
     let searchMemoryBtn = document.querySelector(".search-memory-btn");
-    let searchLoadDataBtn = document.querySelector(".search-load-data-btn");
+    let loadParsingBtn = document.querySelector(".load-data-parsing-btn");
+    let loadExcelBtn = document.querySelector(".load-data-memory-btn");
 
-    let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, searchLoadDataBtn, strategyDeleteBtn );
+    let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, strategyDeleteBtn, loadParsingBtn, loadExcelBtn );
 
 
 
@@ -115,8 +115,9 @@ function quantPageInit() {
     objectClearText(strategySaveText);
     mouseOnOffStyleListVer3(divColorArr, "#FFFFFF", "#00FF00");
     mouseOnOffStyleVer2(strategyList);
+    
     // 네이버 금융 파싱 버튼 클릭 이벤트
-    //naverFinanceParsingBtn(strategyDescription);
+    naverFinanceParsingBtn(searchParsingBtn);
     
     // 현재 전략을 저장합니다.
     strategySaveBtn(strategySaveText, strategySaveInputData, infoDataArr);
@@ -230,12 +231,29 @@ function mouseOnOffStyleListVer3(curObjects, originalColor, mouseOnColor) {
 /**
  *    네이버 금융 파싱 버튼 클릭 이벤트
  */
-// function naverFinanceParsingBtn(object) {
-//     object.addEventListener("click", function() {
+function naverFinanceParsingBtn(object) {
+    object.addEventListener("click", function() {
         
-//     }
-    
-// }
+        let confirmResult = confirm("파싱을 시작하시겠습니까?");
+        if (confirmResult == false) {
+            return;
+        }    
+        //Get통신
+        let quantUr = 'http://localhost:8080/quant/naver-finance-parsing';
+        let data = '';
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', quantUr);
+        xhr.send(data);
+        xhr.addEventListener('load', function() {
+            if (xhr.status === 200 || xhr.status === 201) {
+                alert("파싱이 완료되었습니다.");
+            } else {
+                alert("파싱이 실패하였습니다.");
+            }
+        });
+    });
+    return;      
+}
 
 /**
  *    현재 전략을 저장합니다.

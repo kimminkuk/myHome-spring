@@ -1,13 +1,19 @@
 package com.example.myHome.myHomespring.controller.quant;
 
+import com.example.myHome.myHomespring.domain.quant.CompanyCodeMember;
+import com.example.myHome.myHomespring.domain.quant.CompanyNameMember;
 import com.example.myHome.myHomespring.domain.quant.QuantStrategyInfoMember;
 import com.example.myHome.myHomespring.domain.quant.QuantStrategyMember;
 import com.example.myHome.myHomespring.service.quant.QuantStrategyService;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -24,17 +30,7 @@ public class quantMainController {
     public String quantMain(Model model) {
         System.out.println("[DEBUG] quantMain START");
 
-        List<QuantStrategyMember> quantStrategyMembers = quantStrategyService.findStrategies();
-        model.addAttribute("quantStrategyMembers", quantStrategyMembers);
-
-        // 처음 화면에서는 전략 정보 더미를 던집니다.
-        String companyInfoDummy = "x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x";
-        QuantStrategyInfoMember quantStrategyInfoMember = splitStrategy(companyInfoDummy);
-        model.addAttribute("strategyInfo", quantStrategyInfoMember);
-
-        // html option 더미를 던집니다.
-        QuantStrategyMember quantStrategyMember = new QuantStrategyMember("dummy", getCurDate(), "전략을 선택해주세요.", companyInfoDummy);
-        model.addAttribute("quantStrategyMember", quantStrategyMember);
+        quantPageDefaultSetting(model);
 
         System.out.println("[DEBUG] quantMain END");
         return "quant/quant-main";
@@ -88,22 +84,12 @@ public class quantMainController {
         System.out.println("[DEBUG] saveStrategy START");
         QuantStrategyMember quantStrategyMember = new QuantStrategyMember();
         quantStrategyMember.setUserName(userName);
-        quantStrategyMember.setSaveTime(getCurDate());
+        quantStrategyMember.setSaveTime( quantStrategyService.getCurDate());
         quantStrategyMember.setStrategyTitle(strategyTitle);
         quantStrategyMember.setStrategyInfo(strategyInfo);
         quantStrategyService.strategySave(quantStrategyMember);
 
-        List<QuantStrategyMember> quantStrategyMembers = quantStrategyService.findStrategies();
-        model.addAttribute("quantStrategyMembers", quantStrategyMembers);
-
-        // 처음 화면에서는 전략 정보 더미를 던집니다.
-        String companyInfoDummy = "x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x";
-        QuantStrategyInfoMember quantStrategyInfoMember = splitStrategy(companyInfoDummy);
-        model.addAttribute("strategyInfo", quantStrategyInfoMember);
-
-        // html option 더미를 던집니다.
-        QuantStrategyMember initPageDummyStrategyMember = new QuantStrategyMember("dummy", getCurDate(), "전략을 선택해주세요.", companyInfoDummy);
-        model.addAttribute("quantStrategyMember", initPageDummyStrategyMember);
+        quantPageDefaultSetting(model);
 
         System.out.println("[DEBUG] saveStrategy END");
         return "quant/quant-main";
@@ -119,6 +105,21 @@ public class quantMainController {
         return "quant/quant-main";
     }
 
+    @GetMapping("quant/naver-finance-parsing")
+    public String naverFinanceParsing(Model model) {
+        System.out.println("[DEBUG] naverFinanceParsing START");
+
+        quantPageDefaultSetting(model);
+
+        // 1. 네이버 파싱
+        // 2. Zset에 저장 ( 백업용 )
+        // 3. .txt에 저장 ( 인 메모리에서 사용 용 )
+        quantStrategyService.naverFinanceParsing();
+
+        System.out.println("[DEBUG] naverFinanceParsing END");
+        return "quant/quant-main";
+    }
+
     private QuantStrategyInfoMember splitStrategy(String strategyInfo) {
         String[] strategyInfoList = strategyInfo.split("/");
         QuantStrategyInfoMember quantStrategyInfoMember = new QuantStrategyInfoMember(
@@ -131,9 +132,24 @@ public class quantMainController {
         return quantStrategyInfoMember;
     }
 
-    private String getCurDate() {
-        Calendar calendar = Calendar.getInstance();
-        String saveTime = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE);
-        return saveTime;
+//    private String getCurDate() {
+//        Calendar calendar = Calendar.getInstance();
+//        String saveTime = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE);
+//        return saveTime;
+//    }
+
+    private void quantPageDefaultSetting(Model model) {
+        List<QuantStrategyMember> quantStrategyMembers = quantStrategyService.findStrategies();
+        model.addAttribute("quantStrategyMembers", quantStrategyMembers);
+
+        // 처음 화면에서는 전략 정보 더미를 던집니다.
+        String companyInfoDummy = "x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x";
+        QuantStrategyInfoMember quantStrategyInfoMember = splitStrategy(companyInfoDummy);
+        model.addAttribute("strategyInfo", quantStrategyInfoMember);
+
+        // html option 더미를 던집니다.
+        QuantStrategyMember quantStrategyMember = new QuantStrategyMember("dummy", quantStrategyService.getCurDate(),
+                                                                        "전략을 선택해주세요.", companyInfoDummy);
+        model.addAttribute("quantStrategyMember", quantStrategyMember);
     }
 }

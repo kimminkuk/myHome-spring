@@ -23,7 +23,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	runtimeOnly 'com.h2database:h2'
 
-	//logger implementation
+
+	//jsoup
+	implementation 'org.jsoup:jsoup:1.13.1'
 }
 
 tasks.named('test') {

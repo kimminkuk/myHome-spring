@@ -2,6 +2,11 @@ package com.example.myHome.myHomespring.domain.quant;
 
 public class CompanyCodeMember {
     //22년 4분기
+
+    public String[] getCompanyCode() {
+        return companyCode;
+    }
+
     String[] companyCode = {
             "380540",
             "445970",
