@@ -4,6 +4,7 @@ import com.example.myHome.myHomespring.domain.quant.CompanyCodeMember;
 import com.example.myHome.myHomespring.domain.quant.CompanyNameMember;
 import com.example.myHome.myHomespring.domain.quant.QuantStrategyInfoMember;
 import com.example.myHome.myHomespring.domain.quant.QuantStrategyMember;
+import com.example.myHome.myHomespring.repository.quant.QuantStrategyRedisTemplateRepository;
 import com.example.myHome.myHomespring.service.quant.QuantStrategyService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,7 +22,6 @@ import java.util.List;
 @Controller
 public class quantMainController {
     private final QuantStrategyService quantStrategyService;
-
     public quantMainController(QuantStrategyService quantStrategyService) {
         this.quantStrategyService = quantStrategyService;
     }
@@ -100,7 +100,7 @@ public class quantMainController {
                                  @RequestParam("strategyTitle") String strategyTitle) {
         System.out.println("[DEBUG] deleteStrategy START + strategyTitle: " + strategyTitle);
         quantStrategyService.delStrategy(strategyTitle);
-
+        quantPageDefaultSetting(model);
         System.out.println("[DEBUG] deleteStrategy END");
         return "quant/quant-main";
     }
@@ -127,23 +127,19 @@ public class quantMainController {
                 strategyInfoList[4], strategyInfoList[5], strategyInfoList[6], strategyInfoList[7],
                 strategyInfoList[8], strategyInfoList[9], strategyInfoList[10], strategyInfoList[11],
                 strategyInfoList[12], strategyInfoList[13], strategyInfoList[14], strategyInfoList[15],
-                strategyInfoList[16]
+                strategyInfoList[16], strategyInfoList[17]
         );
         return quantStrategyInfoMember;
     }
-
-//    private String getCurDate() {
-//        Calendar calendar = Calendar.getInstance();
-//        String saveTime = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE);
-//        return saveTime;
-//    }
 
     private void quantPageDefaultSetting(Model model) {
         List<QuantStrategyMember> quantStrategyMembers = quantStrategyService.findStrategies();
         model.addAttribute("quantStrategyMembers", quantStrategyMembers);
 
         // 처음 화면에서는 전략 정보 더미를 던집니다.
-        String companyInfoDummy = "x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x";
+        String companyInfoDummy =   "x/x/x/x/x/x/" +
+                                    "x/x/x/x/x/x/" +
+                                    "x/x/x/x/x/x";
         QuantStrategyInfoMember quantStrategyInfoMember = splitStrategy(companyInfoDummy);
         model.addAttribute("strategyInfo", quantStrategyInfoMember);
 

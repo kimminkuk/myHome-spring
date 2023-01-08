@@ -15,28 +15,28 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 @EnableRedisRepositories
 public class RedisRepositoryConfig {
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory("localhost", 6379);
-    }
-
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
-        return redisTemplate;
-    }
-
-    @Bean
-    public RedisMemberService redisMemberService() {
-        return new RedisMemberService(redisMemberRepository());
-    }
-
-    @Bean
-    public RedisMemberRepository redisMemberRepository() {
-        //return new RedisMemoryMemberRepository();
-        return new RedisTemplateMemberRepository();
-    }
+//    @Bean
+//    public RedisConnectionFactory redisConnectionFactory() {
+//        return new LettuceConnectionFactory("localhost", 6379);
+//    }
+//
+//    @Bean
+//    public RedisTemplate<String, Object> redisTemplate() {
+//        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+//        redisTemplate.setConnectionFactory(redisConnectionFactory());
+//        redisTemplate.setKeySerializer(new StringRedisSerializer());
+//        redisTemplate.setValueSerializer(new StringRedisSerializer());
+//        return redisTemplate;
+//    }
+//
+//    @Bean
+//    public RedisMemberService redisMemberService() {
+//        return new RedisMemberService(redisMemberRepository());
+//    }
+//
+//    @Bean
+//    public RedisMemberRepository redisMemberRepository() {
+//        //return new RedisMemoryMemberRepository();
+//        return new RedisTemplateMemberRepository();
+//    }
 }

@@ -754,6 +754,37 @@
     border: 1px solid black;
 }
 
+.group-quant-mid-1 .group-quant-mid-1-left-1
+.company-info-sales {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    top: 80%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1
+.company-info-sales .sales-text {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-1
+.company-info-sales .sales-input-data {
+    display: inline;
+    position: relative;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    width: 10%;
+    border: 1px solid black;
+}
+
 .group-quant-mid-1 .group-quant-mid-1-left-2 {
     display: inline;
     position: absolute;

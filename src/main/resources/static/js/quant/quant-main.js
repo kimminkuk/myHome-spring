@@ -36,6 +36,7 @@ function quantPageInit() {
     let infoPbrInputData = document.querySelector(".pbr-input-data");
     let infoCashDpsInputData = document.querySelector(".cash-dps-input-data");
     let infoDividendYieldInputData = document.querySelector(".dividend-yield-input-data");
+    let infoSalesInputData = document.querySelector(".sales-input-data");
     let strategyList = document.querySelector(".strategy-list");
     let strategySaveInputData = document.querySelector(".strategy-save");
     let strategyDescription = document.querySelector(".strategy-description");
@@ -55,6 +56,7 @@ function quantPageInit() {
     let infoPbrText = document.querySelector(".pbr-text");
     let infoCashDpsText = document.querySelector(".cash-dps-text");
     let infoDividendYieldText = document.querySelector(".dividend-yield-text");
+    let infoSalesText = document.querySelector(".sales-text");
     let strategySaveText = document.querySelector(".strategy-save-text");
 
     // 정보들의 div class
@@ -74,28 +76,29 @@ function quantPageInit() {
     let infoBpsDiv = document.querySelector(".company-info-bps");
     let infoPbrDiv = document.querySelector(".company-info-pbr");
     let infoCashDpsDiv = document.querySelector(".company-info-cash-dps");
-    let infoDividendYieldDiv = document.querySelector(".company-info-dividend-yield");  
+    let infoDividendYieldDiv = document.querySelector(".company-info-dividend-yield");
+    let infoSalesDiv = document.querySelector(".company-info-sales");
 
     let marketRankingArr = new Array( martketRankingHighInputData, martketRankingLowInputData, martketRankingHighPercentInputData, martketRankingLowPercentInputData, marketCapitalizationInputData );
     let infoDataArr = new Array( 
         martketRankingHighInputData, martketRankingLowInputData, martketRankingHighPercentInputData, martketRankingLowPercentInputData, marketCapitalizationInputData,
         infoOperationProfitRatioInputData, infoNetProfitRatioInputData, infoRoeInputData, infoRoaInputData, 
         infoDebtRatioInputData, infoCapitalRetentionRateInputData, infoEpsInputData, infoPerInputData, 
-        infoBpsInputData, infoPbrInputData, infoCashDpsInputData, infoDividendYieldInputData 
+        infoBpsInputData, infoPbrInputData, infoCashDpsInputData, infoDividendYieldInputData, infoSalesInputData
     );
 
     let infoTextArr = new Array( 
         martketRankingHighText, martketRankingLowText, martketRankingHighPercentText, martketRankingLowPercentText, marketCapitalizationText,
         infoOperationProfitRatioText, infoNetProfitRatioText, infoRoeText, infoRoaText, 
         infoDebtRatioText, infoCapitalRetentionRateText, infoEpsText, infoPerText, 
-        infoBpsText, infoPbrText, infoCashDpsText, infoDividendYieldText 
+        infoBpsText, infoPbrText, infoCashDpsText, infoDividendYieldText, infoSalesText
     );
 
     let infoDivArr = new Array(
         martketRankingHighDiv, martketRankingLowDiv, martketRankingHighPercentDiv, martketRankingLowPercentDiv, marketCapitalizationDiv,
         infoOperationProfitRatioDiv, infoNetProfitRatioDiv, infoRoeDiv, infoRoaDiv,
         infoDebtRatioDiv, infoCapitalRetentionRateDiv, infoEpsDiv, infoPerDiv,
-        infoBpsDiv, infoPbrDiv, infoCashDpsDiv, infoDividendYieldDiv
+        infoBpsDiv, infoPbrDiv, infoCashDpsDiv, infoDividendYieldDiv, infoSalesDiv
     );
     
     let searchParsingBtn = document.querySelector(".search-parsing-btn");
@@ -104,8 +107,6 @@ function quantPageInit() {
     let loadExcelBtn = document.querySelector(".load-data-memory-btn");
 
     let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, strategyDeleteBtn, loadParsingBtn, loadExcelBtn );
-
-
 
     marketRankingOperation(marketRankingArr);
     infoStyleTopAdjustment(infoDivArr);
@@ -119,6 +120,9 @@ function quantPageInit() {
     // 네이버 금융 파싱 버튼 클릭 이벤트
     naverFinanceParsingBtn(searchParsingBtn);
     
+    // 전략 불러오기 버튼
+    loadNaverFinanceParsingBtn(loadParsingBtn);
+
     // 현재 전략을 저장합니다.
     strategySaveBtn(strategySaveText, strategySaveInputData, infoDataArr);
 
@@ -254,6 +258,29 @@ function naverFinanceParsingBtn(object) {
     });
     return;      
 }
+
+/**
+ *    파싱 데이터를 불러옵니다.
+ *    1. 파일 데이터를 읽어옵시다.
+ */
+function loadNaverFinanceParsingBtn(object) {
+    //1. 파일 데이터를 읽어옵시다.
+
+    //2. BackEnd에서 데이터를 Main으로 뿌려주려다가, 계산을 계속 Back 쪽에서 해야하니깐 조금 별로일거같아서
+    //   front에서 처리하도록 생각을 하고 있는데.. 아 그냥 백쪽에서 계산을 해야하나?????
+
+    //아.. 결국 DB에서 계산해야하나??
+
+    // 계산과정
+    // 1. 전략의 최대 13가지 항목들을 조합해서 만든다.
+    // 2. 조합된 항목들을 DB(백업용 저장), File(사용용 저장)에서 가져온다.
+    // 3. 점수 넣는 칸도 만들어야할듯
+    // 4. 음음음
+    
+
+    return;
+}
+
 
 /**
  *    현재 전략을 저장합니다.

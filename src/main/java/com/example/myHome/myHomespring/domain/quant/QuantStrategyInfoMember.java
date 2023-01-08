@@ -18,11 +18,11 @@ public class QuantStrategyInfoMember {
     private String pbr;
     private String cashDps;
     private String dividendYield;
-
+    private String sales;
     //16 개
     public QuantStrategyInfoMember(String capitalRankingHigh, String capitalRankingLow, String capitalPercentHigh, String capitalPercentLow, String marketCapitalization,
                                    String operatingProfitRatio, String netProfitRation, String roe, String roa, String debtRatio, String capitalRetentionRate, String eps,
-                                   String per, String bps, String pbr, String cashDps, String dividendYield) {
+                                   String per, String bps, String pbr, String cashDps, String dividendYield, String sales) {
 
         this.capitalRankingHigh = capitalRankingHigh;
         this.capitalRankingLow = capitalRankingLow;
@@ -41,6 +41,7 @@ public class QuantStrategyInfoMember {
         this.pbr = pbr;
         this.cashDps = cashDps;
         this.dividendYield = dividendYield;
+        this.sales = sales;
     }
 
     public String getMarketCapitalization() {
@@ -181,5 +182,13 @@ public class QuantStrategyInfoMember {
 
     public void setDividendYield(String dividendYield) {
         this.dividendYield = dividendYield;
+    }
+
+    public String getSales() {
+        return sales;
+    }
+
+    public void setSales(String sales) {
+        this.sales = sales;
     }
 }
