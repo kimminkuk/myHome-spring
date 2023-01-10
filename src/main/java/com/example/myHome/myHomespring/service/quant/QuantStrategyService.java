@@ -7,6 +7,7 @@ import com.example.myHome.myHomespring.repository.quant.QuantStrategyRedisReposi
 import com.example.myHome.myHomespring.repository.quant.QuantStrategyRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.FileWriter;
@@ -14,6 +15,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 public class QuantStrategyService {
     private final QuantStrategyRepository quantStrategyRepository;
@@ -82,12 +87,20 @@ public class QuantStrategyService {
         int companyCodeLength = companyCode.length;
         List<String> companyInfoDataList = new ArrayList<>();
         Integer[] companyPerformanceArr = getCompanyPerformanceArr();
-        String curPerformancePos = String.valueOf(companyPerformanceArr[0]);
+        String curPerformancePos = String.valueOf(companyPerformanceArr[2]);
 
         for (int companyNumber = 0; companyNumber < companyCodeLength; companyNumber++) {
             String urlMarketCap = "https://finance.naver.com/item/sise.naver?code=" + companyCode[companyNumber];
-            //String urlCompanyInfo = "https://finance.naver.com/item/main.nhn?code=" + companyCode[companyNumber];
-            String urlCompanyInfo = "https://finance.naver.com/item/coinfo.naver?code=" + companyCode[companyNumber] + "&target=finsum_more";
+
+            // Ver1
+            // Ver2가 실패해서 ROA는 직접 계산을 하겠습니다.
+            // 우선 파싱을 뚫겠습니다.
+            String urlCompanyInfo = "https://finance.naver.com/item/main.nhn?code=" + companyCode[companyNumber];
+
+            // Ver2
+            // full XPATH 가져왔는데 실패
+            // Find out what the id of div dynamically changes when html parsing (실패했습니다. 모르겠습니다. 파이썬으로 나중에 다시 해보겠습니다.)
+            // String urlCompanyInfo = "https://finance.naver.com/item/coinfo.naver?code=" + companyCode[companyNumber] + "&target=finsum_more";
 
             String oneCompanyMarketCap = "";
             String oneCompanySalesCap = "";
@@ -109,14 +122,14 @@ public class QuantStrategyService {
             } catch (Exception e) {
                 System.out.println("[DEBUG] marketCap: " + "없음");
             }
-
             try {
                 Document document = Jsoup.connect(urlCompanyInfo).get();
                 oneCompanySalesCap = getOneCompanySalesCap(document, curPerformancePos);
                 oneCompanyOperationProfitRatio = getOneCompanyOperationProfitRatio(document, curPerformancePos);
                 oneCompanyNetProfitRation = getOneCompanyNetProfitRation(document, curPerformancePos);
                 oneCompanyRoe = getOneCompanyRoe(document, curPerformancePos);
-                oneCompanyRoa = getOneCompanyRoa(document, curPerformancePos);
+                //oneCompanyRoa = getOneCompanyRoa(document, curPerformancePos);
+                oneCompanyRoa = "0";
                 oneCompanyDebtRatio = getOneCompanyDebtRatio(document, curPerformancePos);
                 oneCompanyCapRetentionRate = getOneCompanyCapRetentionRate(document, curPerformancePos);
                 oneCompanyEps = getOneCompanyEps(document, curPerformancePos);
@@ -126,7 +139,9 @@ public class QuantStrategyService {
                 oneCompanyCashDps = getOneCompanyCashDps(document, curPerformancePos);
                 oneCompanyDividendYield = getOneCompanyDividendYield(document, curPerformancePos);
             } catch (Exception e) {
-                System.out.println("[DEBUG] companyInfo: " + "없음");
+                System.out.println("[DEBUG] companyInfo[Fail]: " + urlCompanyInfo);
+                System.out.println("e = " + e);
+                System.out.println("oneCompanySalesCap = " + oneCompanySalesCap);
             }
 
             String exData = "1/2/3/4/" + oneCompanyMarketCap + "/" + oneCompanyOperationProfitRatio + "/" + oneCompanyNetProfitRation + "/" +
@@ -134,6 +149,11 @@ public class QuantStrategyService {
                             oneCompanyEps + "/" + oneCompanyPer + "/" + oneCompanyBps + "/" + oneCompanyPbr + "/" + oneCompanyCashDps + "/" +
                             oneCompanyDividendYield + "/" + oneCompanySalesCap;
             companyInfoDataList.add(companyName[companyNumber] + "@" + exData);
+
+            //Jsoup pull XPath get
+            // /html/body/div/form/div[1]/div/div[2]/div[3]/div/div/div[14]/table[2]/tbody/tr[1]/td[1]/span
+
+
         }
 
         return companyInfoDataList;
@@ -161,6 +181,17 @@ public class QuantStrategyService {
         }
     }
 
+    private String getTableId(Document document) {
+        ///html/body/div/form/div[1]/div/div[2]/div[3]/div/div/div[14]
+        Elements select = document.select("/html/body/div/form/div[1]/div/div[2]/div[3]/div/div/div[14]");
+        System.out.println("select = " + select);
+        System.out.println("select.first() = " + select.first());
+        System.out.println("select.text() = " + select.text());
+        System.out.println("select.attr(id) = " + select.attr("id"));
+        System.out.println("select.first().attr(id) = " + select.first().attr("id"));
+        return select.first().attr("id");
+    }
+
     private String getOneCompanyMarketCap(Document document) {
         Elements elements = document.select("#_sise_market_sum");
         String marketCap = String.valueOf(companyFigureCnvToFloat(elements.text().trim()));
@@ -168,104 +199,149 @@ public class QuantStrategyService {
     }
 
     private String getOneCompanySalesCap(Document document, String companyPerformancePos) {
-        Elements select = document.select("#TDdCYnFkT0 > table:nth-child(2) > tbody > tr:nth-child(1) > td:nth-child(" +
-                companyPerformancePos + ") > span");
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(1) > td:nth-child(" +
+                companyPerformancePos + ")");
+        if ( select == null ) {
+            return "0";
+        }
         String resultText = select.text().trim();
         String salesCap = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return salesCap;
     }
 
     private String getOneCompanyOperationProfitRatio(Document document, String companyPerformancePos) {
-        Elements select = document.select("#TDdCYnFkT0 > table:nth-child(2) > tbody > tr:nth-child(20) > td:nth-child(" +
-                companyPerformancePos + ") > span");
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(4) > td:nth-child(" +
+                companyPerformancePos + ")");
+        if ( select == null ) {
+            return "0";
+        }
         String resultText = select.text().trim();
         String operationProfitRatio = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return operationProfitRatio;
     }
 
     private String getOneCompanyNetProfitRation(Document document, String companyPerformancePos) {
-        Elements select = document.select("#TDdCYnFkT0 > table:nth-child(2) > tbody > tr:nth-child(21) > td:nth-child(" +
-                companyPerformancePos + ") > span");
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(5) > td:nth-child(" +
+                companyPerformancePos + ")");
+        if ( select == null ) {
+            return "0";
+        }
         String resultText = select.text().trim();
         String netProfitRation = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return netProfitRation;
     }
 
     private String getOneCompanyRoe(Document document, String companyPerformancePos) {
-        Elements select = document.select("#TDdCYnFkT0 > table:nth-child(2) > tbody > tr:nth-child(22) > td:nth-child(" +
-                companyPerformancePos + ") > span");
+        // ROE = 당기순이익 / 자기자본
+        // ex) 0.1392  = 399,074 / x
+        // x = 399,074 / 13.92
+        // x = 2866910
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(6) > td:nth-child(" +
+                companyPerformancePos + ")");
+        if ( select == null ) {
+            return "0";
+        }
         String resultText = select.text().trim();
         String roe = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return roe;
     }
 
     private String getOneCompanyRoa(Document document, String companyPerformancePos) {
-        Elements select = document.select("#TDdCYnFkT0 > table:nth-child(2) > tbody > tr:nth-child(23) > td:nth-child(" +
-                companyPerformancePos + ") > span");
+        // ROA = 당기순이익 / 총자산(자기 자본 + 부채)
+        // ROA = 당기순이익 / x*(1+부채비율)
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(6) > td:nth-child(" +
+                companyPerformancePos + ")");
+        if ( select == null ) {
+            return "0";
+        }
         String resultText = select.text().trim();
         String roa = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return roa;
     }
 
     private String getOneCompanyDebtRatio(Document document, String companyPerformancePos) {
-        Elements select = document.select("#TDdCYnFkT0 > table:nth-child(2) > tbody > tr:nth-child(24) > td:nth-child(" +
-                companyPerformancePos + ") > span");
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(7) > td:nth-child(" +
+                companyPerformancePos + ")");
+        if ( select == null ) {
+            return "0";
+        }
         String resultText = select.text().trim();
         String debtRatio = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return debtRatio;
     }
 
     private String getOneCompanyCapRetentionRate(Document document, String companyPerformancePos) {
-        Elements select = document.select("#TDdCYnFkT0 > table:nth-child(2) > tbody > tr:nth-child(25) > td:nth-child(" +
-                companyPerformancePos + ") > span");
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(9) > td:nth-child(" +
+                companyPerformancePos + ")");
+        if ( select == null ) {
+            return "0";
+        }
         String resultText = select.text().trim();
         String capRetentionRate = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return capRetentionRate;
     }
 
     private String getOneCompanyEps(Document document, String companyPerformancePos) {
-        Elements select = document.select("#TDdCYnFkT0 > table:nth-child(2) > tbody > tr:nth-child(26) > td:nth-child(" +
-                companyPerformancePos + ") > span");
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(10) > td:nth-child(" +
+                companyPerformancePos + ")");
+        if ( select == null ) {
+            return "0";
+        }
         String resultText = select.text().trim();
         String eps = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return eps;
     }
 
     private String getOneCompanyPer(Document document, String companyPerformancePos) {
-        Elements select = document.select("#TDdCYnFkT0 > table:nth-child(2) > tbody > tr:nth-child(27) > td:nth-child(" +
-                companyPerformancePos + ") > span");
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(11) > td:nth-child(" +
+                companyPerformancePos + ")");
+        if ( select == null ) {
+            return "0";
+        }
         String resultText = select.text().trim();
         String per = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return per;
     }
 
     private String getOneCompanyBps(Document document, String companyPerformancePos) {
-        Elements select = document.select("#TDdCYnFkT0 > table:nth-child(2) > tbody > tr:nth-child(28) > td:nth-child(" +
-                companyPerformancePos + ") > span");
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(12) > td:nth-child(" +
+                companyPerformancePos + ")");
+        if ( select == null ) {
+            return "0";
+        }
         String resultText = select.text().trim();
         String bps = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return bps;
     }
 
     private String getOneCompanyPbr(Document document, String companyPerformancePos) {
-        Elements select = document.select("#TDdCYnFkT0 > table:nth-child(2) > tbody > tr:nth-child(29) > td:nth-child(" +
-                companyPerformancePos + ") > span");
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(13) > td:nth-child(" +
+                companyPerformancePos + ")");
+        if ( select == null ) {
+            return "0";
+        }
         String resultText = select.text().trim();
         String pbr = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return pbr;
     }
 
     private String getOneCompanyCashDps(Document document, String companyPerformancePos) {
-        Elements select = document.select("#TDdCYnFkT0 > table:nth-child(2) > tbody > tr:nth-child(30) > td:nth-child(" +
-                companyPerformancePos + ") > span");
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(14) > td:nth-child(" +
+                companyPerformancePos + ")");
+        if ( select == null ) {
+            return "0";
+        }
         String resultText = select.text().trim();
         String cashDps = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return cashDps;
     }
 
     private String getOneCompanyDividendYield(Document document, String companyPerformancePos) {
-        Elements select = document.select("#TDdCYnFkT0 > table:nth-child(2) > tbody > tr:nth-child(31) > td:nth-child(" +
-                companyPerformancePos + ") > span");
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(15) > td:nth-child(" +
+                companyPerformancePos + ")");
+        if ( select == null ) {
+            return "0";
+        }
         String resultText = select.text().trim();
         String dividendYield = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return dividendYield;
@@ -307,8 +383,16 @@ public class QuantStrategyService {
     }
 
     private Boolean textContentBlankCheck(String textContent) {
-        return textContent == "" ? false : true;
+        if ( textContent.length() == 0 || textContent.compareTo("-") == 0) {
+            return false;
+        } else {
+            return true;
+        }
+
+
     }
+
+
 
     /**
      *    실적 위치 유지보수 용
@@ -327,7 +411,7 @@ public class QuantStrategyService {
 // 10,// 2022.09 (분기 실적)
 // 11 // 2022.12 (분기 실적 예측)
         for (int i = 0; i < companyPerformanceArr.length; i++) {
-            companyPerformanceArr[i] = i + 2;
+            companyPerformanceArr[i] = i + 1;
         }
         return companyPerformanceArr;
     }

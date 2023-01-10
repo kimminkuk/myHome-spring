@@ -241,7 +241,11 @@ function naverFinanceParsingBtn(object) {
         let confirmResult = confirm("파싱을 시작하시겠습니까?");
         if (confirmResult == false) {
             return;
-        }    
+        }
+
+        //html parsing code
+        
+
         //Get통신
         let quantUr = 'http://localhost:8080/quant/naver-finance-parsing';
         let data = '';

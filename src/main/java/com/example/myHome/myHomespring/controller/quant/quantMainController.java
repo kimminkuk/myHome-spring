@@ -1,22 +1,14 @@
 package com.example.myHome.myHomespring.controller.quant;
 
-import com.example.myHome.myHomespring.domain.quant.CompanyCodeMember;
-import com.example.myHome.myHomespring.domain.quant.CompanyNameMember;
 import com.example.myHome.myHomespring.domain.quant.QuantStrategyInfoMember;
 import com.example.myHome.myHomespring.domain.quant.QuantStrategyMember;
-import com.example.myHome.myHomespring.repository.quant.QuantStrategyRedisTemplateRepository;
+
 import com.example.myHome.myHomespring.service.quant.QuantStrategyService;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 @Controller
