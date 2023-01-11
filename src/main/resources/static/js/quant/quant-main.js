@@ -268,20 +268,11 @@ function naverFinanceParsingBtn(object) {
  *    1. 파일 데이터를 읽어옵시다.
  */
 function loadNaverFinanceParsingBtn(object) {
-    //1. 파일 데이터를 읽어옵시다.
+    //1. Back-end 쪽에서 파일을 읽어와서 계산해주고 결과를 뿌려줍니다.
 
-    //2. BackEnd에서 데이터를 Main으로 뿌려주려다가, 계산을 계속 Back 쪽에서 해야하니깐 조금 별로일거같아서
-    //   front에서 처리하도록 생각을 하고 있는데.. 아 그냥 백쪽에서 계산을 해야하나?????
-
-    //아.. 결국 DB에서 계산해야하나??
-
-    // 계산과정
-    // 1. 전략의 최대 13가지 항목들을 조합해서 만든다.
-    // 2. 조합된 항목들을 DB(백업용 저장), File(사용용 저장)에서 가져온다.
-    // 3. 점수 넣는 칸도 만들어야할듯
-    // 4. 음음음
-    
-
+    object.addEventListener("click", function() {
+        
+    });
     return;
 }
 

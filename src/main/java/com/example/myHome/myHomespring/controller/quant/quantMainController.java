@@ -112,6 +112,21 @@ public class quantMainController {
         return "quant/quant-main";
     }
 
+    @GetMapping("quant/get-parsing-data")
+    public String getParsingData(Model model) {
+        System.out.println("[DEBUG] getParsingData START");
+
+        quantPageDefaultSetting(model);
+
+        // 1. Text 파일에서 가져오기
+        List<String> parsingData = quantStrategyService.getParsingData();
+
+        //parsingData를 어떻게 분류해서 front 쪽으로 보내줄까? 흠
+
+        System.out.println("[DEBUG] getParsingData END");
+        return "quant/quant-main";
+    }
+
     private QuantStrategyInfoMember splitStrategy(String strategyInfo) {
         String[] strategyInfoList = strategyInfo.split("/");
         QuantStrategyInfoMember quantStrategyInfoMember = new QuantStrategyInfoMember(

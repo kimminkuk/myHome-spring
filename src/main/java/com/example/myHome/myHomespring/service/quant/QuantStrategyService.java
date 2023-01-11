@@ -61,6 +61,15 @@ public class QuantStrategyService {
     }
 
     /**
+     *    파싱 데이터 불러오기
+     *    1. Text 데이터 읽어오기
+     */
+    public List<String> getParsingData() {
+        return new ArrayList<>();
+    }
+
+
+    /**
      *    네이버 금융 파싱
      *    1. ZSet 저장 ( 백업 용 )
      *    2. Text 저장 ( 사용 용 )
@@ -128,9 +137,8 @@ public class QuantStrategyService {
                 oneCompanyOperationProfitRatio = getOneCompanyOperationProfitRatio(document, curPerformancePos);
                 oneCompanyNetProfitRation = getOneCompanyNetProfitRation(document, curPerformancePos);
                 oneCompanyRoe = getOneCompanyRoe(document, curPerformancePos);
-                //oneCompanyRoa = getOneCompanyRoa(document, curPerformancePos);
-                oneCompanyRoa = "0";
                 oneCompanyDebtRatio = getOneCompanyDebtRatio(document, curPerformancePos);
+                oneCompanyRoa = getOneCompanyRoa(document, curPerformancePos, oneCompanyRoe, oneCompanyDebtRatio);
                 oneCompanyCapRetentionRate = getOneCompanyCapRetentionRate(document, curPerformancePos);
                 oneCompanyEps = getOneCompanyEps(document, curPerformancePos);
                 oneCompanyPer = getOneCompanyPer(document, curPerformancePos);
@@ -138,6 +146,7 @@ public class QuantStrategyService {
                 oneCompanyPbr = getOneCompanyPbr(document, curPerformancePos);
                 oneCompanyCashDps = getOneCompanyCashDps(document, curPerformancePos);
                 oneCompanyDividendYield = getOneCompanyDividendYield(document, curPerformancePos);
+
             } catch (Exception e) {
                 System.out.println("[DEBUG] companyInfo[Fail]: " + urlCompanyInfo);
                 System.out.println("e = " + e);
@@ -149,11 +158,6 @@ public class QuantStrategyService {
                             oneCompanyEps + "/" + oneCompanyPer + "/" + oneCompanyBps + "/" + oneCompanyPbr + "/" + oneCompanyCashDps + "/" +
                             oneCompanyDividendYield + "/" + oneCompanySalesCap;
             companyInfoDataList.add(companyName[companyNumber] + "@" + exData);
-
-            //Jsoup pull XPath get
-            // /html/body/div/form/div[1]/div/div[2]/div[3]/div/div/div[14]/table[2]/tbody/tr[1]/td[1]/span
-
-
         }
 
         return companyInfoDataList;
@@ -246,19 +250,6 @@ public class QuantStrategyService {
         return roe;
     }
 
-    private String getOneCompanyRoa(Document document, String companyPerformancePos) {
-        // ROA = 당기순이익 / 총자산(자기 자본 + 부채)
-        // ROA = 당기순이익 / x*(1+부채비율)
-        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(6) > td:nth-child(" +
-                companyPerformancePos + ")");
-        if ( select == null ) {
-            return "0";
-        }
-        String resultText = select.text().trim();
-        String roa = textContentBlankCheck(resultText) == false ? "0" : resultText;
-        return roa;
-    }
-
     private String getOneCompanyDebtRatio(Document document, String companyPerformancePos) {
         Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(7) > td:nth-child(" +
                 companyPerformancePos + ")");
@@ -268,6 +259,40 @@ public class QuantStrategyService {
         String resultText = select.text().trim();
         String debtRatio = textContentBlankCheck(resultText) == false ? "0" : resultText;
         return debtRatio;
+    }
+
+
+
+    private String getOneCompanyRoa(Document document, String companyPerformancePos, String Roe, String DebtRatio) {
+        // ROA = 당기순이익 / 총자산(자기 자본 + 부채)
+        // ROA = 당기순이익 / 자기자본 * (1+부채비율)
+        Elements select = document.select("#content > div.section.cop_analysis > div.sub_section > table > tbody > tr:nth-child(3) > td:nth-child(" +
+                companyPerformancePos + ")");
+
+        //1. 당기 순이익 획득 ( select.text.trim() )
+        String resultText = select.text().trim();
+        resultText = textContentBlankCheck(resultText) == false ? "0" : resultText;
+        Float netProfit =  companyFigureCnvToFloatVer2(resultText);
+        final float EPSILON = 1e-15f;
+        if ( select == null || Roe.equals("0") || Math.abs(netProfit) < EPSILON ) {
+            return "0";
+        }
+
+        //2. 자기 자본 계산 = 당기 순이익 / ROE
+        Float equityCapital = netProfit / companyFigureCnvToFloatVer2(Roe);
+
+        //3. ROA 계산 ( 1. 당기 순이익 / 2. 자기 자본 * (1+부채비율) )
+        Float debtRatio = companyFigureCnvToFloat(DebtRatio) / 100;
+        String roa = String.valueOf(netProfit / (equityCapital * (1 + debtRatio)));
+
+        // 삼성전자 Case
+        // 1. 당기 순이익 = 399,074
+        // 2. 자기 자본 = 399,074 / 13.92 = 28669
+        // 3. ROA = 399,074 / 28669 * (1+0.3992) = 0.14
+
+        System.out.println("Roe = " + Roe + " netProfit = " + netProfit + " equityCapital = " + equityCapital + " debtRatio = " + debtRatio + " roa = " + roa);
+
+        return roa;
     }
 
     private String getOneCompanyCapRetentionRate(Document document, String companyPerformancePos) {
@@ -369,6 +394,26 @@ public class QuantStrategyService {
         }
     }
 
+    public Float companyFigureCnvToFloatVer2(String companyFigure) {
+        int temp = 99999;
+        if (companyFigure.isEmpty()) {
+            return Float.valueOf(temp);
+        }
+        companyFigure = companyFigure.replaceAll(",", "");
+        if (companyFigure.compareTo("N/A") == 0) {
+            return Float.valueOf(temp);
+        } else {
+            if (companyFigure.charAt(0) == '∞') {
+                return Float.valueOf(temp);
+            } else if (companyFigure.charAt(0) == '.') {
+                companyFigure = '0' + companyFigure;
+                return Float.valueOf(companyFigure);
+            } else {
+                return Float.valueOf(companyFigure);
+            }
+        }
+    }
+
     public String getCurDate() {
         Calendar calendar = Calendar.getInstance();
         String saveTime = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE);
@@ -411,7 +456,7 @@ public class QuantStrategyService {
 // 10,// 2022.09 (분기 실적)
 // 11 // 2022.12 (분기 실적 예측)
         for (int i = 0; i < companyPerformanceArr.length; i++) {
-            companyPerformanceArr[i] = i + 1;
+            companyPerformanceArr[i] = i + 2;
         }
         return companyPerformanceArr;
     }
