@@ -2,6 +2,7 @@ package com.example.myHome.myHomespring.service.quant;
 
 import com.example.myHome.myHomespring.domain.quant.CompanyCodeMember;
 import com.example.myHome.myHomespring.domain.quant.CompanyNameMember;
+import com.example.myHome.myHomespring.domain.quant.QuantStrategyInfoMember;
 import com.example.myHome.myHomespring.domain.quant.QuantStrategyMember;
 import com.example.myHome.myHomespring.repository.quant.QuantStrategyRedisRepository;
 import com.example.myHome.myHomespring.repository.quant.QuantStrategyRepository;
@@ -10,7 +11,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -65,7 +72,68 @@ public class QuantStrategyService {
      *    1. Text 데이터 읽어오기
      */
     public List<String> getParsingData() {
-        return new ArrayList<>();
+
+        //  2023-1-11.txt 데이터 읽어오기
+        //  src/main/text/2023-1-11.txt
+
+        String path = "src/main/text/2023-1-11.txt";
+
+        // 16개로 나눠야한다.
+        // 이걸 매번 실행해야한다고?????/
+        // 2500줄을 * 16개의 메모리가 매번 생성된다? 이게 맞나?
+
+        // 그래서, 조건들을 추가하면 흠...
+        // 최소 n*log(n) * 16 (n => 2500)
+        // 흠.. 속도가 2초 이상걸리면 안되는데...
+        // 일단 해보자.
+        List<String> lines = new ArrayList<>();
+
+        List<QuantStrategyInfoMember> quantStrategyInfoMembers = new ArrayList<>();
+        //16 인벤티지랩@1/2/3/4/794.0/-513.38/-497.99/-42.92/-35.841335/19.75/568.07/-1,376/0/3,713/0/0/0/19
+        try {
+            lines = Files.readAllLines(Path.of(path));
+            for (String line : lines) {
+                String[] splitStep1 = line.split("@");
+                String[] splitStep2 = splitStep1[1].split("/");
+                String companyName = splitStep1[0].split(" ")[1];
+
+                String capitalRankingHigh = splitStep2[0];
+                String capitalRankingLow = splitStep2[1];
+                String capitalPercentHigh = splitStep2[2];
+                String capitalPercentLow = splitStep2[3];
+                String marketCapitalization = splitStep2[4];
+                String operatingProfitRatio = splitStep2[5];
+                String netProfitRatio = splitStep2[6];
+                String roe = splitStep2[7];
+                String roa = splitStep2[8];
+                String debtRatio = splitStep2[9];
+                String capitalRetentionRate = splitStep2[10];
+                String eps = splitStep2[11];
+                String per = splitStep2[12];
+                String bps = splitStep2[13];
+                String pbr = splitStep2[14];
+                String cashDps = splitStep2[15];
+                String dividendYield = splitStep2[16];
+                String sales = splitStep2[17];
+                quantStrategyInfoMembers.add(new QuantStrategyInfoMember(
+                        companyName, capitalRankingHigh, capitalRankingLow, capitalPercentHigh,
+                        capitalPercentLow, marketCapitalization, operatingProfitRatio, netProfitRatio,
+                        roe, roa, debtRatio, capitalRetentionRate,
+                        eps, per, bps, pbr, cashDps, dividendYield, sales)
+                );
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 몇 가지 조건을 추가해서 테스트한다.
+        // 테스트용으로 그냥 100개까지만 리턴한다.
+
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            result.add(quantStrategyInfoMembers.get(i).getCompanyName());
+        }
+        return result;
     }
 
 

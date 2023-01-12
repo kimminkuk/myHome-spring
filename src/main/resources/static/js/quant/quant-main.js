@@ -271,7 +271,8 @@ function loadNaverFinanceParsingBtn(object) {
     //1. Back-end 쪽에서 파일을 읽어와서 계산해주고 결과를 뿌려줍니다.
 
     object.addEventListener("click", function() {
-        
+        let quantUr = 'http://localhost:8080/quant/get-parsing-data';
+        location.href = quantUr;
     });
     return;
 }

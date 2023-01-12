@@ -118,11 +118,21 @@ public class quantMainController {
 
         quantPageDefaultSetting(model);
 
-        // 1. Text 파일에서 가져오기
+        // 1. ZSet에서 가져오기
+
+
+        // parsingData를 어떻게 분류해서 front 쪽으로 보내줄까? 흠
+        // 리스트로 그냥 넘길까? 음.. 난 100개이상 보기 싫은데..
+        // 100개까지만 보내주는걸로할까? 아니면, front에서 100개까지만 보여주는걸로 할까?
+        long startTime = System.currentTimeMillis();
+        // 2. Text 파일에서 가져오기
         List<String> parsingData = quantStrategyService.getParsingData();
 
-        //parsingData를 어떻게 분류해서 front 쪽으로 보내줄까? 흠
+        long endTime = System.currentTimeMillis();
 
+        model.addAttribute("parsingData", parsingData);
+
+        System.out.println("[DEBUG] endTime - startTime: " + (endTime - startTime));
         System.out.println("[DEBUG] getParsingData END");
         return "quant/quant-main";
     }

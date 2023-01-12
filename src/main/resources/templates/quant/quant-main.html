@@ -133,10 +133,16 @@
         </div>
 
         <div class="group-quant-mid-1-left-2">
-
+            <!--thymeleaf iter-->
+            <table class="group-quant-mid-1-left-2-table">
+                <tr th:each="compnayName, iter : ${parsingData}">
+                    <td th:text="${iter.index + 1}"></td>
+                    <td th:text="${compnayName}"></td>
+                </tr>
+            </table>
         </div>
     </div>
 </body>
-<script type="text/javascript" src="../js/quant/quant-main.js?ver=230107-01"></script>
+<script type="text/javascript" src="../js/quant/quant-main.js?ver=230112-01"></script>
 <script type="text/javascript" src="../js/common.js?ver=2230101-15"></script>
 </html>

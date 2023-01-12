@@ -1,6 +1,7 @@
 package com.example.myHome.myHomespring.domain.quant;
 
 public class QuantStrategyInfoMember {
+    private String companyName;
     private String capitalRankingHigh;
     private String capitalRankingLow;
     private String capitalPercentHigh;
@@ -189,6 +190,36 @@ public class QuantStrategyInfoMember {
     }
 
     public void setSales(String sales) {
+        this.sales = sales;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public QuantStrategyInfoMember(String companyName, String capitalRankingHigh, String capitalRankingLow, String capitalPercentHigh, String capitalPercentLow, String marketCapitalization, String operatingProfitRatio, String netProfitRation, String roe, String roa, String debtRatio, String capitalRetentionRate, String eps, String per, String bps, String pbr, String cashDps, String dividendYield, String sales) {
+        this.companyName = companyName;
+        this.capitalRankingHigh = capitalRankingHigh;
+        this.capitalRankingLow = capitalRankingLow;
+        this.capitalPercentHigh = capitalPercentHigh;
+        this.capitalPercentLow = capitalPercentLow;
+        this.marketCapitalization = marketCapitalization;
+        this.operatingProfitRatio = operatingProfitRatio;
+        this.netProfitRation = netProfitRation;
+        this.roe = roe;
+        this.roa = roa;
+        this.debtRatio = debtRatio;
+        this.capitalRetentionRate = capitalRetentionRate;
+        this.eps = eps;
+        this.per = per;
+        this.bps = bps;
+        this.pbr = pbr;
+        this.cashDps = cashDps;
+        this.dividendYield = dividendYield;
         this.sales = sales;
     }
 }
