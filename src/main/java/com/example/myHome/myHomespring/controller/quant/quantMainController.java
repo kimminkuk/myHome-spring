@@ -113,7 +113,8 @@ public class quantMainController {
     }
 
     @GetMapping("quant/get-parsing-data")
-    public String getParsingData(Model model) {
+    public String getParsingData(Model model,
+                                 @RequestParam("strategyInfo") String strategyInfo) {
         System.out.println("[DEBUG] getParsingData START");
 
         quantPageDefaultSetting(model);
@@ -124,9 +125,12 @@ public class quantMainController {
         // parsingData를 어떻게 분류해서 front 쪽으로 보내줄까? 흠
         // 리스트로 그냥 넘길까? 음.. 난 100개이상 보기 싫은데..
         // 100개까지만 보내주는걸로할까? 아니면, front에서 100개까지만 보여주는걸로 할까?
+
+        // 어쩔 수 없다.. 조건을 Get으로 보내줘야할듯요.. 아 이건 post로 보낼까?? 한번해보지 뭐
+
         long startTime = System.currentTimeMillis();
         // 2. Text 파일에서 가져오기
-        List<String> parsingData = quantStrategyService.getParsingData();
+        List<String> parsingData = quantStrategyService.getParsingData(strategyInfo);
 
         long endTime = System.currentTimeMillis();
 

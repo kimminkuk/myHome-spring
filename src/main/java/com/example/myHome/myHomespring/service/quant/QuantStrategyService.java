@@ -8,29 +8,19 @@ import com.example.myHome.myHomespring.repository.quant.QuantStrategyRedisReposi
 import com.example.myHome.myHomespring.repository.quant.QuantStrategyRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+
 import org.jsoup.select.Elements;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
 
-import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+import java.util.*;
 
 public class QuantStrategyService {
     private final QuantStrategyRepository quantStrategyRepository;
     private final QuantStrategyRedisRepository quantStrategyRedisRepository;
-
     public QuantStrategyService(QuantStrategyRepository quantStrategyRepository, QuantStrategyRedisRepository quantStrategyRedisRepository) {
         this.quantStrategyRepository = quantStrategyRepository;
         this.quantStrategyRedisRepository = quantStrategyRedisRepository;
@@ -71,11 +61,11 @@ public class QuantStrategyService {
      *    파싱 데이터 불러오기
      *    1. Text 데이터 읽어오기
      */
-    public List<String> getParsingData() {
+    public List<String> getParsingData( String strategyInfo ) {
 
         //  2023-1-11.txt 데이터 읽어오기
         //  src/main/text/2023-1-11.txt
-
+        System.out.println("strategyInfo = " + strategyInfo);
         String path = "src/main/text/2023-1-11.txt";
 
         // 16개로 나눠야한다.
@@ -89,6 +79,7 @@ public class QuantStrategyService {
         List<String> lines = new ArrayList<>();
 
         List<QuantStrategyInfoMember> quantStrategyInfoMembers = new ArrayList<>();
+
         //16 인벤티지랩@1/2/3/4/794.0/-513.38/-497.99/-42.92/-35.841335/19.75/568.07/-1,376/0/3,713/0/0/0/19
         try {
             lines = Files.readAllLines(Path.of(path));
@@ -126,6 +117,10 @@ public class QuantStrategyService {
             e.printStackTrace();
         }
 
+        //Step 1 Sort of Info 2~6
+        // 2. 시가총액 상위 순위 3. 시가총액 하위 순위 4. 시가총액 상위 퍼센트 5. 시가총액 하위 퍼센트 6. 시가총액
+        QuantSortStepCompanyInfo2_6(quantStrategyInfoMembers, 6);
+
         // 몇 가지 조건을 추가해서 테스트한다.
         // 테스트용으로 그냥 100개까지만 리턴한다.
 
@@ -134,6 +129,72 @@ public class QuantStrategyService {
             result.add(quantStrategyInfoMembers.get(i).getCompanyName());
         }
         return result;
+    }
+
+    private void QuantSortStepCompanyInfo2_6(List<QuantStrategyInfoMember> quantStrategyInfoMembers, int checkNum) {
+
+        //Sort by Capital Ranking High
+        Collections.sort(quantStrategyInfoMembers, new Comparator<QuantStrategyInfoMember>() {
+            @Override
+            public int compare(QuantStrategyInfoMember o1, QuantStrategyInfoMember o2) {
+                return Integer.parseInt(o1.getCapitalRankingHigh()) - Integer.parseInt(o2.getCapitalRankingHigh());
+            }
+        });
+
+        //Sort by Capital Ranking Low
+        Collections.sort(quantStrategyInfoMembers, new Comparator<QuantStrategyInfoMember>() {
+            @Override
+            public int compare(QuantStrategyInfoMember o1, QuantStrategyInfoMember o2) {
+                return Integer.parseInt(o1.getCapitalRankingLow()) - Integer.parseInt(o2.getCapitalRankingLow());
+            }
+        });
+
+        //Sort by Capital Percent High
+        Collections.sort(quantStrategyInfoMembers, new Comparator<QuantStrategyInfoMember>() {
+            @Override
+            public int compare(QuantStrategyInfoMember o1, QuantStrategyInfoMember o2) {
+                return Integer.parseInt(o1.getCapitalPercentHigh()) - Integer.parseInt(o2.getCapitalPercentHigh());
+            }
+        });
+
+        //Sort by Capital Percent Low
+        Collections.sort(quantStrategyInfoMembers, new Comparator<QuantStrategyInfoMember>() {
+            @Override
+            public int compare(QuantStrategyInfoMember o1, QuantStrategyInfoMember o2) {
+                return Integer.parseInt(o1.getCapitalPercentLow()) - Integer.parseInt(o2.getCapitalPercentLow());
+            }
+        });
+
+        //Sort by Market Capitalization
+        Collections.sort(quantStrategyInfoMembers, new Comparator<QuantStrategyInfoMember>() {
+            @Override
+            public int compare(QuantStrategyInfoMember o1, QuantStrategyInfoMember o2) {
+                return Integer.parseInt(o1.getMarketCapitalization()) - Integer.parseInt(o2.getMarketCapitalization());
+            }
+        });
+
+        switch (checkNum) {
+                case 2:
+                quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalRankingHigh));
+                break;
+                case 3:
+                quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalRankingLow));
+                break;
+                case 4:
+                quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalPercentHigh));
+                break;
+                case 5:
+                quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalPercentLow));
+                break;
+                case 6:
+                quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getMarketCapitalization));
+                break;
+        }
+
+        quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalRankingLow));
+        quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalPercentHigh));
+        quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalPercentLow));
+        quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getMarketCapitalization));
     }
 
 

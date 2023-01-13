@@ -121,7 +121,7 @@ function quantPageInit() {
     naverFinanceParsingBtn(searchParsingBtn);
     
     // 전략 불러오기 버튼
-    loadNaverFinanceParsingBtn(loadParsingBtn);
+    loadNaverFinanceParsingBtn(loadParsingBtn, infoDataArr);
 
     // 현재 전략을 저장합니다.
     strategySaveBtn(strategySaveText, strategySaveInputData, infoDataArr);
@@ -267,12 +267,29 @@ function naverFinanceParsingBtn(object) {
  *    파싱 데이터를 불러옵니다.
  *    1. 파일 데이터를 읽어옵시다.
  */
-function loadNaverFinanceParsingBtn(object) {
+function loadNaverFinanceParsingBtn(object, infoDataArr) {
     //1. Back-end 쪽에서 파일을 읽어와서 계산해주고 결과를 뿌려줍니다.
 
     object.addEventListener("click", function() {
-        let quantUr = 'http://localhost:8080/quant/get-parsing-data';
-        location.href = quantUr;
+        let quantUrl = 'http://localhost:8080/quant/get-parsing-data';
+        
+        // Use the Array.map() method to create an array of the values of the input elements
+        let strategyInfo = infoDataArr.map(input => input.value);
+
+        // Use the Array.join() method to join the values into a single string, separated by "/"
+        strategyInfo = strategyInfo.join("/");
+
+        // Use the URLSearchParams API to create the query string
+        let params = new URLSearchParams();
+        params.set('strategyInfo', strategyInfo);
+
+        // Use the URL API to create the final URL with the query string
+        let url = new URL(quantUrl);
+        url.search = params;
+
+        
+        // Redirect to the final URL
+        location.href = url;
     });
     return;
 }
