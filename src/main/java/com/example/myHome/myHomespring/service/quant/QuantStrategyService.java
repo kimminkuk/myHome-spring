@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class QuantStrategyService {
     private final QuantStrategyRepository quantStrategyRepository;
@@ -119,82 +120,258 @@ public class QuantStrategyService {
 
         //Step 1 Sort of Info 2~6
         // 2. 시가총액 상위 순위 3. 시가총액 하위 순위 4. 시가총액 상위 퍼센트 5. 시가총액 하위 퍼센트 6. 시가총액
-        QuantSortStepCompanyInfo2_6(quantStrategyInfoMembers, 6);
+        //QuantSortStepCompanyInfo2_6(quantStrategyInfoMembers, 6);
 
         // 몇 가지 조건을 추가해서 테스트한다.
         // 테스트용으로 그냥 100개까지만 리턴한다.
 
-        List<String> result = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            result.add(quantStrategyInfoMembers.get(i).getCompanyName());
-        }
+        // 기본적으로 Sort는 한번 하자. (시가총액으로)
+        quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getMarketCapitalizationToFloat));
+
+        // Step 1 Sort 분류
+        // x면 서치 안한다.
+        // x~ => x이상
+        // ~x => x이하
+        // x~y => x이상 y이하
+        List<String> result = QuanySortVer1(quantStrategyInfoMembers, strategyInfo);
+
+        //List<String> result = new ArrayList<>();
+//        for (int i = 0; i < 100; i++) {
+//            System.out.println("companyName = " + quantStrategyInfoMembers.get(i).getCompanyName() + " marketCap = " + quantStrategyInfoMembers.get(i).getMarketCapitalization());
+//            result.add(quantStrategyInfoMembers.get(i).getCompanyName());
+//
+//        }
         return result;
     }
 
-    private void QuantSortStepCompanyInfo2_6(List<QuantStrategyInfoMember> quantStrategyInfoMembers, int checkNum) {
+    private List<String> QuanySortVer1(List<QuantStrategyInfoMember> quantStrategyInfoMembers, String strategyInfo) {
+        List<String> quantMemberSortResult = new ArrayList<>();
+        String[] split = strategyInfo.split("/");
+        String capitalRankingHigh = split[0];
+        String capitalRankingLow = split[1];
+        String capitalPercentHigh = split[2];
+        String capitalPercentLow = split[3];
+        String marketCapitalization = split[4];
+        String operatingProfitRatio = split[5];
+        String netProfitRatio = split[6];
+        String roe = split[7];
+        String roa = split[8];
+        String debtRatio = split[9];
+        String capitalRetentionRate = split[10];
+        String eps = split[11];
+        String per = split[12];
+        String bps = split[13];
+        String pbr = split[14];
+        String cashDps = split[15];
+        String dividendYield = split[16];
+        String sales = split[17];
 
-        //Sort by Capital Ranking High
-        Collections.sort(quantStrategyInfoMembers, new Comparator<QuantStrategyInfoMember>() {
-            @Override
-            public int compare(QuantStrategyInfoMember o1, QuantStrategyInfoMember o2) {
-                return Integer.parseInt(o1.getCapitalRankingHigh()) - Integer.parseInt(o2.getCapitalRankingHigh());
-            }
-        });
+        // Step 1 Sort 분류
+        //아 잘못함;;;
+        //10~100  split("~") => 10, 100
+        // 난 이걸 10, ~, 100 으로 생각해버림 이런,
+        // 어떻게 다시 나눌까.. 고민 중
+        // case 1)  10~
+        // case 2)  10~100
+        // case 3)  ~100
+        // case 4)  10
+        //quantResultSortMarketCap(quantStrategyInfoMembers, marketCapitalization);
 
-        //Sort by Capital Ranking Low
-        Collections.sort(quantStrategyInfoMembers, new Comparator<QuantStrategyInfoMember>() {
-            @Override
-            public int compare(QuantStrategyInfoMember o1, QuantStrategyInfoMember o2) {
-                return Integer.parseInt(o1.getCapitalRankingLow()) - Integer.parseInt(o2.getCapitalRankingLow());
-            }
-        });
+        // 그리고 시가총액으로 솔트는 한번 해줘야한다. (이건 그냥 내가 파이썬에서 해줄까?.. 근데 매번 파싱해오는거니깐 어려워 그냥 여기서 정렬 가볍게 하자)
+        // ascending order
+        quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getMarketCapitalizationToFloat));
 
-        //Sort by Capital Percent High
-        Collections.sort(quantStrategyInfoMembers, new Comparator<QuantStrategyInfoMember>() {
-            @Override
-            public int compare(QuantStrategyInfoMember o1, QuantStrategyInfoMember o2) {
-                return Integer.parseInt(o1.getCapitalPercentHigh()) - Integer.parseInt(o2.getCapitalPercentHigh());
-            }
-        });
+        // 테스트로 하나 해본다.
+        // 아 이거.. 따로따로 17개 만들어야곘네..
+        // 그리고, 시가총액 상위 순위 <-> 시가총액 하위 순위 (그냥 상위만 쓰자..)
+        // 시가총액 상위 퍼센트 <-> 시가총액 하위 퍼센트 (그냥 상위만 쓰자..)
+        quantResultPercentHigh(quantStrategyInfoMembers, capitalPercentHigh);
+        quantResultRankingHigh(quantStrategyInfoMembers, capitalRankingHigh);
+        quantResultSort(quantStrategyInfoMembers, operatingProfitRatio, QuantStrategyInfoMember::getOperatingProfitRatioToFloat);
 
-        //Sort by Capital Percent Low
-        Collections.sort(quantStrategyInfoMembers, new Comparator<QuantStrategyInfoMember>() {
-            @Override
-            public int compare(QuantStrategyInfoMember o1, QuantStrategyInfoMember o2) {
-                return Integer.parseInt(o1.getCapitalPercentLow()) - Integer.parseInt(o2.getCapitalPercentLow());
-            }
-        });
+        // quantResultSort(quantStrategyInfoMembers, capitalRankingHigh, QuantStrategyInfoMember::getCapitalPercentHighToFloat);
 
-        //Sort by Market Capitalization
-        Collections.sort(quantStrategyInfoMembers, new Comparator<QuantStrategyInfoMember>() {
-            @Override
-            public int compare(QuantStrategyInfoMember o1, QuantStrategyInfoMember o2) {
-                return Integer.parseInt(o1.getMarketCapitalization()) - Integer.parseInt(o2.getMarketCapitalization());
-            }
-        });
 
-        switch (checkNum) {
-                case 2:
-                quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalRankingHigh));
-                break;
-                case 3:
-                quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalRankingLow));
-                break;
-                case 4:
-                quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalPercentHigh));
-                break;
-                case 5:
-                quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalPercentLow));
-                break;
-                case 6:
-                quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getMarketCapitalization));
-                break;
+        for (int i = 0; i < quantStrategyInfoMembers.size(); i++) {
+            quantMemberSortResult.add(quantStrategyInfoMembers.get(i).getCompanyName());
+            System.out.println("quantStrategyInfoMembers marketCap = " + quantStrategyInfoMembers.get(i).getMarketCapitalizationToFloat());
         }
+        return quantMemberSortResult;
+    }
 
-        quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalRankingLow));
-        quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalPercentHigh));
-        quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getCapitalPercentLow));
-        quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getMarketCapitalization));
+    private static void quantResultSort(List<QuantStrategyInfoMember> quantStrategyInfoMembers, String infoData, Function<QuantStrategyInfoMember, Float> getMember) {
+        // case 1)  10~
+        // case 2)  10~100
+        // case 3)  ~100
+        // case 4)  10
+        if ( !infoData.equals("x") ) {
+            if ( infoData.contains("~") ) {
+                String[] range = infoData.split("~");
+                if ( infoData.indexOf("~") == 0) {
+                    // case 3)  ~100
+                    quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> getMember.apply(quantStrategyInfoMember) > Float.parseFloat(infoData.substring(1)));
+                } else {
+                    String[] step1 = infoData.split("~");
+                    if ( step1.length == 2 ) {
+                        // case 2)  10~100
+                        quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> getMember.apply(quantStrategyInfoMember) < Float.parseFloat(step1[0]) || getMember.apply(quantStrategyInfoMember) > Float.parseFloat(step1[1]));
+                    } else {
+                        // case 1)  10~
+                        quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> getMember.apply(quantStrategyInfoMember) < Float.parseFloat(step1[0]));
+                    }
+                }
+            } else {
+                // case 4)  10
+                quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> getMember.apply(quantStrategyInfoMember) < Float.parseFloat(infoData));
+            }
+        }
+    }
+
+    private static void quantResultPercentHigh(List<QuantStrategyInfoMember> quantStrategyInfoMembers, String percentHigh) {
+        // 10~20 => QuantStrategyInfoMember의 10%~20% 사이의 회사들 get해오기
+        // case 1)  10~
+        // case 2)  10~20
+        // case 3)  ~20
+        // case 4)  10
+
+        if ( !percentHigh.equals("x") ) {
+            int infoPercent = Math.round(quantStrategyInfoMembers.size() / 100);
+            // Ver1
+            // List<QuantStrategyInfoMember> result = quantStrategyInfoMembers.sublist(0, infoPercent * Integer.parseInt(capitalRankingHigh));
+            // Ver2
+//            int subListCount = infoPercent * Integer.parseInt(percentHigh);
+//            int count = 0;
+//            List<QuantStrategyInfoMember> result = new ArrayList<>();
+//            for (int i = 0; i < quantStrategyInfoMembers.size(); i++) {
+//                if ( count > subListCount ) {
+//                    break;
+//                }
+//                result.add(quantStrategyInfoMembers.get(i));
+//                count++;
+//            }
+
+            //Ver2 람다식으로
+            // 아 잠깐만.. 상위니깐.. 1 ~ 2500 개 중에, 상위 20% => 2000 ~ 2500개지
+            if ( percentHigh.contains("~") ) {
+                // case 3) ~15% => 85% ~ 100%
+                if ( percentHigh.indexOf("~") == 0) {
+                    quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) < infoPercent * (100 - Integer.parseInt(percentHigh.substring(1))));
+                } else {
+                    String[] step1 = percentHigh.split("~");
+                    if ( step1.length == 2 ) {
+                        // case 2) 5 ~ 15% => indexOf로 95~85% 사이의 회사들 get해오기
+                        int notMoreValue = infoPercent * (100 - Integer.parseInt(step1[0]));
+                        int moreValue = infoPercent * (100 - Integer.parseInt(step1[1]));
+                        quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) < moreValue || quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) > notMoreValue );
+                    } else {
+                        // case 1) 10~ => 하위 10 퍼센트 이하 제거 (90% 아래는 전부 제거)
+                        quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) < infoPercent * (100 - Integer.parseInt(step1[0])));
+                    }
+                }
+            } else {
+                // case 4) 10 => 10 퍼센트 이하 제거 (90% 아래는 전부 제거)
+                quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) < infoPercent * (100 - Integer.parseInt(percentHigh)));
+            }
+        }
+    }
+
+    private static void quantResultRankingHigh(List<QuantStrategyInfoMember> quantStrategyInfoMembers, String rankingHigh) {
+        // 시가총액 상위 순위
+        // case 1)  1000~
+        // case 2)  1000~2000
+        // case 3)  ~2000
+        // case 4)  1000
+        if (!rankingHigh.equals("x")) {
+            if ( rankingHigh.contains("~") ) {
+                //case 3) ~2000 => 2000개 이하까지
+                if ( rankingHigh.indexOf("~") == 0) {
+                    quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) > Integer.parseInt(rankingHigh.substring(1)));
+                } else {
+                    String[] step1 = rankingHigh.split("~");
+                    if ( step1.length == 2 ) {
+                        // case 2) 1000~2000 => 1000~2000개까지
+                        quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) < Integer.parseInt(step1[0]) || quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) > Integer.parseInt(step1[1]));
+                    } else {
+                        // case 1) 1000~ => 1000개 이상
+                        quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) < Integer.parseInt(step1[0]));
+                    }
+                }
+            } else {
+                // case 4) 1000 => 1000 이상부터..
+                quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) < Integer.parseInt(rankingHigh));
+            }
+        }
+    }
+
+    private static void quantResultOperatingProfitRatio(List<QuantStrategyInfoMember> quantStrategyInfoMembers, String operatingProfitRatio) {
+        // 시가총액 상위 순위
+        // case 1)  8.0~
+        // case 2)  8.0~9.2
+        // case 3)  ~9.5
+        // case 4)  8.4
+        if (!operatingProfitRatio.equals("x")) {
+            if ( operatingProfitRatio.contains("~") ) {
+                //case 3) ~2000 => 2000개 이하까지
+                if ( operatingProfitRatio.indexOf("~") == 0) {
+                    quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) > Integer.parseInt(operatingProfitRatio.substring(1)));
+                } else {
+                    String[] step1 = operatingProfitRatio.split("~");
+                    if ( step1.length == 2 ) {
+                        // case 2) 1000~2000 => 1000~2000개까지
+                        quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) < Integer.parseInt(step1[0]) || quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) > Integer.parseInt(step1[1]));
+                    } else {
+                        // case 1) 1000~ => 1000개 이상
+                        quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) < Integer.parseInt(step1[0]));
+                    }
+                }
+            } else {
+                // case 4) 1000 => 1000 이상부터..
+                quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMembers.indexOf(quantStrategyInfoMember) < Integer.parseInt(operatingProfitRatio));
+            }
+        }
+    }
+
+    private static void quantResultSortMarketCap(List<QuantStrategyInfoMember> quantStrategyInfoMembers, String infoData) {
+        // 10~100  split("~") => 10, 100
+        // case 1)  10~
+        // case 2)  10~100
+        // case 3)  ~100
+        // case 4)  10
+        if (!infoData.equals("x")) {
+            if ( infoData.contains("~") ) {
+                // case 3)
+                if ( infoData.indexOf("~") == 0 ) {
+                    quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMember.getMarketCapitalizationToFloat() > Float.parseFloat(infoData.substring(1)));
+                } else {
+                    String[] step1 = infoData.split("~");
+                    if ( step1.length == 2 ) {
+                        // case 2)
+                        quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMember.getMarketCapitalizationToFloat() < Float.parseFloat(step1[0]) || quantStrategyInfoMember.getMarketCapitalizationToFloat() > Float.parseFloat(step1[1]));
+                    } else {
+                        // case 1)
+                        quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMember.getMarketCapitalizationToFloat() < Float.parseFloat(step1[0]));
+                    }
+                }
+            } else {
+                // case 4)
+                quantStrategyInfoMembers.removeIf(quantStrategyInfoMember -> quantStrategyInfoMember.getMarketCapitalizationToFloat() < Float.parseFloat(infoData));
+            }
+        }
+    }
+
+    private void QuantSortStepCompanyInfo2_6(List<QuantStrategyInfoMember> quantStrategyInfoMembers, int checkNum) {
+//
+//        //Sort by Market Capitalization
+//        Collections.sort(quantStrategyInfoMembers, new Comparator<QuantStrategyInfoMember>() {
+//            @Override
+//            public int compare(QuantStrategyInfoMember o1, QuantStrategyInfoMember o2) {
+//                float f1 = Float.parseFloat(o1.getMarketCapitalization());
+//                float f2 = Float.parseFloat(o2.getMarketCapitalization());
+//                return Float.compare(f2, f1);
+//            }
+//        });
+//
+        quantStrategyInfoMembers.sort(Comparator.comparing(QuantStrategyInfoMember::getMarketCapitalizationToFloat));
     }
 
 

@@ -45,6 +45,7 @@ public class QuantStrategyInfoMember {
         this.sales = sales;
     }
 
+
     public String getMarketCapitalization() {
         return marketCapitalization;
     }
@@ -222,4 +223,67 @@ public class QuantStrategyInfoMember {
         this.dividendYield = dividendYield;
         this.sales = sales;
     }
+    public float getCapitalRankingHighToFloat() {
+        return Float.parseFloat(capitalRankingHigh);
+    }
+
+    public float getCapitalRankingLowToFloat() {
+        return Float.parseFloat(capitalRankingLow);
+    }
+    public float getCapitalPercentHighToFloat() {
+        return Float.parseFloat(capitalPercentHigh);
+    }
+    public float getCapitalPercentLowToFloat() {
+        return Float.parseFloat(capitalPercentLow);
+    }
+    public float getMarketCapitalizationToFloat() {
+        return Float.parseFloat(marketCapitalization);
+    }
+    public float getOperatingProfitRatioToFloat() {
+        String replaceData = operatingProfitRatio.replaceAll(",", "");
+        if ( replaceData.equals("N/A") ) {
+            return 0;
+        } else if ( replaceData.indexOf("-") == 0 ) {
+            return -Float.parseFloat(replaceData.substring(1));
+        } else {
+            return Float.parseFloat(replaceData);
+        }
+    }
+    public float getNetProfitRationToFloat() {
+        return Float.parseFloat(netProfitRation);
+    }
+    public float getRoeToFloat() {
+        return Float.parseFloat(roe);
+    }
+    public float getRoaToFloat() {
+        return Float.parseFloat(roa);
+    }
+    public float getDebtRatioToFloat() {
+        return Float.parseFloat(debtRatio);
+    }
+    public float getCapitalRetentionRateToFloat() {
+        return Float.parseFloat(capitalRetentionRate);
+    }
+    public float getEpsToFloat() {
+        return Float.parseFloat(eps);
+    }
+    public float getPerToFloat() {
+        return Float.parseFloat(per);
+    }
+    public float getBpsToFloat() {
+        return Float.parseFloat(bps);
+    }
+    public float getPbrToFloat() {
+        return Float.parseFloat(pbr);
+    }
+    public float getCashDpsToFloat() {
+        return Float.parseFloat(cashDps);
+    }
+    public float getDividendYieldToFloat() {
+        return Float.parseFloat(dividendYield);
+    }
+    public float getSalesToFloat() {
+        return Float.parseFloat(sales);
+    }
+
 }
