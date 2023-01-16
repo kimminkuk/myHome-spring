@@ -105,8 +105,9 @@ function quantPageInit() {
     let searchMemoryBtn = document.querySelector(".search-memory-btn");
     let loadParsingBtn = document.querySelector(".load-data-parsing-btn");
     let loadExcelBtn = document.querySelector(".load-data-memory-btn");
+    let saveParsingBtn = document.querySelector(".save-data-parsing");
 
-    let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, strategyDeleteBtn, loadParsingBtn, loadExcelBtn );
+    let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, strategyDeleteBtn, loadParsingBtn, loadExcelBtn, saveParsingBtn );
 
     marketRankingOperation(marketRankingArr);
     infoStyleTopAdjustment(infoDivArr);
@@ -131,6 +132,82 @@ function quantPageInit() {
 
     // 선택한 전략을 불러옵니다.
     loadOneStrategy(strategyList);
+
+    // 결과 전략을 저장합니다.
+    SaveParsingResultDataVer2(saveParsingBtn);
+    return;
+}
+
+/**
+ *    결과 데이터를 저장합니다.
+ *    group-quant-mid-1-left-2-table의 자료입니다.
+ */
+function SaveParsingResultData(object) {
+    object.addEventListener("click", function() {
+        // data는 group-quant-mid-1-left-2-table의 자료입니다.
+
+        var data = 'data to write';
+        var fileName = prompt("Please enter the file name:", "file.txt");
+        
+        // chech if user entered a file name
+        if (fileName !== null) {
+            // create a blob object
+            var blob = new Blob([data], { type: 'text/plain' });
+
+            // check if the browser supports the donwload attribute
+            if (URL && 'download' in document.createElement('a')) {
+                // create a link element
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                // create a new window and open the blob in it
+                window.open(URL.createObjectURL(blob));
+            }
+        }
+    });
+    return;
+}
+
+function SaveParsingResultDataVer2(object) {
+    object.addEventListener("click", function() {
+        var data = 'data to write';
+        var fileName = prompt("Please enter the file name:", "file.txt");
+        
+        // check if user entered a file name
+        if (fileName !== null) {
+            // create a blob object
+            var blob = new Blob([data], { type: 'text/plain' });
+        
+            // check if the browser supports the download attribute
+            if (URL && 'download' in document.createElement('a')) {
+                // create a link element
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                // create a new window and open the blob in it
+                window.open(URL.createObjectURL(blob));
+            }
+        }
+        
+        // Create a file save as dialog with the file name and default path
+        var saveAs = document.createElement("a");
+        saveAs.download = fileName;
+        saveAs.href = URL.createObjectURL(blob);
+        saveAs.style.display = "none";
+        document.body.appendChild(saveAs);
+        saveAs.click();
+        document.body.removeChild(saveAs);        
+    });
     return;
 }
 

@@ -138,6 +138,11 @@ public class quantMainController {
 
         System.out.println("[DEBUG] endTime - startTime: " + (endTime - startTime));
         System.out.println("[DEBUG] getParsingData END");
+//        1	휴네시온
+//        2	유엔젤
+//        3	윙입푸드
+//        4	오에스피
+//        5	슈프리마에이치큐
         return "quant/quant-main";
     }
 

@@ -794,3 +794,30 @@
     left: 49%;
     border: 1px solid black;
 }
+
+.group-quant-mid-1-left-2-bottom-1 {
+    display: inline;
+    position: absolute;
+    width: 50%;
+    height: 10%;
+    top: 90%;
+    left: 49%;
+    border: 1px solid black;
+}
+
+.group-quant-mid-1-left-2-bottom-1 .save-data-parsing {
+    display: inline;
+    position: absolute;
+    left: 0%;
+    width: 6%;
+    padding-right: 1px;
+}
+
+.group-quant-mid-1-left-2-bottom-1 .save-data-parsing .save-parsing-btn {
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    border: 1px solid black;
+}
