@@ -1,3 +1,4 @@
+
 const E_quantStrategy = {
     0: "TEMP1",
     1: "TEMP2",
@@ -105,7 +106,7 @@ function quantPageInit() {
     let searchMemoryBtn = document.querySelector(".search-memory-btn");
     let loadParsingBtn = document.querySelector(".load-data-parsing-btn");
     let loadExcelBtn = document.querySelector(".load-data-memory-btn");
-    let saveParsingBtn = document.querySelector(".save-data-parsing");
+    let saveParsingBtn = document.querySelector(".save-parsing-btn");
 
     let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, strategyDeleteBtn, loadParsingBtn, loadExcelBtn, saveParsingBtn );
 
@@ -134,25 +135,35 @@ function quantPageInit() {
     loadOneStrategy(strategyList);
 
     // 결과 전략을 저장합니다.
-    SaveParsingResultDataVer2(saveParsingBtn);
+    SaveParsingResultData(saveParsingBtn);
+    //SaveParsingResultDataVer2(saveParsingBtn);
+    //SaveParsingResultDataVer3(saveParsingBtn);
+    //SaveParsingVer4();
     return;
 }
 
 /**
  *    결과 데이터를 저장합니다.
  *    group-quant-mid-1-left-2-table의 자료입니다.
+ *    보안 정책 때문에 Blob는 사용할 수 없을수도?? 
  */
 function SaveParsingResultData(object) {
     object.addEventListener("click", function() {
         // data는 group-quant-mid-1-left-2-table의 자료입니다.
+        let dataArr = document.querySelectorAll(".quant-table-th");
+        let writeData = new Array();
+        for (let i = 0; i < dataArr.length; i++) {
+            let dataNumber = dataArr[i].children[0].textContent.replace(",", "");
+            writeData.push(dataNumber + "\t" + dataArr[i].children[1].textContent + "\n");
+        }
 
-        var data = 'data to write';
+        //var data = 'data to write';
         var fileName = prompt("Please enter the file name:", "file.txt");
         
         // chech if user entered a file name
         if (fileName !== null) {
             // create a blob object
-            var blob = new Blob([data], { type: 'text/plain' });
+            var blob = new Blob([writeData], { type: 'text/plain' });
 
             // check if the browser supports the donwload attribute
             if (URL && 'download' in document.createElement('a')) {
@@ -209,6 +220,72 @@ function SaveParsingResultDataVer2(object) {
         document.body.removeChild(saveAs);        
     });
     return;
+}
+
+/**
+ *    파일 저장하는 HTML를 호출합니다.
+ */
+function SaveParsingResultDataVer3(object, objectFileInput) {
+    object.addEventListener("click", function() {
+        //objectFileInput.click();
+        SaveParsingVer4();
+    });
+    return
+}
+
+//node.js 에서 파일을 저장하는 경로 만들기
+// Client-side JavaScript
+// const fileContent = 'This is the content of the file.';
+
+// fetch('/save-file', {
+//   method: 'POST',
+//   body: JSON.stringify({ fileContent }),
+//   headers: { 'Content-Type': 'application/json' },
+// })
+//   .then((response) => {
+//     if (!response.ok) {
+//       throw new Error('An error occurred while saving the file.');
+//     }
+//     console.log('The file has been saved.');
+//   })
+//   .catch((error) => {
+//     console.error(error);
+//   });
+
+// // Server-side Node.js
+// const path = require('path');
+// const fs = require('fs');
+// const express = require('express');
+// const app = express();
+// app.use(express.json());
+
+// app.post('/save-file', (req, res) => {
+//   const fileName = 'example.txt';
+//   const filePath = path.join(__dirname, 'files', fileName);
+
+//   fs.writeFile(filePath, req.body.fileContent, (err) => {
+//     if (err) {
+//       res.status(500).send('An error occurred while saving the file.');
+//       return;
+//     }
+//     res.send('The file has been saved.');
+//   });
+// });
+
+
+/**
+ *   
+ */
+function SaveParsingVer4() {
+    let fileName = "test.txt";
+    let text = "test입니다.";
+    var a = document.createElement("a");
+    a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(text);
+    a.download = fileName;
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 /**
