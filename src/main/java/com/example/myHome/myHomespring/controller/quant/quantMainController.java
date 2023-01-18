@@ -114,13 +114,13 @@ public class quantMainController {
 
     @GetMapping("quant/get-parsing-data")
     public String getParsingData(Model model,
-                                 @RequestParam("strategyInfo") String strategyInfo) {
+                                 @RequestParam("strategyInfo") String strategyInfo,
+                                 @RequestParam("strategyTitle") String strategyTitle) {
         System.out.println("[DEBUG] getParsingData START");
 
-        quantPageDefaultSetting(model);
+        strategiesBackUpDisplay(model, strategyTitle);
 
         // 1. ZSet에서 가져오기
-
 
         // parsingData를 어떻게 분류해서 front 쪽으로 보내줄까? 흠
         // 리스트로 그냥 넘길까? 음.. 난 100개이상 보기 싫은데..
@@ -138,12 +138,16 @@ public class quantMainController {
 
         System.out.println("[DEBUG] endTime - startTime: " + (endTime - startTime));
         System.out.println("[DEBUG] getParsingData END");
-//        1	휴네시온
-//        2	유엔젤
-//        3	윙입푸드
-//        4	오에스피
-//        5	슈프리마에이치큐
         return "quant/quant-main";
+    }
+
+    private void strategiesBackUpDisplay(Model model, String strategyTitle) {
+        List<QuantStrategyMember> quantStrategyMembers = quantStrategyService.findStrategies();
+        model.addAttribute("quantStrategyMembers", quantStrategyMembers);
+        QuantStrategyMember quantStrategyMember = quantStrategyService.findStrategy(strategyTitle).get();
+        QuantStrategyInfoMember quantStrategyInfoMember = splitStrategy(quantStrategyMember.getStrategyInfo());
+        model.addAttribute("strategyInfo", quantStrategyInfoMember);
+        model.addAttribute("quantStrategyMember", quantStrategyMember);
     }
 
     private QuantStrategyInfoMember splitStrategy(String strategyInfo) {

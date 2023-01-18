@@ -123,7 +123,7 @@ function quantPageInit() {
     naverFinanceParsingBtn(searchParsingBtn);
     
     // 전략 불러오기 버튼
-    loadNaverFinanceParsingBtn(loadParsingBtn, infoDataArr);
+    loadNaverFinanceParsingBtn(loadParsingBtn, infoDataArr, strategyList);
 
     // 현재 전략을 저장합니다.
     strategySaveBtn(strategySaveText, strategySaveInputData, infoDataArr);
@@ -139,6 +139,7 @@ function quantPageInit() {
     //SaveParsingResultDataVer2(saveParsingBtn);
     //SaveParsingResultDataVer3(saveParsingBtn);
     //SaveParsingVer4();
+    //SaveParsingResultDataVer4(saveParsingBtn);
     return;
 }
 
@@ -151,14 +152,28 @@ function SaveParsingResultData(object) {
     object.addEventListener("click", function() {
         // data는 group-quant-mid-1-left-2-table의 자료입니다.
         let dataArr = document.querySelectorAll(".quant-table-th");
-        let writeData = new Array();
+
+        // Ver1
+        // let writeData = new Array();
+        // for (let i = 0; i < dataArr.length; i++) {
+        //     let dataNumber = dataArr[i].children[0].textContent.replace(",", "");
+        //     //writeData.push(dataNumber + "\t" + dataArr[i].children[1].textContent + "\n");
+        //     //writeData.push(dataNumber + "\t" + dataArr[i].children[1].textContent);
+        //     writeData.push(dataNumber + " " + dataArr[i].children[1].textContent);
+        // }
+        //feedback , delete
+        // In javascript, arrays ares separated by commas when being printed out.
+        // using join() method of the writeData array
+        //var blob = new Blob([writeData.join("\n")], { type: 'text/plain' });
+
+        // Ver2 Not use push
+        let writeData = "";
         for (let i = 0; i < dataArr.length; i++) {
             let dataNumber = dataArr[i].children[0].textContent.replace(",", "");
-            writeData.push(dataNumber + "\t" + dataArr[i].children[1].textContent + "\n");
+            writeData += dataNumber + " " + dataArr[i].children[1].textContent + "\n";
         }
 
-        //var data = 'data to write';
-        var fileName = prompt("Please enter the file name:", "file.txt");
+        var fileName = prompt("Please enter the file name: ");
         
         // chech if user entered a file name
         if (fileName !== null) {
@@ -230,27 +245,33 @@ function SaveParsingResultDataVer3(object, objectFileInput) {
         //objectFileInput.click();
         SaveParsingVer4();
     });
-    return
+    return;
 }
 
 //node.js 에서 파일을 저장하는 경로 만들기
 // Client-side JavaScript
-// const fileContent = 'This is the content of the file.';
+function SaveParsingResultDataVer4(object) {
+    object.addEventListener("click", function() {
+        const fileContent = 'This is the content of the file.';
 
-// fetch('/save-file', {
-//   method: 'POST',
-//   body: JSON.stringify({ fileContent }),
-//   headers: { 'Content-Type': 'application/json' },
-// })
-//   .then((response) => {
-//     if (!response.ok) {
-//       throw new Error('An error occurred while saving the file.');
-//     }
-//     console.log('The file has been saved.');
-//   })
-//   .catch((error) => {
-//     console.error(error);
-//   });
+        fetch('/save-file', {
+            method: 'POST',
+            body: JSON.stringify({ fileContent }),
+            headers: { 'Content-Type': 'application/json' },
+        })
+        .then((response) => {
+            if (!response.ok) {
+            throw new Error('An error occurred while saving the file.');
+            }
+            console.log('The file has been saved.');
+        })
+        .catch((error) => {
+            console.error(error);
+        });    
+    
+    });
+    return;
+}
 
 // // Server-side Node.js
 // const path = require('path');
@@ -399,7 +420,6 @@ function naverFinanceParsingBtn(object) {
 
         //html parsing code
         
-
         //Get통신
         let quantUr = 'http://localhost:8080/quant/naver-finance-parsing';
         let data = '';
@@ -421,7 +441,7 @@ function naverFinanceParsingBtn(object) {
  *    파싱 데이터를 불러옵니다.
  *    1. 파일 데이터를 읽어옵시다.
  */
-function loadNaverFinanceParsingBtn(object, infoDataArr) {
+function loadNaverFinanceParsingBtn(object, infoDataArr, loadStrategies) {
     //1. Back-end 쪽에서 파일을 읽어와서 계산해주고 결과를 뿌려줍니다.
 
     object.addEventListener("click", function() {
@@ -429,6 +449,8 @@ function loadNaverFinanceParsingBtn(object, infoDataArr) {
         
         // Use the Array.map() method to create an array of the values of the input elements
         let strategyInfo = infoDataArr.map(input => input.value);
+        let strategyTitle = loadStrategies.value;
+
 
         // Use the Array.join() method to join the values into a single string, separated by "/"
         strategyInfo = strategyInfo.join("/");
@@ -436,6 +458,7 @@ function loadNaverFinanceParsingBtn(object, infoDataArr) {
         // Use the URLSearchParams API to create the query string
         let params = new URLSearchParams();
         params.set('strategyInfo', strategyInfo);
+        params.set('strategyTitle', strategyTitle);
 
         // Use the URL API to create the final URL with the query string
         let url = new URL(quantUrl);

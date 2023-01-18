@@ -148,7 +148,27 @@
             <!--<input type="file" id="file-input" class="save-parsing-btn-type-file">-->
         </div>
     </div>
+    
+    <!-- <input type="file" id="fileInput" style="display:none" nwworkingdir="save" nwsaveas>
+    <button id="saveButton">Save</button>
+    <script>
+        var saveButton = document.getElementById("saveButton");
+        var fileInput = document.getElementById("fileInput");
+        saveButton.addEventListener("click", function() {
+            fileInput.click();
+        });
+        fileInput.addEventListener("change", function(){
+            var file = this.files[0];
+            var fileContents = "Hello World";
+            var blob = new Blob([fileContents], {type: "text/plain;charset=utf-8"});
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var data = e.target.result;
+                var buffer = new Uint8Array(data)
+            }
+        });
+    </script> -->
 </body>
-<script type="text/javascript" src="../js/quant/quant-main.js?ver=230117-15"></script>
+<script type="text/javascript" src="../js/quant/quant-main.js?ver=230118-08"></script>
 <script type="text/javascript" src="../js/common.js?ver=2230101-15"></script>
 </html>
