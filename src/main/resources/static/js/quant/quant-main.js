@@ -80,6 +80,9 @@ function quantPageInit() {
     let infoDividendYieldDiv = document.querySelector(".company-info-dividend-yield");
     let infoSalesDiv = document.querySelector(".company-info-sales");
 
+    // 캔버스 관련 변수
+    let canvas = document.getElementById("myCanvas");
+
     let marketRankingArr = new Array( martketRankingHighInputData, martketRankingLowInputData, martketRankingHighPercentInputData, martketRankingLowPercentInputData, marketCapitalizationInputData );
     let infoDataArr = new Array( 
         martketRankingHighInputData, martketRankingLowInputData, martketRankingHighPercentInputData, martketRankingLowPercentInputData, marketCapitalizationInputData,
@@ -140,6 +143,9 @@ function quantPageInit() {
     //SaveParsingResultDataVer3(saveParsingBtn);
     //SaveParsingVer4();
     //SaveParsingResultDataVer4(saveParsingBtn);
+
+    // 캔버스 그리기
+    InitCanvas(canvas);
     return;
 }
 
@@ -560,5 +566,33 @@ function loadOneStrategy(strategyList) {
 
     return
 }
+
+/**
+ *    캔버스 그리기 테스트
+ */
+function InitCanvas(canvas) {
+    let ctx = canvas.getContext("2d");
+
+    // Set the canvas width and height
+    canvas.width = 300;
+    canvas.height = 200;
+
+    //Draw the x and y axis
+    ctx.beginPath();
+    ctx.moveTo(0, 100);
+    ctx.lineTo(300, 100);
+    ctx.lineTo(300, 10);
+    ctx.stroke();
+
+    // Plot the data points
+    for (let i = 0; i <= 200; i++) {
+        let x = 50 +i;
+        let y = 200 - (i * 20);
+        ctx.fillRect(x, y, 1, 1);
+    }
+
+    return;
+}
+
 
 quantPageInit();
