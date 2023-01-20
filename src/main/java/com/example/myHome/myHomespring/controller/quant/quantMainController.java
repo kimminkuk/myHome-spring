@@ -106,6 +106,7 @@ public class quantMainController {
         // 1. 네이버 파싱
         // 2. Zset에 저장 ( 백업용 )
         // 3. .txt에 저장 ( 인 메모리에서 사용 용 )
+        // etc) 일별시세 ( 파싱기준 200일 전까지 가져오기)
         quantStrategyService.naverFinanceParsing();
 
         System.out.println("[DEBUG] naverFinanceParsing END");

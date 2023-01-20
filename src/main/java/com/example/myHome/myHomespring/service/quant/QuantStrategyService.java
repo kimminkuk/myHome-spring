@@ -339,11 +339,14 @@ public class QuantStrategyService {
         String writeFilePathAndTitle = "src/main/text/" + getCurDate() + ".txt";
 
         List<String> companyInfoDataList = getAllCompanyInfo();
-
+        List<String> companyDailyRateList = new ArrayList<>();
         //1. ZSet 저장 ( 백업 용 )
         quantStrategyRedisRepository.saveVer2(companyInfoDataList, getCurDate());
         //2. Text 저장 ( 사용 용 )
         parsingResultFileWrite(companyInfoDataList, writeFilePathAndTitle);
+
+        //etc) 일별시세 추가
+
     }
 
     public List<String> getAllCompanyInfo() {
@@ -422,6 +425,24 @@ public class QuantStrategyService {
         }
 
         return companyInfoDataList;
+    }
+
+    public List<String> getCompanyDailyRate() {
+        //1. DailyRate 파싱 뚫기
+
+        //2. 각 Company loop 돌면서 데이터 생성 후, List에 저장
+
+        //3. 리턴
+        String writeFilePathAndTitle = "src/main/text/" + getCurDate() +"-DailyRate" + ".txt";
+        CompanyCodeMember companyCodeMember = new CompanyCodeMember();
+        CompanyNameMember companyNameMember = new CompanyNameMember();
+        String[] companyCode = companyCodeMember.getCompanyCode();
+        String[] companyName = companyNameMember.getCompanyName();
+
+        int companyCodeLength = companyCode.length;
+        List<String> companyDailyRateList = new ArrayList<>();
+
+        return companyDailyRateList;
     }
 
     public static void parsingResultZSetSave(List<String> companyInfoDataList, String ZSetTitle) {

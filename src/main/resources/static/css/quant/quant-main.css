@@ -97,6 +97,81 @@
     top: 15%;    
 }
 
+.group-quant-top-2 .simulator-date-month-1 {
+    display: inline;
+    position: absolute;
+    left: 36%;
+    width: 6%;
+    padding-right: 1px;
+    
+}
+
+.group-quant-top-2 .simulator-date-month-1 .month-1-btn {
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    border: 1px solid black;
+}
+
+
+.group-quant-top-2 .simulator-date-month-2 {
+    display: inline;
+    position: absolute;
+    left: 42%;
+    width: 6%;
+    padding-right: 1px;
+    
+}
+
+.group-quant-top-2 .simulator-date-month-1 .month-2-btn {
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    border: 1px solid black;
+}
+
+
+.group-quant-top-2 .simulator-date-month-6 {
+    display: inline;
+    position: absolute;
+    left: 48%;
+    width: 6%;
+    padding-right: 1px;
+    
+}
+
+.group-quant-top-2 .simulator-date-month-1 .month-6-btn {
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    border: 1px solid black;
+}
+
+
+.group-quant-top-2 .simulator-date-month-sel {
+    display: inline;
+    position: absolute;
+    left: 54%;
+    width: 6%;
+    padding-right: 1px;
+    
+}
+
+.group-quant-top-2 .simulator-date-month-1 .month-sel-btn {
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    padding-right: 1px;
+    border: 1px solid black;
+}
+
 .group-quant-top-2 .search-parsing {
     display: inline;
     position: absolute;

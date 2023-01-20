@@ -145,7 +145,7 @@ function quantPageInit() {
     //SaveParsingResultDataVer4(saveParsingBtn);
 
     // 캔버스 그리기
-    InitCanvas(canvas);
+    //InitCanvas(canvas);
     return;
 }
 

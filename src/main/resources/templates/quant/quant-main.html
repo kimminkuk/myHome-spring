@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache">
     <link rel="stylesheet" href="../css/v1.css?ver=221017">
-    <link rel="stylesheet" href="../css/quant/quant-main.css?ver=230119-01">
+    <link rel="stylesheet" href="../css/quant/quant-main.css?ver=230120-03">
 </head>
 <body>
     <div id="header">
@@ -33,6 +33,23 @@
     </div>
     
     <div class="group-quant-top-2">
+
+        <div class="simulator-date-month-1">
+            <div class="month-1-btn" id="one-month"></div>
+        </div>
+
+        <div class="simulator-date-month-2">
+            <div class="month-2-btn" id="two-month"></div>
+        </div>
+
+        <div class="simulator-date-month-6">
+            <div class="month-6-btn" id="six-month"></div>
+        </div>
+
+        <div class="simulator-date-month-sel">
+            <div class="month-sel-btn" id="sel-month"></div>
+        </div>
+
         <div class="search-parsing">
             <div class="search-parsing-btn">네이버 파싱</div>
             <div class="search-parsing-update-date-text">최종: 2023-01-01</div>
@@ -142,7 +159,7 @@
             </table>
         </div>
         <div class="group-quant-mid-1-left-3-graph">
-            <canvas class="group-quant-mid-1-left-3-graph-canvaas" id="myCanvas">
+            <canvas class="group-quant-mid-1-left-3-graph-canvas" id="myCanvas">
                 
             </canvas>
         </div>
@@ -153,27 +170,7 @@
             <!--<input type="file" id="file-input" class="save-parsing-btn-type-file">-->
         </div>
     </div>
-    
-    <!-- <input type="file" id="fileInput" style="display:none" nwworkingdir="save" nwsaveas>
-    <button id="saveButton">Save</button>
-    <script>
-        var saveButton = document.getElementById("saveButton");
-        var fileInput = document.getElementById("fileInput");
-        saveButton.addEventListener("click", function() {
-            fileInput.click();
-        });
-        fileInput.addEventListener("change", function(){
-            var file = this.files[0];
-            var fileContents = "Hello World";
-            var blob = new Blob([fileContents], {type: "text/plain;charset=utf-8"});
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var data = e.target.result;
-                var buffer = new Uint8Array(data)
-            }
-        });
-    </script> -->
 </body>
-<script type="text/javascript" src="../js/quant/quant-main.js?ver=230119-01"></script>
+<script type="text/javascript" src="../js/quant/quant-main.js?ver=230120-01"></script>
 <script type="text/javascript" src="../js/common.js?ver=2230101-15"></script>
 </html>
