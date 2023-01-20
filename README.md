@@ -69,8 +69,7 @@
       5. 그래프 (고민 중..)
    #### 초안 이미지
    <img width="458" alt="콴트 페이지 초안" src="https://user-images.githubusercontent.com/27074717/209965774-6f67342a-2dd0-4170-ab48-640ba1273cb2.png">
-![IMG_1905 2 작게](https://user-images.githubusercontent.com/27074717/213702846-3fc97c6a-6ef0-4eaa-ab34-f82665c5beed.png)
-
+   ![IMG_1905](https://user-images.githubusercontent.com/27074717/213703175-34ae9b5b-7887-40e8-8dad-9d8a44d9380e.png)
    <img width="1440" alt="myHome-spring 콴트페이지 초안1" src="https://user-images.githubusercontent.com/27074717/210174159-1ed7995a-1260-4df1-9594-14b3ae2ca2dd.png">
 
 
