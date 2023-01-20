@@ -49,11 +49,13 @@
 ### 1-4. 콴트 페이지
    #### 기본 틀 생성
       1. 버튼 기능들 활성화
-      2. 
+      2. 그래프 기능
       3. 
    #### 기업 데이터 생성
       1. Text파일로 Company Code, Name 생성 ( 파이썬으로 코넥스 시장은 제외 )
       2. Naver Finance Parsing 기능
+      3. 1번의 목록들에 여러 정보 입력해서 Text파일로 저장
+      4. 200일전 가격까지 취득 필요 (약 6개월)
       3. 1번의 목록들에 여러 정보 입력해서 Text파일로 저장
    #### DB
       1. H2 DataBase
@@ -61,14 +63,17 @@
       2. Redis
          2.1. 기업 데이터 3번 항목을 백업용으로 ZSet을 사용해서 저장 
               ex) 2023-01-14
+         2.2  기업이름별로 가격 데이터 필요..
    #### 기능
       1. Front-end <-> Back-end 연결 체크
       2. 전략 정보들의 문자열 체크 (1. 10~ 2. 10~20 3. ~20 4. 10 , 이외에 예외처리 추가)
       3. 전략들의 결과 데이터 HTML에 표시
       4. Text파일로 저장 가능하도록 추가
-      5. 그래프 (고민 중..)
+      5. 3개의 그래프 그리기
+      
    #### 초안 이미지
-   <img width="458" alt="콴트 페이지 초안" src="https://user-images.githubusercontent.com/27074717/209965774-6f67342a-2dd0-4170-ab48-640ba1273cb2.png">
+   <img width="458" alt="콴트 페이지 초안" src="https://user-images.githubusercontent.com/27074717/209965774-6f67342a-2dd0-4170-ab48-640ba1273cb2.png"> <img width="400" alt="초안 그래프 이미지" src="https://user-images.githubusercontent.com/27074717/213703456-03001f7d-b75a-435a-9526-74d39913cb43.png">
+   #### 진행 이미지
    <img width="1440" alt="myHome-spring 콴트페이지 초안1" src="https://user-images.githubusercontent.com/27074717/210174159-1ed7995a-1260-4df1-9594-14b3ae2ca2dd.png">
 
 
