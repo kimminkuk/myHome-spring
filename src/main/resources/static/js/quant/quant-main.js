@@ -80,6 +80,9 @@ function quantPageInit() {
     let infoDividendYieldDiv = document.querySelector(".company-info-dividend-yield");
     let infoSalesDiv = document.querySelector(".company-info-sales");
 
+    let searchParsingUpdateDateText = document.querySelector(".search-parsing-update-date-text");
+    let loadDataParsingUpdateDateText = document.querySelector("load-data-parsing-update-date-text");
+
     // 캔버스 관련 변수
     let canvas = document.getElementById("myCanvas");
 
@@ -110,8 +113,14 @@ function quantPageInit() {
     let loadParsingBtn = document.querySelector(".load-data-parsing-btn");
     let loadExcelBtn = document.querySelector(".load-data-memory-btn");
     let saveParsingBtn = document.querySelector(".save-parsing-btn");
-
-    let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, strategyDeleteBtn, loadParsingBtn, loadExcelBtn, saveParsingBtn );
+    let month1Btn = document.querySelector(".month-1-btn");
+    let month2Btn = document.querySelector(".month-2-btn");
+    let month6Btn = document.querySelector(".month-6-btn");
+    let monthSelBtn = document.querySelector(".month-sel-btn");
+    let graphMonthSelArr = new Array( month1Btn, month2Btn, month6Btn, monthSelBtn );
+    let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, 
+                                 strategyDeleteBtn, loadParsingBtn, loadExcelBtn, saveParsingBtn,
+                                 month1Btn, month2Btn, month6Btn, monthSelBtn );
 
     marketRankingOperation(marketRankingArr);
     infoStyleTopAdjustment(infoDivArr);
@@ -123,10 +132,10 @@ function quantPageInit() {
     mouseOnOffStyleVer2(strategyList);
     
     // 네이버 금융 파싱 버튼 클릭 이벤트
-    naverFinanceParsingBtn(searchParsingBtn);
+    naverFinanceParsingBtn(searchParsingBtn, searchParsingUpdateDateText);
     
     // 전략 불러오기 버튼
-    loadNaverFinanceParsingBtn(loadParsingBtn, infoDataArr, strategyList);
+    loadNaverFinanceParsingBtn(loadParsingBtn, infoDataArr, strategyList, loadDataParsingUpdateDateText);
 
     // 현재 전략을 저장합니다.
     strategySaveBtn(strategySaveText, strategySaveInputData, infoDataArr);
@@ -146,6 +155,7 @@ function quantPageInit() {
 
     // 캔버스 그리기
     //InitCanvas(canvas);
+    drawCanvasOfDailyRate(canvas, graphMonthSelArr);
     return;
 }
 
@@ -416,7 +426,7 @@ function mouseOnOffStyleListVer3(curObjects, originalColor, mouseOnColor) {
 /**
  *    네이버 금융 파싱 버튼 클릭 이벤트
  */
-function naverFinanceParsingBtn(object) {
+function naverFinanceParsingBtn(object, searchParsingUpdateDateText) {
     object.addEventListener("click", function() {
         
         let confirmResult = confirm("파싱을 시작하시겠습니까?");
@@ -435,6 +445,7 @@ function naverFinanceParsingBtn(object) {
         xhr.addEventListener('load', function() {
             if (xhr.status === 200 || xhr.status === 201) {
                 alert("파싱이 완료되었습니다.");
+                searchParsingUpdateDateText.textContent = "최종:" + getCurDate();
             } else {
                 alert("파싱이 실패하였습니다.");
             }
@@ -447,7 +458,7 @@ function naverFinanceParsingBtn(object) {
  *    파싱 데이터를 불러옵니다.
  *    1. 파일 데이터를 읽어옵시다.
  */
-function loadNaverFinanceParsingBtn(object, infoDataArr, loadStrategies) {
+function loadNaverFinanceParsingBtn(object, infoDataArr, loadStrategies, loadDataParsingUpdateDateText) {
     //1. Back-end 쪽에서 파일을 읽어와서 계산해주고 결과를 뿌려줍니다.
 
     object.addEventListener("click", function() {
@@ -463,6 +474,7 @@ function loadNaverFinanceParsingBtn(object, infoDataArr, loadStrategies) {
 
         // Use the URLSearchParams API to create the query string
         let params = new URLSearchParams();
+        params.set('parsingDataDate', document.querySelector(".search-parsing-update-date-text").textContent);
         params.set('strategyInfo', strategyInfo);
         params.set('strategyTitle', strategyTitle);
 
@@ -470,7 +482,9 @@ function loadNaverFinanceParsingBtn(object, infoDataArr, loadStrategies) {
         let url = new URL(quantUrl);
         url.search = params;
 
-        
+        // 파싱 데이터 불러오기 후, 최종 날짜 갱신
+        loadDataParsingUpdateDateText.textContent = "최종:" + getCurDate();
+
         // Redirect to the final URL
         location.href = url;
     });
@@ -594,5 +608,34 @@ function InitCanvas(canvas) {
     return;
 }
 
+/**
+ *    시뮬레이션 그림 그리기
+ *    1,2,6,기타 버튼 입력시, 그림을 그린다.
+ */
+function drawCanvasOfDailyRate(canvas, drawOptionArr) {
+
+    //여기서 데이터를 가져와야하나?????
+
+    //drawOptionArr의 버튼들을 누르면, 그림을 그린다.
+    let drawOptionArrLen = drawOptionArr.length;
+    for (let i = 0; i < drawOptionArrLen; i++) {
+        drawOptionArr[i].addEventListener("click", function() {
+            let ctx = canvas.getContext("2d");
+        });
+    }
+    return;
+}
+
+/**
+ *    오늘 날짜를 가져오는 함수
+ */
+function getCurDate() {
+    let today = new Date();
+    let year = today.getFullYear();
+    let month = today.getMonth() + 1;
+    let day = today.getDate();
+    let curDate = year + '-' + month + '-' + day;
+    return curDate;
+}
 
 quantPageInit();

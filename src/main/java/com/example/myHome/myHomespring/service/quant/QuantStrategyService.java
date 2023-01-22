@@ -62,12 +62,15 @@ public class QuantStrategyService {
      *    파싱 데이터 불러오기
      *    1. Text 데이터 읽어오기
      */
-    public List<String> getParsingData( String strategyInfo ) {
+    public List<String> getParsingData( String strategyInfo, String parsingDate) {
 
         //  2023-1-11.txt 데이터 읽어오기
         //  src/main/text/2023-1-11.txt
-        System.out.println("strategyInfo = " + strategyInfo);
-        String path = "src/main/text/2023-1-11.txt";
+        //System.out.println("strategyInfo = " + strategyInfo);
+
+        // 이거 수정해야하네 (최종 날짜로 가져와야합니다.)
+        //String path = "src/main/text/2023-1-11.txt";
+        String path = "src/main/text/" + parsingDate + ".txt";
 
         // 16개로 나눠야한다.
         // 이걸 매번 실행해야한다고?????/
@@ -345,8 +348,12 @@ public class QuantStrategyService {
         //2. Text 저장 ( 사용 용 )
         parsingResultFileWrite(companyInfoDataList, writeFilePathAndTitle);
 
-        //etc) 일별시세 추가
-
+        //etc) 일별시세 추가 및 Text 저장
+        try {
+            getCompanyDailyRate(false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public List<String> getAllCompanyInfo() {
@@ -427,22 +434,93 @@ public class QuantStrategyService {
         return companyInfoDataList;
     }
 
-    public List<String> getCompanyDailyRate() {
+    /**
+     *    1. 일별시세 만들기
+     *    2. O(n) * O(n) * O(n) => O(n3)
+     *    3. 이전 파일이 있으면, 이전 파일을 읽어서, 현재 파일과 비교해서, 새로운 데이터만 추가 ( 생각 중 )
+     */
+    public void getCompanyDailyRate(Boolean testOnOff) throws Exception{
+        if (testOnOff == Boolean.FALSE) return;
         //1. DailyRate 파싱 뚫기
 
         //2. 각 Company loop 돌면서 데이터 생성 후, List에 저장
 
         //3. 리턴
-        String writeFilePathAndTitle = "src/main/text/" + getCurDate() +"-DailyRate" + ".txt";
+
+
+        String writeFilePathAndTitleRate = "src/main/text/" + getCurDate() +"-DailyRate" + ".txt";
+        String writeFilePathAndTitleDate = "src/main/text/" + getCurDate() +"-DailyDate" + ".txt";
         CompanyCodeMember companyCodeMember = new CompanyCodeMember();
-        CompanyNameMember companyNameMember = new CompanyNameMember();
         String[] companyCode = companyCodeMember.getCompanyCode();
-        String[] companyName = companyNameMember.getCompanyName();
+        List<String> dailyRateList = new ArrayList<>();
+        List<String> dailyDateList = new ArrayList<>();
+        int dayMax = 20;
+        String dailyRateAll = "";
+        String dailyDateAll = "";
+        int[] textTrIdx = {3, 4, 5, 6, 7, 11, 12, 13, 14, 15};
 
-        int companyCodeLength = companyCode.length;
-        List<String> companyDailyRateList = new ArrayList<>();
+        for (int companyCount = 0; companyCount < companyCode.length; companyCount++) {
+            for (int day = 1; day <= dayMax; day++) {
+                String urlDailyRate2 = "https://finance.naver.com/item/sise_day.naver?code=" + companyCode[companyCount] + "&page=" + day;
+                try {
+                    Document document = Jsoup.connect(urlDailyRate2).get();
+                    // 가장 최신 날짜 ( curDate의 날짜와 같다. )
+                    // 음 이거, 날짜도 비교가 조금 필요하겠다. 예를들어 2023.01.20 -> 2023.01.19 .... 이런식으로 이어지는것을 기대했지만,
+                    // 실제로는 2023.01.20 -> 2017.02.17 이런애들있음 (재상장이나, 기업분할, 새로 상장한 회사 등등.. 어떻게 처리할까??)
+                    // 해당 날짜에 맞는 값을 비교하면서 처리할까??
+                    // 우선 날짜도 가져오자
+                    for (int trIdx = 0; trIdx < textTrIdx.length; trIdx++) {
+                        // tr:nth-child(3 ~ 7), tr:nth-child(11 ~ 15)
+                        Elements dailyRate = document.select("body > table.type2 > tbody > tr:nth-child(" + textTrIdx[trIdx] + ") > td:nth-child(2) > span");
+                        String dailyRateText = dailyRate.text().trim();
+                        String curDateRateRst = textContentBlankCheck(dailyRateText) == false ? "0" : dailyRateText;
 
-        return companyDailyRateList;
+                        Elements dateSelect = document.select("body > table.type2 > tbody > tr:nth-child(" + textTrIdx[trIdx] + ") > td:nth-child(1) > span");
+                        String dateText = dateSelect.text().trim();
+                        String curDateRst = textContentBlankCheck(dateText) == false ? "0" : dateText;
+
+                        if ( curDateRateRst.equals("0") || curDateRst.equals("0") ) {
+                            dailyRateAll += curDateRateRst + "/";
+                            dailyDateAll += curDateRst + "/";
+                        } else {
+                            dailyRateAll += curDateRateRst + "/";
+                            dailyDateAll += curDateRst + "/";
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.out.println("[DEBUG] urlDailyRate2: " + urlDailyRate2);
+                    System.out.println("e = " + e);
+                }
+
+                catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("[DEBUG] urlDailyRate2: " + urlDailyRate2);
+                    System.out.println("e = " + e);
+                }
+            }
+            /**
+             // 마지막 '/'제거하기 Ver 1
+             if (dailyRateAll.endsWith("/")) {
+             dailyRateAll = dailyRateAll.substring(0, dailyRateAll.length() - 1);
+             }
+             if (dailyDateAll.endsWith("/")) {
+             dailyDateAll = dailyDateAll.substring(0, dailyDateAll.length() - 1);
+             }
+             **/
+            // 마지막 '/' 제거하기 Ver2
+            dailyRateAll = dailyRateAll.replaceAll("/$", "");
+            dailyDateAll = dailyDateAll.replaceAll("/$", "");
+
+            //dailyRateAll의 마지막 / 제거
+            dailyRateList.add(dailyRateAll);
+            dailyDateList.add(dailyDateAll);
+            dailyDateAll = "";
+            dailyRateAll = "";
+        }
+        parsingResultFileWrite(dailyRateList, writeFilePathAndTitleRate);
+        parsingResultFileWrite(dailyDateList, writeFilePathAndTitleDate);
+        return;
     }
 
     public static void parsingResultZSetSave(List<String> companyInfoDataList, String ZSetTitle) {
@@ -571,9 +649,6 @@ public class QuantStrategyService {
         // 1. 당기 순이익 = 399,074
         // 2. 자기 자본 = 399,074 / 13.92 = 28669
         // 3. ROA = 399,074 / 28669 * (1+0.3992) = 0.14
-
-        System.out.println("Roe = " + Roe + " netProfit = " + netProfit + " equityCapital = " + equityCapital + " debtRatio = " + debtRatio + " roa = " + roa);
-
         return roa;
     }
 
@@ -715,8 +790,6 @@ public class QuantStrategyService {
         } else {
             return true;
         }
-
-
     }
 
 

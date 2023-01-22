@@ -115,6 +115,7 @@ public class quantMainController {
 
     @GetMapping("quant/get-parsing-data")
     public String getParsingData(Model model,
+                                 @RequestParam("parsingDataDate") String parsingDataDate,
                                  @RequestParam("strategyInfo") String strategyInfo,
                                  @RequestParam("strategyTitle") String strategyTitle) {
         System.out.println("[DEBUG] getParsingData START");
@@ -131,7 +132,7 @@ public class quantMainController {
 
         long startTime = System.currentTimeMillis();
         // 2. Text 파일에서 가져오기
-        List<String> parsingData = quantStrategyService.getParsingData(strategyInfo);
+        List<String> parsingData = quantStrategyService.getParsingData(strategyInfo, parsingDataDate);
 
         long endTime = System.currentTimeMillis();
 
