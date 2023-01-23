@@ -52,7 +52,7 @@
 
         <div class="search-parsing">
             <div class="search-parsing-btn">네이버 파싱</div>
-            <div class="search-parsing-update-date-text">최종: 2023-01-01</div>
+            <div class="search-parsing-update-date-text" th:value="${parsingDateMember.parsingDate}" th:text="${parsingDateMember.parsingDate}">최종: 2023-01-01</div>
         </div>
         <div class="search-memory">
             <div class="search-memory-btn">엑셀 자료로 검색</div>
@@ -60,7 +60,7 @@
         </div>
         <div class="load-data-parsing">
             <div class="load-data-parsing-btn">파싱 데이터 불러오기</div>
-            <div class="load-data-parsing-update-date-text">최종: 2023-01-01</div>
+            <div class="load-data-parsing-update-date-text" th:value="${parsingDateMember.parsingDate}" th:text="${parsingDateMember.parsingDate}">최종: 2023-01-01</div>
         </div>
         <div class="load-data-memory">
             <div class="load-data-memory-btn">엑셀 데이터 불러오기</div>
@@ -171,6 +171,6 @@
         </div>
     </div>
 </body>
-<script type="text/javascript" src="../js/quant/quant-main.js?ver=230122-02"></script>
+<script type="text/javascript" src="../js/quant/quant-main.js?ver=230123-07"></script>
 <script type="text/javascript" src="../js/common.js?ver=2230101-15"></script>
 </html>

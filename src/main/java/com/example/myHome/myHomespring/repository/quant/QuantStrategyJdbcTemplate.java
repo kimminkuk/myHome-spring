@@ -1,6 +1,7 @@
 package com.example.myHome.myHomespring.repository.quant;
 
 import com.example.myHome.myHomespring.domain.facility.ReserveFacilityTitle;
+import com.example.myHome.myHomespring.domain.quant.ParsingDateMember;
 import com.example.myHome.myHomespring.domain.quant.QuantStrategyMember;
 import org.apache.catalina.util.ParameterMap;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -68,6 +69,37 @@ public class QuantStrategyJdbcTemplate implements QuantStrategyRepository {
         return jdbcTemplate.query(sql, strategyRowMapper());
     }
 
+    @Override
+    public ParsingDateMember addParsingDate(ParsingDateMember parsingDateMember) {
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        simpleJdbcInsert.withTableName("PARSING_LAST_DATE").usingGeneratedKeyColumns("id");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("parsing_date", parsingDateMember.getParsingDate());
+        Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
+        parsingDateMember.setId(key.longValue());
+        return parsingDateMember;
+    }
+
+    @Override
+    public Optional<ParsingDateMember> getLastParsingDateById() {
+        try {
+            String sql = "SELECT ID FROM PARSING_LAST_DATE ORDER BY ID DESC LIMIT 1";
+            Long id = jdbcTemplate.queryForObject(sql, Long.class);
+            return findByParsingDateId(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<ParsingDateMember> findByParsingDateId(Long id) {
+        // id로 parsing_date 찾기
+        String sql = "select * from PARSING_LAST_DATE where id = ?";
+        List<ParsingDateMember> query = jdbcTemplate.query(sql, parsingDateRowMapper(), id);
+        return Optional.ofNullable(query.get(0));
+    }
+
     private RowMapper<QuantStrategyMember> strategyRowMapper() {
         return (rs, rowNum) -> {
             QuantStrategyMember quantStrategyMember = new QuantStrategyMember();
@@ -77,6 +109,15 @@ public class QuantStrategyJdbcTemplate implements QuantStrategyRepository {
             quantStrategyMember.setStrategyTitle(rs.getString("strategy_title"));
             quantStrategyMember.setStrategyInfo(rs.getString("strategy_info"));
             return quantStrategyMember;
+        };
+    }
+
+    private RowMapper<ParsingDateMember> parsingDateRowMapper() {
+        return (rs, rowNum) -> {
+            ParsingDateMember parsingDateMember = new ParsingDateMember();
+            parsingDateMember.setId(rs.getLong("id"));
+            parsingDateMember.setParsingDate(rs.getString("parsing_date"));
+            return parsingDateMember;
         };
     }
 }

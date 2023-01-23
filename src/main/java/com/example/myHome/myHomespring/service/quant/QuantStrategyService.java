@@ -1,9 +1,6 @@
 package com.example.myHome.myHomespring.service.quant;
 
-import com.example.myHome.myHomespring.domain.quant.CompanyCodeMember;
-import com.example.myHome.myHomespring.domain.quant.CompanyNameMember;
-import com.example.myHome.myHomespring.domain.quant.QuantStrategyInfoMember;
-import com.example.myHome.myHomespring.domain.quant.QuantStrategyMember;
+import com.example.myHome.myHomespring.domain.quant.*;
 import com.example.myHome.myHomespring.repository.quant.QuantStrategyRedisRepository;
 import com.example.myHome.myHomespring.repository.quant.QuantStrategyRepository;
 import org.jsoup.Jsoup;
@@ -59,10 +56,27 @@ public class QuantStrategyService {
     }
 
     /**
+     *    파싱 후, 최종 날짜 기록
+     */
+    public void updateParsingDate() {
+        ParsingDateMember parsingDateMember = new ParsingDateMember();
+        parsingDateMember.setParsingDate(getCurDate());
+        quantStrategyRepository.addParsingDate(parsingDateMember);
+    }
+
+    /**
+     *    최종 날짜 기록 get
+     *    Last Index 가 최종 날짜입니다.
+     */
+    public Optional<ParsingDateMember> getLastParsingDate() {
+        return quantStrategyRepository.getLastParsingDateById();
+    }
+
+    /**
      *    파싱 데이터 불러오기
      *    1. Text 데이터 읽어오기
      */
-    public List<String> getParsingData( String strategyInfo, String parsingDate) {
+    public List<String> getParsingData( String strategyInfo ) {
 
         //  2023-1-11.txt 데이터 읽어오기
         //  src/main/text/2023-1-11.txt
@@ -70,7 +84,7 @@ public class QuantStrategyService {
 
         // 이거 수정해야하네 (최종 날짜로 가져와야합니다.)
         //String path = "src/main/text/2023-1-11.txt";
-        String path = "src/main/text/" + parsingDate + ".txt";
+        String path = "src/main/text/" + getCurDate() + ".txt";
 
         // 16개로 나눠야한다.
         // 이걸 매번 실행해야한다고?????/
@@ -354,6 +368,7 @@ public class QuantStrategyService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        updateParsingDate();
     }
 
     public List<String> getAllCompanyInfo() {

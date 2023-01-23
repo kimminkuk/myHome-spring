@@ -1,5 +1,6 @@
 package com.example.myHome.myHomespring.controller.quant;
 
+import com.example.myHome.myHomespring.domain.quant.ParsingDateMember;
 import com.example.myHome.myHomespring.domain.quant.QuantStrategyInfoMember;
 import com.example.myHome.myHomespring.domain.quant.QuantStrategyMember;
 
@@ -115,7 +116,6 @@ public class quantMainController {
 
     @GetMapping("quant/get-parsing-data")
     public String getParsingData(Model model,
-                                 @RequestParam("parsingDataDate") String parsingDataDate,
                                  @RequestParam("strategyInfo") String strategyInfo,
                                  @RequestParam("strategyTitle") String strategyTitle) {
         System.out.println("[DEBUG] getParsingData START");
@@ -132,7 +132,7 @@ public class quantMainController {
 
         long startTime = System.currentTimeMillis();
         // 2. Text 파일에서 가져오기
-        List<String> parsingData = quantStrategyService.getParsingData(strategyInfo, parsingDataDate);
+        List<String> parsingData = quantStrategyService.getParsingData(strategyInfo);
 
         long endTime = System.currentTimeMillis();
 
@@ -144,8 +144,13 @@ public class quantMainController {
     }
 
     private void strategiesBackUpDisplay(Model model, String strategyTitle) {
+// 파싱 최신 날짜 가져오기 추가
+        ParsingDateMember parsingDateMember = quantStrategyService.getLastParsingDate().get();
+        model.addAttribute("parsingDateMember", parsingDateMember);
+
         List<QuantStrategyMember> quantStrategyMembers = quantStrategyService.findStrategies();
         model.addAttribute("quantStrategyMembers", quantStrategyMembers);
+
         QuantStrategyMember quantStrategyMember = quantStrategyService.findStrategy(strategyTitle).get();
         QuantStrategyInfoMember quantStrategyInfoMember = splitStrategy(quantStrategyMember.getStrategyInfo());
         model.addAttribute("strategyInfo", quantStrategyInfoMember);
@@ -165,7 +170,11 @@ public class quantMainController {
     }
 
     private void quantPageDefaultSetting(Model model) {
+        // 파싱 최신 날짜 가져오기 추가
+        ParsingDateMember parsingDateMember = quantStrategyService.getLastParsingDate().get();
         List<QuantStrategyMember> quantStrategyMembers = quantStrategyService.findStrategies();
+
+        model.addAttribute("parsingDateMember", parsingDateMember);
         model.addAttribute("quantStrategyMembers", quantStrategyMembers);
 
         // 처음 화면에서는 전략 정보 더미를 던집니다.

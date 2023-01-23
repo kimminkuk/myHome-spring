@@ -2,6 +2,7 @@ package com.example.myHome.myHomespring.service.quant;
 
 import com.example.myHome.myHomespring.domain.quant.CompanyCodeMember;
 import com.example.myHome.myHomespring.domain.quant.CompanyNameMember;
+import com.example.myHome.myHomespring.domain.quant.ParsingDateMember;
 import com.example.myHome.myHomespring.domain.quant.QuantStrategyMember;
 import com.example.myHome.myHomespring.repository.quant.QuantStrategyRepository;
 import org.assertj.core.api.Assertions;
@@ -191,6 +192,26 @@ class QuantStrategyServiceTest {
         parsingResultFileWrite(dailyDateList, writeFilePathAndTitleDate);
         //then
     }
+
+    @Test
+    void 파싱날짜저장() throws Exception {
+        //given
+        quantStrategyService.updateParsingDate();
+        quantStrategyService.updateParsingDate();
+        quantStrategyService.updateParsingDate();
+        quantStrategyService.updateParsingDate();
+        quantStrategyService.updateParsingDate();
+
+
+        //when
+        ParsingDateMember parsingDateMember = quantStrategyService.getLastParsingDate().get();
+
+
+        // h2 database에서 가장 마지막 날짜 가져오기
+        //then
+        assertThat(parsingDateMember.getParsingDate()).isEqualTo(quantStrategyService.getCurDate());
+    }
+
     private Boolean textContentBlankCheck(String textContent) {
         if ( textContent.length() == 0 || textContent.compareTo("-") == 0) {
             return false;

@@ -81,7 +81,7 @@ function quantPageInit() {
     let infoSalesDiv = document.querySelector(".company-info-sales");
 
     let searchParsingUpdateDateText = document.querySelector(".search-parsing-update-date-text");
-    let loadDataParsingUpdateDateText = document.querySelector("load-data-parsing-update-date-text");
+    let loadDataParsingUpdateDateText = document.querySelector(".load-data-parsing-update-date-text");
 
     // 캔버스 관련 변수
     let canvas = document.getElementById("myCanvas");
@@ -474,16 +474,12 @@ function loadNaverFinanceParsingBtn(object, infoDataArr, loadStrategies, loadDat
 
         // Use the URLSearchParams API to create the query string
         let params = new URLSearchParams();
-        params.set('parsingDataDate', document.querySelector(".search-parsing-update-date-text").textContent);
         params.set('strategyInfo', strategyInfo);
         params.set('strategyTitle', strategyTitle);
 
         // Use the URL API to create the final URL with the query string
         let url = new URL(quantUrl);
         url.search = params;
-
-        // 파싱 데이터 불러오기 후, 최종 날짜 갱신
-        loadDataParsingUpdateDateText.textContent = "최종:" + getCurDate();
 
         // Redirect to the final URL
         location.href = url;
@@ -614,16 +610,45 @@ function InitCanvas(canvas) {
  */
 function drawCanvasOfDailyRate(canvas, drawOptionArr) {
 
-    //여기서 데이터를 가져와야하나?????
 
     //drawOptionArr의 버튼들을 누르면, 그림을 그린다.
     let drawOptionArrLen = drawOptionArr.length;
     for (let i = 0; i < drawOptionArrLen; i++) {
         drawOptionArr[i].addEventListener("click", function() {
-            let ctx = canvas.getContext("2d");
+        //여기서 데이터를 가져와야하나?????
+        let loadDataParsingUpdateDateText = document.querySelector(".load-data-parsing-update-date-text").textContent;
+        let filePath = "/Users/mkkim/Desktop/study/myHome-spring/src/main/text/" + loadDataParsingUpdateDateText + ".txt";
+        readTextFileVer2(filePath);
+        //readTextFile(filePath);
+        let ctx = canvas.getContext("2d");
         });
     }
     return;
+}
+
+async function readTextFileVer2(filePath) {
+    try {
+        const response = await fetch(filePath);
+        const blob = await response.blob();
+        const fileReader = new FileReader();
+        fileReader.readAsText(blob);
+        fileReader.onload = function() {
+            console.log(fileReader.result);
+        }
+    } catch (err) {
+        console.error(err);
+    }
+    return;
+}
+
+async function readTextFile(filePath) {
+    const fs = require('fs');
+    try {
+        const data = await fs.readFile(filePath, 'utf8');
+        console.log(data);
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 /**
