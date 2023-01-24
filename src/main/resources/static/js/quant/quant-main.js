@@ -1,3 +1,8 @@
+// /Users/mkkim/Desktop/study/myHome-spring/src/main/resources/static/js/quant/daily.js 
+// 경로의 daily.js companyDailyData, companyDailyRate를 호출하고 싶은데, 어떻게 해야할까요?
+import { companyDailyData, companyDailyRate } from './daily.js';
+
+
 
 const E_quantStrategy = {
     0: "TEMP1",
@@ -608,18 +613,37 @@ function InitCanvas(canvas) {
  *    시뮬레이션 그림 그리기
  *    1,2,6,기타 버튼 입력시, 그림을 그린다.
  */
-function drawCanvasOfDailyRate(canvas, drawOptionArr) {
+function drawCanvasOfDailyRate(canvas, drawOptionArr, strategyTitle) {
 
-
+    
     //drawOptionArr의 버튼들을 누르면, 그림을 그린다.
     let drawOptionArrLen = drawOptionArr.length;
     for (let i = 0; i < drawOptionArrLen; i++) {
         drawOptionArr[i].addEventListener("click", function() {
-        //여기서 데이터를 가져와야하나?????
-        let loadDataParsingUpdateDateText = document.querySelector(".load-data-parsing-update-date-text").textContent;
-        let filePath = "/Users/mkkim/Desktop/study/myHome-spring/src/main/text/" + loadDataParsingUpdateDateText + ".txt";
-        readTextFileVer2(filePath);
-        //readTextFile(filePath);
+        
+        // 결국.. Back -> front로 데이터 가져오기로 했습니다.
+        // 주의사항: 시간이 5초 이상 걸리면 바로 포기입니다...(20~30개의 회사가 이상적인 테스트 환경)
+        // 1. Front에서 회사들의 데이터를 Back으로 보냅니다.
+        // 2. Back에서 회사들의 데이터를 받아서, 일별 시세를 보내줍니다. (1, 2, 6, 기타)
+        // 3. Front에서 받은 데이터를 가지고, 그림을 그립니다.
+        // 아..이거 새로고침으로 하면 별로일거같은데..
+        // 이건 포기 아무리봐도 데이터를 2->3에서 너무 많은 자원을 소모해야해
+        // 일단, javascript로 그냥 데이터가 만들어졌다는 가정으로 하자..
+        
+        let quantDailyRateUrl = 'http://localhost:8080/quant/get-daily-rate';
+        
+        // Use the URLSearchParams API to create the query string
+        let params = new URLSearchParams();
+        params.set('month', drawOptionArr[i].value);
+        params.set('strategyTitle', strategyTitle);
+
+        // Use the URL API to create the final URL with the query string
+        let url = new URL(quantDailyRateUrl);
+        url.search = params;
+
+        // Redirect to the final URL
+        location.href = url;
+
         let ctx = canvas.getContext("2d");
         });
     }
@@ -664,3 +688,10 @@ function getCurDate() {
 }
 
 quantPageInit();
+
+for (let i = 0; i < companyDailyData.length; i++) {
+    console.log("companyDailyData", companyDailyData[i]);
+}
+for (let i = 0; i < companyDailyRate.length; i++) {
+    console.log("companyDailyRate", companyDailyRate[i]);
+}

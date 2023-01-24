@@ -143,6 +143,14 @@ public class quantMainController {
         return "quant/quant-main";
     }
 
+    @GetMapping("quant/get-daily-rate")
+    public String getDailyRate(Model model,
+                               @RequestParam("strategyTitle") String strategyTitle,
+                               @RequestParam("month") String month) {
+        strategiesBackUpDisplay(model, strategyTitle);
+        return "quant/quant-main";
+    }
+
     private void strategiesBackUpDisplay(Model model, String strategyTitle) {
 // 파싱 최신 날짜 가져오기 추가
         ParsingDateMember parsingDateMember = quantStrategyService.getLastParsingDate().get();
