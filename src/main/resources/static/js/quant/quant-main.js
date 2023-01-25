@@ -1,6 +1,5 @@
-// /Users/mkkim/Desktop/study/myHome-spring/src/main/resources/static/js/quant/daily.js 
-// 경로의 daily.js companyDailyData, companyDailyRate를 호출하고 싶은데, 어떻게 해야할까요?
-import { companyDailyData, companyDailyRate } from './daily.js';
+import { companyDailyData } from './dailyDate.js';
+import { companyDailyRate } from './dailyRate.js';
 
 
 
@@ -479,8 +478,10 @@ function loadNaverFinanceParsingBtn(object, infoDataArr, loadStrategies, loadDat
 
         // Use the URLSearchParams API to create the query string
         let params = new URLSearchParams();
+        
         params.set('strategyInfo', strategyInfo);
         params.set('strategyTitle', strategyTitle);
+        params.set('parsingLatelyDate', loadDataParsingUpdateDateText.textContent);
 
         // Use the URL API to create the final URL with the query string
         let url = new URL(quantUrl);
@@ -630,19 +631,10 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr, strategyTitle) {
         // 이건 포기 아무리봐도 데이터를 2->3에서 너무 많은 자원을 소모해야해
         // 일단, javascript로 그냥 데이터가 만들어졌다는 가정으로 하자..
         
-        let quantDailyRateUrl = 'http://localhost:8080/quant/get-daily-rate';
+
+        // 회사코드도 가져와야겠네..
+        let month = drawOptionArr[i].value; // 1, 2, 6, 기타 (기타는 일단 대기.. 달력으로 Call해줄거임)
         
-        // Use the URLSearchParams API to create the query string
-        let params = new URLSearchParams();
-        params.set('month', drawOptionArr[i].value);
-        params.set('strategyTitle', strategyTitle);
-
-        // Use the URL API to create the final URL with the query string
-        let url = new URL(quantDailyRateUrl);
-        url.search = params;
-
-        // Redirect to the final URL
-        location.href = url;
 
         let ctx = canvas.getContext("2d");
         });
@@ -688,10 +680,3 @@ function getCurDate() {
 }
 
 quantPageInit();
-
-for (let i = 0; i < companyDailyData.length; i++) {
-    console.log("companyDailyData", companyDailyData[i]);
-}
-for (let i = 0; i < companyDailyRate.length; i++) {
-    console.log("companyDailyRate", companyDailyRate[i]);
-}

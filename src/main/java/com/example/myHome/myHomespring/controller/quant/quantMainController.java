@@ -55,15 +55,12 @@ public class quantMainController {
             return "quant/quant-main";
         }
 
-        // 1. back 쪽에서 전략을 split해서 front로 보내주는 방법
-        //    아 타임리프로 보내야하니깐 클래스로 묶어서 보내주자
         QuantStrategyInfoMember quantStrategyInfoMember = splitStrategy(quantStrategyMember.getStrategyInfo());
         model.addAttribute("strategyInfo", quantStrategyInfoMember);
-
-        // html option에 로드한 전략이 나오게 합니다.
+        ParsingDateMember parsingDateMember = quantStrategyService.getLastParsingDate().get();
+        model.addAttribute("parsingDateMember", parsingDateMember);
         model.addAttribute("quantStrategyMember", quantStrategyMember);
 
-        // 2. back 쪽에서 리스트로 보내서 front에서 split 하는 방법
 
         System.out.println("[DEBUG] loadStrategy END");
         return "quant/quant-main";
@@ -117,7 +114,8 @@ public class quantMainController {
     @GetMapping("quant/get-parsing-data")
     public String getParsingData(Model model,
                                  @RequestParam("strategyInfo") String strategyInfo,
-                                 @RequestParam("strategyTitle") String strategyTitle) {
+                                 @RequestParam("strategyTitle") String strategyTitle,
+                                 @RequestParam("parsingLatelyDate") String parsingLatelyDate ) {
         System.out.println("[DEBUG] getParsingData START");
 
         strategiesBackUpDisplay(model, strategyTitle);
@@ -132,7 +130,7 @@ public class quantMainController {
 
         long startTime = System.currentTimeMillis();
         // 2. Text 파일에서 가져오기
-        List<String> parsingData = quantStrategyService.getParsingData(strategyInfo);
+        List<String> parsingData = quantStrategyService.getParsingData(strategyInfo, parsingLatelyDate);
 
         long endTime = System.currentTimeMillis();
 

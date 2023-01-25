@@ -76,7 +76,7 @@ public class QuantStrategyService {
      *    파싱 데이터 불러오기
      *    1. Text 데이터 읽어오기
      */
-    public List<String> getParsingData( String strategyInfo ) {
+    public List<String> getParsingData( String strategyInfo, String parsingLatelyDate ) {
 
         //  2023-1-11.txt 데이터 읽어오기
         //  src/main/text/2023-1-11.txt
@@ -84,8 +84,8 @@ public class QuantStrategyService {
 
         // 이거 수정해야하네 (최종 날짜로 가져와야합니다.)
         //String path = "src/main/text/2023-1-11.txt";
-        String path = "src/main/text/" + getCurDate() + ".txt";
-
+        //String path = "src/main/text/2023-1-22.txt";
+        String path = "src/main/text/" + parsingLatelyDate + ".txt";
         // 16개로 나눠야한다.
         // 이걸 매번 실행해야한다고?????/
         // 2500줄을 * 16개의 메모리가 매번 생성된다? 이게 맞나?
@@ -104,6 +104,7 @@ public class QuantStrategyService {
             for (String line : lines) {
                 String[] splitStep1 = line.split("@");
                 String[] splitStep2 = splitStep1[1].split("/");
+                String companyIdx = splitStep1[0].split(" ")[0];
                 String companyName = splitStep1[0].split(" ")[1];
 
                 String capitalRankingHigh = splitStep2[0];
@@ -125,7 +126,7 @@ public class QuantStrategyService {
                 String dividendYield = splitStep2[16];
                 String sales = splitStep2[17];
                 quantStrategyInfoMembers.add(new QuantStrategyInfoMember(
-                        companyName, capitalRankingHigh, capitalRankingLow, capitalPercentHigh,
+                        companyIdx, companyName, capitalRankingHigh, capitalRankingLow, capitalPercentHigh,
                         capitalPercentLow, marketCapitalization, operatingProfitRatio, netProfitRatio,
                         roe, roa, debtRatio, capitalRetentionRate,
                         eps, per, bps, pbr, cashDps, dividendYield, sales)
@@ -237,7 +238,8 @@ public class QuantStrategyService {
 
 
         for (int i = 0; i < quantStrategyInfoMembers.size(); i++) {
-            quantMemberSortResult.add(quantStrategyInfoMembers.get(i).getCompanyName());
+            //quantMemberSortResult.add(quantStrategyInfoMembers.get(i).getCompanyIndex() + " " + quantStrategyInfoMembers.get(i).getCompanyName());
+            quantMemberSortResult.add(quantStrategyInfoMembers.get(i).getCompanyName() + " " + quantStrategyInfoMembers.get(i).getCompanyIndex());
             System.out.println("quantStrategyInfoMembers marketCap = " + quantStrategyInfoMembers.get(i).getMarketCapitalizationToFloat());
         }
         return quantMemberSortResult;

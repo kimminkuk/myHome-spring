@@ -1,6 +1,7 @@
 package com.example.myHome.myHomespring.domain.quant;
 
 public class QuantStrategyInfoMember {
+    private String companyIndex;
     private String companyName;
     private String capitalRankingHigh;
     private String capitalRankingLow;
@@ -45,6 +46,13 @@ public class QuantStrategyInfoMember {
         this.sales = sales;
     }
 
+    public String getCompanyIndex() {
+        return companyIndex;
+    }
+
+    public void setCompanyIndex(String companyIndex) {
+        this.companyIndex = companyIndex;
+    }
 
     public String getMarketCapitalization() {
         return marketCapitalization;
@@ -292,4 +300,26 @@ public class QuantStrategyInfoMember {
         }
     }
 
+    public QuantStrategyInfoMember(String companyIndex, String companyName, String capitalRankingHigh, String capitalRankingLow, String capitalPercentHigh, String capitalPercentLow, String marketCapitalization, String operatingProfitRatio, String netProfitRation, String roe, String roa, String debtRatio, String capitalRetentionRate, String eps, String per, String bps, String pbr, String cashDps, String dividendYield, String sales) {
+        this.companyIndex = companyIndex;
+        this.companyName = companyName;
+        this.capitalRankingHigh = capitalRankingHigh;
+        this.capitalRankingLow = capitalRankingLow;
+        this.capitalPercentHigh = capitalPercentHigh;
+        this.capitalPercentLow = capitalPercentLow;
+        this.marketCapitalization = marketCapitalization;
+        this.operatingProfitRatio = operatingProfitRatio;
+        this.netProfitRation = netProfitRation;
+        this.roe = roe;
+        this.roa = roa;
+        this.debtRatio = debtRatio;
+        this.capitalRetentionRate = capitalRetentionRate;
+        this.eps = eps;
+        this.per = per;
+        this.bps = bps;
+        this.pbr = pbr;
+        this.cashDps = cashDps;
+        this.dividendYield = dividendYield;
+        this.sales = sales;
+    }
 }
