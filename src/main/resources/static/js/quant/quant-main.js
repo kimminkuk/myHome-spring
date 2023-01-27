@@ -619,23 +619,11 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
     
     //drawOptionArr의 버튼들을 누르면, 그림을 그린다.
     let drawOptionArrLen = drawOptionArr.length;
-    let drawOption = 0;
+    
     for (let i = 0; i < drawOptionArrLen; i++) {
         drawOptionArr[i].addEventListener("click", function() {
-            switch (i) {
-                case 0:
-                    drawOption = 1;
-                    break;
-                case 1:
-                    drawOption = 2;
-                    break;
-                case 2:
-                    drawOption = 6;
-                    break;
-                case 3:
-                    drawOption = 0;
-                    break;
-            }
+
+            let drawOption = drawOptionArr[i].getAttribute("value");
             console.log("click!");
             // 결국.. Back -> front로 데이터 가져오기로 했습니다.
             // 주의사항: 시간이 5초 이상 걸리면 바로 포기입니다...(20~30개의 회사가 이상적인 테스트 환경)
@@ -652,6 +640,13 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
             for (let i = 0; i < companyIdxArr.length; i++) {
                 let rateList = companyDailyRate[companyIdxArr[i]];
                 let dateList = companyDailyDate[companyIdxArr[i]];
+                
+                // canDrawList는 그림을 그릴 수 있는지 없는지를 판단하는 리스트입니다.
+                // true, false를 저장하는 배열을 생성합니다.
+                let canDrawList = new Array();
+                for (let j = 0; j < companyIdxArr.length; j++) {
+                    canDrawList.push(false);
+                }
                 // 여기서 구분을 해줘야합니다. drawOption의 값에 따라서 그림이 가능한지..
                 
 
@@ -661,10 +656,20 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
                 //         아.. 이거도 그냥 파이썬으로 미리 분류를 하자. 그래서 텍스트 파일에서 불러와서 pass/fail 찍어주는것만 하자..
                 let dayValue = drawOption * 30;
                 //drawDetermineCanDraw(dayValue, dateList);
-                console.log(drawDetermineCanDraw(dayValue, dateList));
+                canDrawList.push(drawDetermineCanDraw(dayValue, dateList));
+                if (canDrawList[i] == false) {
+                    continue;
+                }
                 // Step 2) 가져올 수 있다면, 가져옵니다. (가져올 수 없으면 해당 element는 그림을 그리지 않고, 다음 element로 넘어갑니다.)
-
+                //         이거는 rateList를 split해서, dayValue만큼 가져오면 될거같은데..
+                let rateListSplit = rateList.slice(0, dayValue);
+                
                 // Step 3) 그림을 그릴 수 있는 데이터들의 +(퍼센트), -(퍼센트) 등으로 잘 정리해서, 하나의 그래프로 그려줄 데이터를 만듭니다.
+                //         각 회사의 일별 시세를 매일매일 비교해서 +, -를 구분해서, 그래프로 그려줄 데이터를 만들어야합니다.
+                //         ex) 2022-04-05 100원 , 2022-04-06 110원 이면, +10%를 배열에 저장합니다.
+                //             2022-04-05 100원 , 2022-04-06 90원 이면, -10%를 배열에 저장합니다.
+                //             처음은 무조건 0으로 시작하고, +, - 로 리턴합니다.
+                let rateDailyPercentList = getCompanyDailyRatePercent(rateListSplit);
 
                 // Step 4) 코스피, 코스닥의 지수 데이터를 가져와서, +(퍼센트), -(퍼센트) 등으로 잘 정리해서, 각각 그래프로 그려줄 데이터를 만듭니다.
 
@@ -776,12 +781,14 @@ function drawDetermineCanDraw(day, dateList) {
                                   '2022.04.08', '2022.04.07', '2022.04.06', '2022.04.05');
 
     // Ver1 
-    for (let i = 0; i < day; i++) {
-        if ( originalDate[i] !== dateList[i] ) {
-            answer = false;
-            break;
+    /*
+        for (let i = 0; i < day; i++) {
+            if ( originalDate[i] !== dateList[i] ) {
+                answer = false;
+                break;
+            }
         }
-    }
+    */
 
     // Ver2
     let originalDateList = originalDate.slice(0, day);
@@ -789,6 +796,26 @@ function drawDetermineCanDraw(day, dateList) {
     answer = JSON.stringify(originalDateList) === JSON.stringify(compareDateList);
     
     return answer
+}
+
+/**
+ *    일별 시세를 now - prev로 계산하여,
+ *    percent int 값으로 변환합니다.
+ *    처음은 0퍼센트로 시작합니다.
+ */
+function getCompanyDailyRatePercent(rateList) {
+    
+    let resultPercentList = new Array();
+    resultPercentList.push(0);
+    for (let i = 0; i < rateList.length - 1; i++) {
+        // 이전 값이랑 계속 비교할겁니다.
+        // 마치 버블 정렬처럼?
+        let prev = rateList[i];
+        let now = rateList[i + 1];
+        let percent = (now - prev) / prev * 100;
+        resultPercentList.push(percent);
+    }
+    return resultPercentList;
 }
 
 
