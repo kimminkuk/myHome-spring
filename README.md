@@ -70,6 +70,8 @@
       3. 전략들의 결과 데이터 HTML에 표시
       4. Text파일로 저장 가능하도록 추가
       5. 3개의 그래프 그리기
+      6. 마지막 파싱 날짜에서, 현재 파싱한 날짜와 비교해서 부족한 만큼 텍스트파일을 자동으로 관리하도록 구현
+      7. ZSset으로 백업용 데이터 만들기
       
    #### 초안 이미지
    <img width="458" alt="콴트 페이지 초안" src="https://user-images.githubusercontent.com/27074717/209965774-6f67342a-2dd0-4170-ab48-640ba1273cb2.png"> <img width="400" alt="초안 그래프 이미지" src="https://user-images.githubusercontent.com/27074717/213703456-03001f7d-b75a-435a-9526-74d39913cb43.png">
