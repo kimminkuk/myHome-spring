@@ -355,6 +355,9 @@ public class QuantStrategyService {
      *    2. Text 저장 ( 사용 용 )
      */
     public void naverFinanceParsing() {
+
+        saveKospiKosdaqIndex();
+/*
         String writeFilePathAndTitle = "src/main/text/" + getCurDate() + ".txt";
 
         List<String> companyInfoDataList = getAllCompanyInfo();
@@ -364,13 +367,69 @@ public class QuantStrategyService {
         //2. Text 저장 ( 사용 용 )
         parsingResultFileWrite(companyInfoDataList, writeFilePathAndTitle);
 
-        //etc) 일별시세 추가 및 Text 저장
+        // etc) 일별시세 추가 및 Text 저장
+        // 마지막 파싱 날짜에서, 현재 파싱한 날짜와 비교해서 부족한 부분만 추가하는거 구현해야함
+        // 대신 맥스 데이는 200일이다.
         try {
             getCompanyDailyRate(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
         updateParsingDate();
+ */
+    }
+
+    /**
+     *    코스피, 코스닥 지수를 파싱 후, 파일에 저장합니다.
+     */
+    public void saveKospiKosdaqIndex() {
+//        String writeKospiIndex = "src/main/text/" + getCurDate() + "-KOSPI.txt";
+//        String writeKosdaqIndex = "src/main/text/" + getCurDate() + "-KOSDAQ.txt";
+        String writeKospiIndex = "src/main/text/" + "2023-1-22" + "-KOSPI.txt";
+        String writeKosdaqIndex = "src/main/text/" + "2023-1-22" + "-KOSDAQ.txt";
+
+        // Kospi, Kosdaq은 6일씩 나와있습니다.
+        // 200일이 되기 위해선... 200 / 6 = 33.3333... 이므로, 34일치를 가져와야합니다.
+        int dayMax = 34;
+        int[] textTrIdx = { 3,4,5, 10,11,12 };
+        String kospiIndexRateAll = "";
+        String kosaqIndexRateAll = "";
+        // JSoup 파싱 코스피
+        String urlKospi = "https://finance.naver.com/sise/sise_index_day.naver?code=KOSPI&page=";
+        String urlKosdaq = "https://finance.naver.com/sise/sise_index_day.naver?code=KOSDAQ&page=";
+        for ( int day = 1; day <= dayMax; day++ ) {
+            if (day == 1) textTrIdx = new int[]{ 10,11,12 };
+            else if (day == dayMax) textTrIdx = new int[]{ 3,4,5, 10,11 };
+            else textTrIdx = new int[]{ 3,4,5, 10,11,12 };
+            for ( int trIdx : textTrIdx) {
+                try {
+                    Document doc = Jsoup.connect(urlKospi + day).get();
+                    Elements kospiIndexRate = doc.select("body > div > table.type_1 > tbody > tr:nth-child(+" + trIdx + ") > td:nth-child(2)");
+                    String kospiIndexRateText = kospiIndexRate.text().trim();
+                    String kospiIndexRateRst = textContentBlankCheck(kospiIndexRateText) == false ? "0" : kospiIndexRateText;
+                    kospiIndexRateAll += kospiIndexRateRst + "/";
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            for ( int trIdx : textTrIdx) {
+                try {
+                    Document doc = Jsoup.connect(urlKosdaq + day).get();
+                    Elements kosdaqIndexRate = doc.select("body > div > table.type_1 > tbody > tr:nth-child(+" + trIdx + ") > td:nth-child(2)");
+                    String kosdaqIndexRateText = kosdaqIndexRate.text().trim();
+                    String kosdaqIndexRateRst = textContentBlankCheck(kosdaqIndexRateText) == false ? "0" : kosdaqIndexRateText;
+                    kosaqIndexRateAll += kosdaqIndexRateRst + "/";
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // 마지막 '/' 제거
+        kospiIndexRateAll = kospiIndexRateAll.replaceAll("/$", "");
+        kosaqIndexRateAll = kosaqIndexRateAll.replaceAll("/$", "");
+        parsingResultFileWrite(kospiIndexRateAll, writeKospiIndex);
+        parsingResultFileWrite(kosaqIndexRateAll, writeKosdaqIndex);
     }
 
     public List<String> getAllCompanyInfo() {
@@ -509,12 +568,6 @@ public class QuantStrategyService {
                     System.out.println("[DEBUG] urlDailyRate2: " + urlDailyRate2);
                     System.out.println("e = " + e);
                 }
-
-                catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("[DEBUG] urlDailyRate2: " + urlDailyRate2);
-                    System.out.println("e = " + e);
-                }
             }
             /**
              // 마지막 '/'제거하기 Ver 1
@@ -555,6 +608,21 @@ public class QuantStrategyService {
                 fw.write( String.valueOf(number) +" "+ resultData);
                 fw.write("\n");
             }
+            fw.flush();
+            fw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void parsingResultFileWrite(String fileWriteData, String fileWritePath) {
+        // src/main/text/test.txt 파일쓰기 코드
+        try {
+            FileWriter fw = new FileWriter(fileWritePath);
+            int number = 0;
+            number++;
+            fw.write( String.valueOf(number) +" "+ fileWriteData);
+            fw.write("\n");
             fw.flush();
             fw.close();
         } catch (Exception e) {

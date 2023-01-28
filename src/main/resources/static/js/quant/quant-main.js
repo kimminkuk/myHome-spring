@@ -637,18 +637,17 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
 
             // 회사가 저장된 순서를 가져오기 O(1) Get할거임
             let companyIdxArr = getCompanyIdxResult();
-            for (let i = 0; i < companyIdxArr.length; i++) {
-                let rateList = companyDailyRate[companyIdxArr[i]];
-                let dateList = companyDailyDate[companyIdxArr[i]];
-                
-                // canDrawList는 그림을 그릴 수 있는지 없는지를 판단하는 리스트입니다.
-                // true, false를 저장하는 배열을 생성합니다.
-                let canDrawList = new Array();
-                for (let j = 0; j < companyIdxArr.length; j++) {
-                    canDrawList.push(false);
-                }
-                // 여기서 구분을 해줘야합니다. drawOption의 값에 따라서 그림이 가능한지..
-                
+            let canDrawList = new Array();
+            let notDrawList = new Array();
+            let rateDailyPercentList = new Array();
+            const E_companyDataFormat = {
+                companyName: 0,
+                companyCode: 1
+            }
+            for (let companyIdx = 0; i < companyIdxArr.length; companyIdx++) {
+                let rateList = companyDailyRate[companyIdxArr[E_companyDataFormat.companyCode][companyIdx]];
+                let dateList = companyDailyDate[companyIdxArr[E_companyDataFormat.companyCode][companyIdx]];
+
 
                 // Step 1) 선택한 날짜(달)만큼 Date 및 Rate를 가져 올 수 있는지 판단합니다.
                 //         사실 여기서부터 좀 막막함.. 주말은 어떻게 처리할거고 흠.. 연휴는 어떻게 처리할거고..
@@ -656,9 +655,12 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
                 //         아.. 이거도 그냥 파이썬으로 미리 분류를 하자. 그래서 텍스트 파일에서 불러와서 pass/fail 찍어주는것만 하자..
                 let dayValue = drawOption * 30;
                 //drawDetermineCanDraw(dayValue, dateList);
-                canDrawList.push(drawDetermineCanDraw(dayValue, dateList));
-                if (canDrawList[i] == false) {
+                let canDraw = drawDetermineCanDraw(dayValue, dateList);
+                if (canDraw == false) {
+                    notDrawList.push(companyIdxArr[E_companyDataFormat.companyName][companyIdx]);
                     continue;
+                } else {
+                    canDrawList.push(canDraw);
                 }
                 // Step 2) 가져올 수 있다면, 가져옵니다. (가져올 수 없으면 해당 element는 그림을 그리지 않고, 다음 element로 넘어갑니다.)
                 //         이거는 rateList를 split해서, dayValue만큼 가져오면 될거같은데..
@@ -669,7 +671,7 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
                 //         ex) 2022-04-05 100원 , 2022-04-06 110원 이면, +10%를 배열에 저장합니다.
                 //             2022-04-05 100원 , 2022-04-06 90원 이면, -10%를 배열에 저장합니다.
                 //             처음은 무조건 0으로 시작하고, +, - 로 리턴합니다.
-                let rateDailyPercentList = getCompanyDailyRatePercent(rateListSplit);
+                rateDailyPercentList.push(getCompanyDailyRatePercent(rateListSplit));
 
                 // Step 4) 코스피, 코스닥의 지수 데이터를 가져와서, +(퍼센트), -(퍼센트) 등으로 잘 정리해서, 각각 그래프로 그려줄 데이터를 만듭니다.
 
@@ -826,17 +828,21 @@ function getCompanyDailyRatePercent(rateList) {
 function getCompanyIdxResult() {
     let tdElements = document.querySelectorAll(".quant-table-th");
     let resultIdx = new Array();
+
     //Ver 1
-    for (let i = 0; i < tdElements.length; i++) {
-        let secondTd = tdElements[i].children[1]; //0번째는 Table의 Index번호, 1번째는 회사이름 + 저장된 위치 ( 1을 뺴줘야함.. 1부터 시작이라)
-        let secondTdText = secondTd.innerText;
-        let secondTdTextArr = secondTdText.split(" ");
-        let companyName = secondTdTextArr[0];
-        let companyIdx = parseInt(secondTdTextArr[1]) - 1;
-        
-        
-        resultIdx.push(companyIdx);
-    }    
+    /*
+        for (let i = 0; i < tdElements.length; i++) {
+            let secondTd = tdElements[i].children[1]; //0번째는 Table의 Index번호, 1번째는 회사이름 + 저장된 위치 ( 1을 뺴줘야함.. 1부터 시작이라)
+            let secondTdText = secondTd.innerText;
+            let secondTdTextArr = secondTdText.split(" ");
+            let companyName = secondTdTextArr[0];
+            let companyIdx = parseInt(secondTdTextArr[1]) - 1;
+            
+            
+            resultIdx.push(companyIdx);
+        } 
+    */   
+
     //Ver 2
     tdElements.forEach(function(tdElement) {
         let secondTd = tdElement.children[1];
@@ -844,7 +850,7 @@ function getCompanyIdxResult() {
         let secondTdTextArr = secondTdText.split(" ");
         let companyName = secondTdTextArr[0];
         let companyIdx = parseInt(secondTdTextArr[1]) - 1;
-        resultIdx.push(companyIdx);
+        resultIdx.push([companyName, companyIdx]);
     });
     return resultIdx;
 }
