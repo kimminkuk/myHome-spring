@@ -906,3 +906,9 @@
     left: 30%;
     border: 1px solid black;
 }
+
+.group-quant-mid-1 .group-quant-mid-1-left-3-graph .group-quant-mid-1-left-3-graph-canvas {
+    position: relative;
+    width : 100%;
+    height: 50%;
+}

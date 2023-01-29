@@ -1,5 +1,7 @@
 import { companyDailyDate } from './dailyDate.js';
 import { companyDailyRate } from './dailyRate.js';
+import { kospiDailyIndexRate } from './dailyIndexRate.js';
+import { kosdaqDailyIndexRate } from './dailyIndexRate.js';
 
 
 
@@ -8,6 +10,10 @@ const E_quantStrategy = {
     1: "TEMP2",
     2: "TEMP3",
     3: "절대망하지않는 시리즈1 (망하는 중)"
+};
+
+const E_day = {
+    maxDay: 200
 };
 
 /**
@@ -613,6 +619,7 @@ function InitCanvas(canvas) {
 /**
  *    시뮬레이션 그림 그리기
  *    1,2,6,기타 버튼 입력시, 그림을 그린다.
+ *    기타는 최소 하루 이상이어야 그림을 그릴 수 있다.
  */
 function drawCanvasOfDailyRate(canvas, drawOptionArr) {
 
@@ -621,9 +628,9 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
     let drawOptionArrLen = drawOptionArr.length;
     
     for (let i = 0; i < drawOptionArrLen; i++) {
-        drawOptionArr[i].addEventListener("click", function() {
-
+        drawOptionArr[i].addEventListener("click", function() {            
             let drawOption = drawOptionArr[i].getAttribute("value");
+            let dayValue = drawOption * 30;
             console.log("click!");
             // 결국.. Back -> front로 데이터 가져오기로 했습니다.
             // 주의사항: 시간이 5초 이상 걸리면 바로 포기입니다...(20~30개의 회사가 이상적인 테스트 환경)
@@ -640,20 +647,23 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
             let canDrawList = new Array();
             let notDrawList = new Array();
             let rateDailyPercentList = new Array();
+            let kospiDailyPercent = new Array();
+            let kosdaqDailyPercent = new Array();
             const E_companyDataFormat = {
                 companyName: 0,
                 companyCode: 1
             }
-            for (let companyIdx = 0; i < companyIdxArr.length; companyIdx++) {
-                let rateList = companyDailyRate[companyIdxArr[E_companyDataFormat.companyCode][companyIdx]];
-                let dateList = companyDailyDate[companyIdxArr[E_companyDataFormat.companyCode][companyIdx]];
+            let companyIdxArrLen = companyIdxArr.length;
+            for (let companyIdx = 0; companyIdx < companyIdxArrLen; companyIdx++) {
+                let rateList = companyDailyRate[companyIdxArr[companyIdx][E_companyDataFormat.companyCode] - 1];
+                let dateList = companyDailyDate[companyIdxArr[companyIdx][E_companyDataFormat.companyCode] - 1];
 
 
                 // Step 1) 선택한 날짜(달)만큼 Date 및 Rate를 가져 올 수 있는지 판단합니다.
                 //         사실 여기서부터 좀 막막함.. 주말은 어떻게 처리할거고 흠.. 연휴는 어떻게 처리할거고..
                 //         삼성전자(Idx:2373 - 1) 를 기준으로 잡고 하자. 이거랑 다르면 문제가 있는거다 ㅇㅋ
                 //         아.. 이거도 그냥 파이썬으로 미리 분류를 하자. 그래서 텍스트 파일에서 불러와서 pass/fail 찍어주는것만 하자..
-                let dayValue = drawOption * 30;
+                
                 //drawDetermineCanDraw(dayValue, dateList);
                 let canDraw = drawDetermineCanDraw(dayValue, dateList);
                 if (canDraw == false) {
@@ -671,17 +681,50 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
                 //         ex) 2022-04-05 100원 , 2022-04-06 110원 이면, +10%를 배열에 저장합니다.
                 //             2022-04-05 100원 , 2022-04-06 90원 이면, -10%를 배열에 저장합니다.
                 //             처음은 무조건 0으로 시작하고, +, - 로 리턴합니다.
-                rateDailyPercentList.push(getCompanyDailyRatePercent(rateListSplit));
-
-                // Step 4) 코스피, 코스닥의 지수 데이터를 가져와서, +(퍼센트), -(퍼센트) 등으로 잘 정리해서, 각각 그래프로 그려줄 데이터를 만듭니다.
-
-                // Step 5) Step3, Step4의 데이터를 사용해서 그래프를 그립니다. (꺽은선 그래프입니다, X는 일자, Y는 퍼센트입니다.)
-
+                rateDailyPercentList.push(getDailyRatePercent(rateListSplit, rateList[dayValue]));
             }
-        let month = drawOptionArr[i].value; // 1, 2, 6, 기타 (기타는 일단 대기.. 달력으로 Call해줄거임)
-        
+            // Step 4) 코스피, 코스닥의 지수 데이터를 가져와서, +(퍼센트), -(퍼센트) 등으로 잘 정리해서, 각각 그래프로 그려줄 데이터를 만듭니다.
+            kospiDailyPercent.push(getDailyRatePercent(kospiDailyIndexRate.slice(0, dayValue), kospiDailyIndexRate[dayValue]));
+            kosdaqDailyPercent.push(getDailyRatePercent(kosdaqDailyIndexRate.slice(0, dayValue), kosdaqDailyIndexRate[dayValue]));
 
-        let ctx = canvas.getContext("2d");
+            // Step 5) Step3, Step4의 데이터를 사용해서 그래프를 그립니다. (꺽은선 그래프입니다, X는 일자, Y는 퍼센트입니다.)
+            //         그래프를 그릴 수 없는 회사는, 그래프를 그리지 않습니다.
+            //         그릴 수 없는 회사명은 맨아래에 표시해줍니다. (10개 이상이면 +... 이런식으로 처리하자)
+            //         그래프를 그릴 수 있는 회사는, 그래프를 그립니다. ( 무조건 균등 배분이라고 생각합니다. )
+            let companyAveragePercent = getAveragePercent(rateDailyPercentList);
+            let ctx = canvas.getContext("2d");
+            let xAxis = Array.from({length: dayValue}, (y, x) => x);
+
+            const graphColors = ["green", "red", "purple"];
+            // style color list
+            
+            const graphData = [companyAveragePercent, kospiDailyPercent[0], kosdaqDailyPercent[0]];
+
+            let minMaxList = new Array(0, 0);            
+            
+            let graphDataAllValues = [].concat(companyAveragePercent, kospiDailyPercent[0], kosdaqDailyPercent[0]);
+
+            minMaxList[0] = Math.min.apply(null, graphDataAllValues) - 1;
+            minMaxList[1] = Math.max.apply(null, graphDataAllValues) + 1;
+            let yAxisPercent = Number(canvas.height / (minMaxList[1] - minMaxList[0]));
+            let xAxisPercent = Number(canvas.width / (dayValue + 1)); //200일까지 그릴 수 있습니다.
+            
+            ctx.beginPath();
+            graphData.forEach((y, x) => {
+                ctx.strokeStyle = graphColors[x];
+                // 첫 째날은 0으로 시작합니다.
+                y.forEach((val, xAxisDay) => {
+                    const xPos = xAxisDay * xAxisPercent;
+                    // const yPos = canvas.height - ( val * yAxisPercent );
+                    const yPos = (canvas.height / 2 - val * yAxisPercent);
+                    if ( xAxisDay === 0 ) {
+                        ctx.moveTo(xPos, canvas.height / 2);
+                    } else {
+                        ctx.lineTo(xPos, yPos);
+                    }
+                });
+                ctx.stroke();
+            });
         });
     }
     return;
@@ -801,14 +844,40 @@ function drawDetermineCanDraw(day, dateList) {
 }
 
 /**
- *    일별 시세를 now - prev로 계산하여,
- *    percent int 값으로 변환합니다.
- *    처음은 0퍼센트로 시작합니다.
+ *    데이터의 평균(소수점2자리)을 return 합니다.
+ *    @param {*} dataList 평균값을 구하고 싶은 데이터 리스트
  */
-function getCompanyDailyRatePercent(rateList) {
+
+function getAveragePercent(dataList) {
+    let ave = [];
+    let dataElLen = dataList[0].length;
+    for (let i = 0; i < dataList[0].length; i++) {
+        ave.push(0);
+    }
     
+    for ( let elIdx = 0; elIdx < dataElLen; elIdx++ ) {
+        for (let dataIdx = 0; dataIdx < dataList.length; dataIdx++) {
+            ave[elIdx] += dataList[dataIdx][elIdx];
+        }
+        //ave[elIdx] = parseFloat(ave[elIdx] / dataElLen).toFixed(2); 
+        ave[elIdx] = Number(((ave[elIdx] / dataElLen)).toFixed(2));
+    }
+    return ave;
+}
+
+/**
+ *    일별 시세를 분모와 일별 시세로 계산합니다/
+ *    소수점 2자리까지 반올림합니다.
+ */
+function getDailyRatePercent(rateList, rateDenominator) {
+    
+    if ( typeof rateDenominator === "string" ) {
+        rateDenominator = parseInt(rateDenominator.replace(/,/g, ''));
+    }
+
     let resultPercentList = new Array();
     resultPercentList.push(0);
+    /*
     for (let i = 0; i < rateList.length - 1; i++) {
         // 이전 값이랑 계속 비교할겁니다.
         // 마치 버블 정렬처럼?
@@ -817,6 +886,35 @@ function getCompanyDailyRatePercent(rateList) {
         let percent = (now - prev) / prev * 100;
         resultPercentList.push(percent);
     }
+    */
+
+    // step1) rateList의 데이터들을 String -> Int로 변환합니다.
+    //        ,를 제거합니다.
+    for (let i = 0; i < rateList.length; i++) {
+        rateList[i] = parseInt(rateList[i].replace(/,/g, ''));
+    }
+
+    // step2) 
+    // index를 거꾸로 했어야 했습니다.!
+    // 설정한 기간의 마지막날부터 시작해야 합니다.
+    // ex) 현재 날짜가, 2023-1-22 이고, day가 30일이라면
+    //     2023-1-22 ~ 2022-12-23
+    //     분모가 2022-12-22의 값입니다. (day에서 하루 더 빼야합니다!)
+    //     데이터는 2022-12-23 부터 2023-1-22의 날짜에서 분모를 나눈 퍼센트입니다.
+    for (let i = rateList.length - 1; i >= 0; i--) {
+        let now = rateList[i];
+        
+        //let percent = parseFloat((now - rateDenominator) / rateDenominator * 100).toFixed(2);
+        let percent = Number(((now - rateDenominator) / rateDenominator * 100).toFixed(2));
+
+        resultPercentList.push(percent);
+    }
+    
+    // step3)
+    // 잠깐만요... 우리이거.. 합산으로 해야할거같은데????
+    // 아 아니야! 처음 시작하는 날짜를 분모로 잡고 전부 계산해줬어야했어!
+
+
     return resultPercentList;
 }
 
