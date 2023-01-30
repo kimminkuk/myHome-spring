@@ -16,6 +16,8 @@ const E_day = {
     maxDay: 200
 };
 
+var canvasDrawing = false;
+
 /**
  *    기본적인 화면 구성
  *    1. 버튼 구성
@@ -692,67 +694,96 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
             //         그릴 수 없는 회사명은 맨아래에 표시해줍니다. (10개 이상이면 +... 이런식으로 처리하자)
             //         그래프를 그릴 수 있는 회사는, 그래프를 그립니다. ( 무조건 균등 배분이라고 생각합니다. )
             let companyAveragePercent = getAveragePercent(rateDailyPercentList);
-            let ctx = canvas.getContext("2d");
             let xAxis = Array.from({length: dayValue}, (y, x) => x);
-
             const graphColors = ["green", "red", "purple"];
-            // style color list
-            
             const graphData = [companyAveragePercent, kospiDailyPercent[0], kosdaqDailyPercent[0]];
 
-            let minMaxList = new Array(0, 0);            
-            
-            let graphDataAllValues = [].concat(companyAveragePercent, kospiDailyPercent[0], kosdaqDailyPercent[0]);
+            let minMaxList = getMinMaxValue(companyAveragePercent, kospiDailyPercent[0], kosdaqDailyPercent[0]);
 
-            minMaxList[0] = Math.min.apply(null, graphDataAllValues) - 1;
-            minMaxList[1] = Math.max.apply(null, graphDataAllValues) + 1;
-            let yAxisPercent = Number(canvas.height / (minMaxList[1] - minMaxList[0]));
-            let xAxisPercent = Number(canvas.width / (dayValue + 1)); //200일까지 그릴 수 있습니다.
+            let ctx = canvas.getContext("2d");
+            canvas.width = 600, canvas.height = 300;
+            if ( canvasDrawing === true ) ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 1;
+            ctx.beginPath();            
+            drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue)
+            canvasDrawing = true;
             
-            ctx.beginPath();
-            graphData.forEach((y, x) => {
-                ctx.strokeStyle = graphColors[x];
-                // 첫 째날은 0으로 시작합니다.
-                y.forEach((val, xAxisDay) => {
-                    const xPos = xAxisDay * xAxisPercent;
-                    // const yPos = canvas.height - ( val * yAxisPercent );
-                    const yPos = (canvas.height / 2 - val * yAxisPercent);
-                    if ( xAxisDay === 0 ) {
-                        ctx.moveTo(xPos, canvas.height / 2);
-                    } else {
-                        ctx.lineTo(xPos, yPos);
-                    }
-                });
-                ctx.stroke();
-            });
+            
+            // 이 부분은 함수로 뺴고, 그래픽적인 요소 조금 더 추가해봅시다.
+            // 그리고, x, y 도표도 추가하고요.
+            
+            // graphData.forEach((y, x) => {
+            //     ctx.strokeStyle = graphColors[x];
+                
+            //     ctx.beginPath();
+            //     y.forEach((val, xAxisDay) => {
+            //         const xPos = xAxisDay * xAxisPercent;
+            //         const yPos = (canvas.height / 2 - val * yAxisPercent);
+            //         if ( xAxisDay === 0 ) {
+            //             ctx.moveTo(xPos, canvas.height / 2);
+            //         } else {
+            //             ctx.lineTo(xPos, yPos);
+            //         }
+            //     });
+
+            //     ctx.stroke();
+            // });
+            
         });
     }
     return;
 }
 
-async function readTextFileVer2(filePath) {
-    try {
-        const response = await fetch(filePath);
-        const blob = await response.blob();
-        const fileReader = new FileReader();
-        fileReader.readAsText(blob);
-        fileReader.onload = function() {
-            console.log(fileReader.result);
-        }
-    } catch (err) {
-        console.error(err);
-    }
+/**
+ *    그래프를 그리는 함수입니다.
+ */
+function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
+
+    // image 개선 처리 세가지 방법
+    // 1) Anti-Aliasing 처리를 해줍니다.
+    //    Sommothens out the edges of your graphics and makes them look less pixelated
+    ctx.imageSmoothingEnabled = true;
+
+    // 2) Sub-Pixel Rendering
+    ctx.translate(0.5, 0.5);
+
+    // 3) High DPI Canvas
+    //    this means that can display sharper and clearer images
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    let yAxisPercent = Number(canvas.height / (minMaxList[1] - minMaxList[0]));
+    let xAxisPercent = Number(canvas.width / (dayValue + 1)); //200일까지 그릴 수 있습니다.    
+    graphData.forEach((y, x) => {
+        ctx.strokeStyle = graphColors[x];
+        ctx.beginPath();
+        y.forEach((val, xAxisDay) => {
+            const xPos = xAxisDay * xAxisPercent;
+            const yPos = (canvas.height / 2 - val * yAxisPercent);
+            if ( xAxisDay === 0 ) {
+                ctx.moveTo(xPos, canvas.height / 2);
+            } else {
+                ctx.lineTo(xPos, yPos);
+            }
+        });
+        ctx.stroke();
+    });
     return;
 }
 
-async function readTextFile(filePath) {
-    const fs = require('fs');
-    try {
-        const data = await fs.readFile(filePath, 'utf8');
-        console.log(data);
-    } catch (err) {
-        console.error(err);
-    }
+/**
+ *    데이터들의 최소, 최대값을 구하는 함수입니다.
+ *    그래프를 그릴 때, y좌표의 최소, 최대값으로 사용합니다.
+ */
+function getMinMaxValue(companyAveragePercent, kospiDailyPercent, kosdaqDailyPercent) {
+    let minMaxList = new Array(0, 0);            
+    let graphDataAllValues = [].concat(companyAveragePercent, kospiDailyPercent, kosdaqDailyPercent);
+    minMaxList[0] = Math.min.apply(null, graphDataAllValues) - 1;
+    minMaxList[1] = Math.max.apply(null, graphDataAllValues) + 1;
+    return minMaxList;
 }
 
 /**
