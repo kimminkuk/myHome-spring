@@ -97,7 +97,7 @@ public class quantMainController {
 
     @GetMapping("quant/naver-finance-parsing")
     public String naverFinanceParsing(Model model) {
-        System.out.println("[DEBUG] naverFinanceParsing START");
+        System.out.println("[DEBUG] naverFinanc eParsing START");
 
         quantPageDefaultSetting(model);
 

@@ -2,6 +2,7 @@ import { companyDailyDate } from './dailyDate.js';
 import { companyDailyRate } from './dailyRate.js';
 import { kospiDailyIndexRate } from './dailyIndexRate.js';
 import { kosdaqDailyIndexRate } from './dailyIndexRate.js';
+import { dailyOriginal } from './dailyIndexRate.js';
 
 
 
@@ -701,10 +702,12 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
             let minMaxList = getMinMaxValue(companyAveragePercent, kospiDailyPercent[0], kosdaqDailyPercent[0]);
 
             let ctx = canvas.getContext("2d");
-            canvas.width = 600, canvas.height = 300;
+            canvas.width = canvas.getBoundingClientRect().width;
+            canvas.height = canvas.getBoundingClientRect().height;
             if ( canvasDrawing === true ) ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.lineWidth = 1;
-            ctx.beginPath();            
+            ctx.beginPath();
+            graphFillText(ctx, graphData, minMaxList, canvas, dayValue);
             drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue)
             canvasDrawing = true;
             
@@ -735,6 +738,127 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
 }
 
 /**
+ *    그래프의 x, y 축의 라벨을 설정합니다.
+ */
+function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
+    
+    
+
+    // x축은
+    //
+    //
+    //
+    //
+    //   (시작) 1  2  3  4  5  6 (끝)  xPos를 8로 나눠야지.
+    //   만약, 6일치 데이터보다 작다면, 그냥 순서대로 합니다.
+    
+    // 아 이거 y는 5단위로 끊고 싶은데.. 흐으믕믕므... 그니깐 대충 6등분해서 숫자 딱떨어지게 하고싶어
+    // ex) +2 ~ -32 이렇게 있다고 가정 하고. 어떻게 딱 나눠주지??
+    // 더하면 34.. 34 / 6 = 5.666666666666667 -> 여기서 뒷자리 버리면, 5
+    // 그럼 5씩 더하면 되는거 아닌가??
+    // 예제2) -4.9 ~ 30.4 -> 35.3 / 6 = 5.9 -> 여기서 뒷자리 버리면, 5
+    // 아 그니깐 최소 ~ 최대값을 일단 6등분하자 그럼, 35.4 / 6 -> 5.9 여기서 뒷자리 버려.
+
+    //              x1 -4.9
+    //    1-------
+    //              0.01 (round -> 0.00)
+    //    2-------
+    //              -5.00 
+    //    3-------
+    //              -10.00
+    //    4-------
+    //              -15.00
+    //    5-------
+    //              -20.00
+    //    6-------
+    //              -25.00
+    //    7-------
+    //              -30.00
+    //    8-------
+    //              x2
+
+    // 이게 지금 마이너스인 경우고, 플러스인 경우는? 최소값이 0보다 작으면 이렇게, 0보다 크면?
+    //              x1 (최대)
+    //    1-------
+    //              30.00
+    //    2-------
+    //              25.00
+    //    3-------
+    //              20.00
+    //    4-------
+    //              15.00
+    //    5-------
+    //              10.00
+    //    6-------
+    //              5.00
+    //    7-------                  7------
+    //              0.00                   x2 (최소)
+    //    8-------                  8------
+    //              x2 (최소)               0.00
+    
+    // 그래프가 - ~ + 왔다갔다 하는 경우,
+    //              x1 (최대)           x1 (최소)
+    //    1-------                  1------
+    //              15.00                   -15.00
+    //    2-------                  2------
+    //              10.00                   -10.00
+    //    3-------                  3------
+    //               5.00                   -5.00
+    //    4-------                  4------
+    //               0.00                   0.00
+    //    5-------                  5------
+    //              -5.00                   5.00
+    //    6-------                  6------
+    //              -10.00                  10.00
+    //    7-------                  7------
+    //              -15.00                  15.00
+    //    8-------                  8------
+    //              x2 (최소)           x2 (최대)
+
+    // 그러면, 최소가 0보다 큰 경우랑, 작은 경우 두개를 나눠서 해야겠다.
+
+    const xLabels = [];
+    const yLabels = [];
+    xLabels.push(dailyOriginal[dailyOriginal.length - 1]);
+    // if ( minMaxList[0] < 0 ) { // 최소가 0보다 작은 경우
+    //     // 마이너스에서 시작하는 케이스
+    //     // 어차피 그려지니깐 상관없나?
+    // } else {
+    //     // 플러스에서 시작하는 케이스
+    // }
+    yLabels.push(minMaxList[0]); //최소값이 아래에 있습니다.
+
+    //const yLabelGap = Math.floor((minMaxList[1] - minMaxList[0]) / 6).toFixed(2); //ex) '5.00'
+    const yLabelGap = Math.floor((minMaxList[1] - minMaxList[0]) / 6); //ex) '5.00'
+    // 아.. 나는 좀 헷갈리니깐 일단 y좌표 갭을 등차로 계산을 할까??
+    for ( let i = 1; i <= 6; i++ ) {
+        yLabels.push(minMaxList[0] + yLabelGap * i);
+    }
+    yLabels.push(minMaxList[1]); //최대값이 그래프의 Max위치 입니다.
+    if ( dayValue > 6 ) {
+        const xLabelGap = Math.floor(dayValue / 8); //dayValue가 12라면, 2가 됩니다. 그럼 이제
+        for ( let i = 1; i <= 6; i++ ) {
+            xLabels.push(dailyOriginal[dailyOriginal.length - 1 - xLabelGap * i]);
+        }
+        xLabels.push(dailyOriginal[0]);
+    } 
+    // else {
+    //     // 1 ~ 6일치 데이터 커버
+    // }
+
+    // Draw the x-axis labels
+    for (let i = 0; i < xLabels.length; i++) {
+        ctx.fillText(xLabels[i], canvas.width / 8 * i, canvas.height);
+    }
+
+    // Draw the y-axis labels
+    for (let i = 0; i < yLabels.length; i++) {
+        ctx.fillText(yLabels[i], canvas.height / 8 * i, canvas.width);
+    }
+    return;
+}
+
+/**
  *    그래프를 그리는 함수입니다.
  */
 function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
@@ -749,11 +873,12 @@ function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
 
     // 3) High DPI Canvas
     //    this means that can display sharper and clearer images
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
+    //    but,, 캔버스 커지는걸 컨트롤 하기 어렵다.
+    // const dpr = window.devicePixelRatio || 1;
+    // const rect = canvas.getBoundingClientRect();
+    // canvas.width = rect.width * dpr;
+    // canvas.height = rect.height * dpr;
+    // ctx.scale(dpr, dpr);
 
     let yAxisPercent = Number(canvas.height / (minMaxList[1] - minMaxList[0]));
     let xAxisPercent = Number(canvas.width / (dayValue + 1)); //200일까지 그릴 수 있습니다.    
