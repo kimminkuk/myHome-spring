@@ -3,7 +3,8 @@ import { companyDailyRate } from './dailyRate.js';
 import { kospiDailyIndexRate } from './dailyIndexRate.js';
 import { kosdaqDailyIndexRate } from './dailyIndexRate.js';
 import { dailyOriginal } from './dailyIndexRate.js';
-
+import { dailyOnlyDayVer1 } from './dailyIndexRate.js';
+import { dailyOnlyDayVer2 } from './dailyIndexRate.js';
 
 
 const E_quantStrategy = {
@@ -17,7 +18,12 @@ const E_day = {
     maxDay: 200
 };
 
-var canvasDrawing = false;
+const E_graphExtra = {
+    width: 50,
+    height: 50
+};
+
+var G_canvasDrawing = false;
 
 /**
  *    기본적인 화면 구성
@@ -702,36 +708,16 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
             let minMaxList = getMinMaxValue(companyAveragePercent, kospiDailyPercent[0], kosdaqDailyPercent[0]);
 
             let ctx = canvas.getContext("2d");
-            canvas.width = canvas.getBoundingClientRect().width;
-            canvas.height = canvas.getBoundingClientRect().height;
-            if ( canvasDrawing === true ) ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // canvas.width = canvas.getBoundingClientRect().width - E_graphExtra.width;
+            // canvas.height = canvas.getBoundingClientRect().height - E_graphExtra.height;
+            canvas.width = canvas.getBoundingClientRect().width ;
+            canvas.height = canvas.getBoundingClientRect().height;            
+            if ( G_canvasDrawing === true ) ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.lineWidth = 1;
+            //ctx.font = "9px Arial";
             ctx.beginPath();
             graphFillText(ctx, graphData, minMaxList, canvas, dayValue);
             drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue)
-            canvasDrawing = true;
-            
-            
-            // 이 부분은 함수로 뺴고, 그래픽적인 요소 조금 더 추가해봅시다.
-            // 그리고, x, y 도표도 추가하고요.
-            
-            // graphData.forEach((y, x) => {
-            //     ctx.strokeStyle = graphColors[x];
-                
-            //     ctx.beginPath();
-            //     y.forEach((val, xAxisDay) => {
-            //         const xPos = xAxisDay * xAxisPercent;
-            //         const yPos = (canvas.height / 2 - val * yAxisPercent);
-            //         if ( xAxisDay === 0 ) {
-            //             ctx.moveTo(xPos, canvas.height / 2);
-            //         } else {
-            //             ctx.lineTo(xPos, yPos);
-            //         }
-            //     });
-
-            //     ctx.stroke();
-            // });
-            
         });
     }
     return;
@@ -819,41 +805,49 @@ function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
 
     const xLabels = [];
     const yLabels = [];
-    xLabels.push(dailyOriginal[dailyOriginal.length - 1]);
+    xLabels.push(dailyOnlyDayVer1[dailyOnlyDayVer1.length - 1]);
+
     // if ( minMaxList[0] < 0 ) { // 최소가 0보다 작은 경우
     //     // 마이너스에서 시작하는 케이스
     //     // 어차피 그려지니깐 상관없나?
     // } else {
     //     // 플러스에서 시작하는 케이스
     // }
-    yLabels.push(minMaxList[0]); //최소값이 아래에 있습니다.
+    yLabels.push(minMaxList[0].toFixed(2)); //최소값이 아래에 있습니다.
 
     //const yLabelGap = Math.floor((minMaxList[1] - minMaxList[0]) / 6).toFixed(2); //ex) '5.00'
-    const yLabelGap = Math.floor((minMaxList[1] - minMaxList[0]) / 6); //ex) '5.00'
+    const yLabelGap = Math.floor((minMaxList[1] - minMaxList[0]) / 6);
+
     // 아.. 나는 좀 헷갈리니깐 일단 y좌표 갭을 등차로 계산을 할까??
     for ( let i = 1; i <= 6; i++ ) {
-        yLabels.push(minMaxList[0] + yLabelGap * i);
+        yLabels.push((minMaxList[0] + yLabelGap * i).toFixed(2));
     }
-    yLabels.push(minMaxList[1]); //최대값이 그래프의 Max위치 입니다.
+    yLabels.push(minMaxList[1].toFixed(2)); //최대값이 그래프의 Max위치 입니다.
+
     if ( dayValue > 6 ) {
         const xLabelGap = Math.floor(dayValue / 8); //dayValue가 12라면, 2가 됩니다. 그럼 이제
         for ( let i = 1; i <= 6; i++ ) {
-            xLabels.push(dailyOriginal[dailyOriginal.length - 1 - xLabelGap * i]);
+            xLabels.push(dailyOnlyDayVer2[dailyOnlyDayVer2.length - 1 - xLabelGap * i]);
         }
-        xLabels.push(dailyOriginal[0]);
+        xLabels.push(dailyOnlyDayVer2[0]);
     } 
     // else {
     //     // 1 ~ 6일치 데이터 커버
     // }
 
     // Draw the x-axis labels
+    // 개선점: 시작하는것 년도,날짜 나오게: 22.04.05 이런식 그리고 나머지는 06.05 이런식으로
     for (let i = 0; i < xLabels.length; i++) {
         ctx.fillText(xLabels[i], canvas.width / 8 * i, canvas.height);
+        //fillText글자 작게하기
+        
     }
 
     // Draw the y-axis labels
+    // 개선점: y의 자리수를 0.00, 5.00 으로 고정시켜야합니다. 
+    //       그리고 나오는게 음.. 일단 5등분한 자리에서 나오게 해볼까요?
     for (let i = 0; i < yLabels.length; i++) {
-        ctx.fillText(yLabels[i], canvas.height / 8 * i, canvas.width);
+        ctx.fillText(yLabels[i], canvas.width * 0.9, canvas.height / 8 * i);
     }
     return;
 }
@@ -896,6 +890,7 @@ function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
         });
         ctx.stroke();
     });
+    G_canvasDrawing = true;
     return;
 }
 

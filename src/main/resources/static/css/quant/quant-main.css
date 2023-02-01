@@ -909,6 +909,22 @@
 
 .group-quant-mid-1 .group-quant-mid-1-left-3-graph .group-quant-mid-1-left-3-graph-canvas {
     position: relative;
-    width : 100%;
+    width : 90%;
     height: 50%;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-3-graph .group-quant-mid-1-y-text {
+    display: inline;
+    position: absolute;
+    width : 10%;
+    height: 50%;
+}
+
+.group-quant-mid-1 .group-quant-mid-1-left-3-graph .group-quant-mid-1-x-text {
+    position: absolute;
+    width : 90%;
+    height: 5%;
+    top: 50%;
 }
