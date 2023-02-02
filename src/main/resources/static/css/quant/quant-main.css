@@ -863,10 +863,10 @@
 .group-quant-mid-1 .group-quant-mid-1-left-2 {
     display: inline;
     position: absolute;
-    width: 40%;
+    width: 30%;
     height: 100%;
     top: 0%;
-    left: 60%;
+    left: 70%;
     border: 1px solid black;
 }
 
@@ -900,7 +900,7 @@
 .group-quant-mid-1 .group-quant-mid-1-left-3-graph {
     display: inline;
     position: absolute;
-    width: 30%;
+    width: 40%;
     height: 100%;
     top: 0%;
     left: 30%;
@@ -910,7 +910,7 @@
 .group-quant-mid-1 .group-quant-mid-1-left-3-graph .group-quant-mid-1-left-3-graph-canvas {
     position: relative;
     width : 90%;
-    height: 50%;
+    height: 70%;
     border-bottom: 1px solid black;
     border-right: 1px solid black;
 }
@@ -919,12 +919,12 @@
     display: inline;
     position: absolute;
     width : 10%;
-    height: 50%;
+    height: 70%;
 }
 
 .group-quant-mid-1 .group-quant-mid-1-left-3-graph .group-quant-mid-1-x-text {
     position: absolute;
     width : 90%;
     height: 5%;
-    top: 50%;
+    top: 70%;
 }

@@ -712,7 +712,26 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
             // canvas.height = canvas.getBoundingClientRect().height - E_graphExtra.height;
             canvas.width = canvas.getBoundingClientRect().width ;
             canvas.height = canvas.getBoundingClientRect().height;            
-            if ( G_canvasDrawing === true ) ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if ( G_canvasDrawing === true ) { 
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // text 영역을 초기화 해줍니다.
+                // step1) x, y좌표들의 부모 클래스를 가져옵니다.
+                let yTextParent = document.querySelector(".group-quant-mid-1-y-text");
+                let xTextParent = document.querySelector(".group-quant-mid-1-x-text");
+
+                // step2) 부모 클래스의 자식div이 있다면, 모두 삭제합니다.
+                if ( yTextParent.hasChildNodes() ) {
+                    while (yTextParent.firstChild) {
+                        yTextParent.removeChild(yTextParent.firstChild);
+                    }
+                }
+                if ( xTextParent.hasChildNodes() ) {
+                    while (xTextParent.firstChild) {
+                        xTextParent.removeChild(xTextParent.firstChild);
+                    }
+                }
+            }
             ctx.lineWidth = 1;
             //ctx.font = "9px Arial";
             ctx.beginPath();
@@ -835,20 +854,87 @@ function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
     //     // 1 ~ 6일치 데이터 커버
     // }
 
-    // Draw the x-axis labels
-    // 개선점: 시작하는것 년도,날짜 나오게: 22.04.05 이런식 그리고 나머지는 06.05 이런식으로
-    for (let i = 0; i < xLabels.length; i++) {
-        ctx.fillText(xLabels[i], canvas.width / 8 * i, canvas.height);
-        //fillText글자 작게하기
-        
+    /*  fillText로 하니깐, canvas 해상도 때문에, 글씨가 깨져서 나옵니다.
+        그래프는 어느 정도 깨져도 괜찮습니다. (그래프는 그냥 선이니깐)
+        하지만, 텍스트는 깨지면 안됩니다.
+        따라서, div 클래스에 text를 넣는식으로 처리하도록 하겠습니다.
+        // Draw the x-axis labels
+        // 개선점: 시작하는것 년도,날짜 나오게: 22.04.05 이런식 그리고 나머지는 06.05 이런식으로
+        for (let i = 0; i < xLabels.length; i++) {
+            ctx.fillText(xLabels[i], canvas.width / 8 * i, canvas.height);
+            //fillText글자 작게하기
+            
+        }
+
+        // Draw the y-axis labels
+        // 개선점: y의 자리수를 0.00, 5.00 으로 고정시켜야합니다. 
+        //       그리고 나오는게 음.. 일단 5등분한 자리에서 나오게 해볼까요?
+        for (let i = 0; i < yLabels.length; i++) {
+            ctx.fillText(yLabels[i], canvas.width * 0.9, canvas.height / 8 * i);
+        }
+    */
+
+    // X, Y 좌표의 거리를 구해줍니다.
+    // step1) y, x text의 div class를 가져옵니다.
+    let yTextParent = document.querySelector(".group-quant-mid-1-y-text");
+    let xTextParent = document.querySelector(".group-quant-mid-1-x-text");
+
+    // step2) x, y의 text개수를 가져와서 div를 만들어 주고,
+    //        y, x text의 부모 div class에 넣어줍니다.
+    //        text는 y, x의 label을 넣어줍니다.
+    for ( let i = 0; i < yLabels.length; i++ ) {
+        let yTextChild = document.createElement("div");
+        yTextChild.classList.add("group-quant-mid-1-y-text-child");
+        yTextChild.innerText = yLabels[i];
+        yTextParent.appendChild(yTextChild);
+    }
+    for ( let i = 0; i < xLabels.length; i++ ) {
+        let xTextChild = document.createElement("div");
+        xTextChild.classList.add("group-quant-mid-1-x-text-child");
+        xTextChild.innerText = xLabels[i];
+        xTextParent.appendChild(xTextChild);
     }
 
-    // Draw the y-axis labels
-    // 개선점: y의 자리수를 0.00, 5.00 으로 고정시켜야합니다. 
-    //       그리고 나오는게 음.. 일단 5등분한 자리에서 나오게 해볼까요?
-    for (let i = 0; i < yLabels.length; i++) {
-        ctx.fillText(yLabels[i], canvas.width * 0.9, canvas.height / 8 * i);
+    // step3) y, x의 Gap(거리)를 이용해서 child div들의 position을 조정해줍니다.
+    //        자식 div에 따라서, 거리가 변해야합니다.
+    let yTextChilds = document.querySelectorAll(".group-quant-mid-1-y-text-child");
+    let xTextChilds = document.querySelectorAll(".group-quant-mid-1-x-text-child");
+    let yTextChilsLen = yTextChilds.length;
+    let xTextChilsLen = xTextChilds.length;
+
+    for ( let i = 0; i < yTextChilsLen; i++ ) {
+        if ( i == 0 ) {
+            yTextChilds[0].style.top = 0 + "px";
+        } else if ( i == yTextChilsLen - 1 ) {
+            yTextChilds[yTextChilsLen - 1].style.top = (yTextParent.clientHeight - 15) + "px";
+        } else {
+            yTextChilds[i].style.top = canvas.height / 8 * i + "px";
+        }
+        yTextChilds[i].style.position = "absolute";
     }
+    for ( let i = 0; i < xTextChilsLen; i++ ) {
+
+        if ( i == 0 ) {
+            xTextChilds[0].style.left = 0 + "px";
+        } else if ( i == xTextChilsLen - 1 ) {
+            xTextChilds[xTextChilsLen - 1].style.left = (xTextParent.clientWidth - 15) + "px";
+        } else {
+            xTextChilds[i].style.left = canvas.width / 8 * i + "px";
+        }
+
+        xTextChilds[i].style.position = "absolute";
+    }
+
+    // step4) x, y childs div들의 font-size 및 style 조정해줍니다.
+    for ( let i = 0; i < yTextChilsLen; i++ ) {
+        yTextChilds[i].style.fontSize = "0.8rem";
+        yTextChilds[i].style.fontWeight = "bold";
+    }
+    for ( let i = 0; i < xTextChilsLen; i++ ) {
+        xTextChilds[i].style.fontSize = "0.8rem";
+        xTextChilds[i].style.fontWeight = "bold";
+    }
+
     return;
 }
 
@@ -873,19 +959,54 @@ function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
     // canvas.width = rect.width * dpr;
     // canvas.height = rect.height * dpr;
     // ctx.scale(dpr, dpr);
-
+    let yAxisStartPos = 0;
+    let yHeight = canvas.height;
     let yAxisPercent = Number(canvas.height / (minMaxList[1] - minMaxList[0]));
-    let xAxisPercent = Number(canvas.width / (dayValue + 1)); //200일까지 그릴 수 있습니다.    
+    let xAxisPercent = Number(canvas.width / (dayValue + 1)); //200일까지 그릴 수 있습니다.
+    
+    // (최대 + 최소) / 2 -> y축의 중간 값이다.
+    let yAxisMidValue = (minMaxList[1] + minMaxList[0]) / 2;
+    let yAxisMidPos = yAxisPercent / 2;
+
+    // case 1) 최소값이 0보다 작고, 최대값도 0보다 작은 경우
+    if ( minMaxList[0] < 0 && minMaxList[1] < 0 ) {
+        yAxisStartPos = minMaxList[0];
+    }
+    // case 2) 최소값이 0보다 작고, 최대값은 0보다 큰 경우
+    else if ( minMaxList[0] < 0 && minMaxList[1] > 0 ) {
+        yAxisStartPos = 0;
+    }
+    // case 3) 최소값이 0보다 크고, 최대값도 0보다 큰 경우
+    else if ( minMaxList[0] > 0 && minMaxList[1] > 0 ) {
+        yAxisStartPos = minMaxList[0];
+    }
     graphData.forEach((y, x) => {
         ctx.strokeStyle = graphColors[x];
         ctx.beginPath();
         y.forEach((val, xAxisDay) => {
             const xPos = xAxisDay * xAxisPercent;
-            const yPos = (canvas.height / 2 - val * yAxisPercent);
-            if ( xAxisDay === 0 ) {
-                ctx.moveTo(xPos, canvas.height / 2);
+            let yPos = 0;
+            if ( val < 0 ) {
+                yPos =  - ( yAxisPercent * (val) );
             } else {
-                ctx.lineTo(xPos, yPos);
+                yPos =  ( yAxisPercent * (val) );
+            }
+            // case 1) data가 평균값보다 작은 경우
+            // if ( val < yAxisMidValue ) {
+            //     //yPos =  yAxisMidPos - ( yAxisPercent * (val) );
+            //     yPos =  ( yAxisPercent * (val) );
+            // }
+            
+            // // case 2) data가 평균값보다 크거나, 같은 경우
+            // else {
+            //     //yPos =  yAxisMidPos + ( yAxisPercent * (val) );
+            //     yPos =  ( yAxisPercent * (val) );
+            // }
+            
+            if ( xAxisDay === 0 ) {
+                ctx.moveTo(xPos, yHeight - yAxisStartPos * yAxisPercent);
+            } else {
+                ctx.lineTo(xPos, yHeight - yPos);
             }
         });
         ctx.stroke();
