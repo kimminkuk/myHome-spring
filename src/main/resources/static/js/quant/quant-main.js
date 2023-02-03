@@ -747,7 +747,10 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
  */
 function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
     
-    
+    /**
+     *    수정..23.02.03
+     *    x, y축 모두 시작, 끝을 제외하고 5등분해서 라벨을 설정합시다. 아 아닌가? 6개 먼저 해보지 뭐
+     */
 
     // x축은
     //
@@ -821,38 +824,27 @@ function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
     //              x2 (최소)           x2 (최대)
 
     // 그러면, 최소가 0보다 큰 경우랑, 작은 경우 두개를 나눠서 해야겠다.
-
+    const gapCount = 5;
+    const gapCountLen = gapCount + 1;
     const xLabels = [];
     const yLabels = [];
     xLabels.push(dailyOnlyDayVer1[dailyOnlyDayVer1.length - 1]);
+    yLabels.push(minMaxList[1].toFixed(2)); //최소값이 아래에 있습니다.
 
-    // if ( minMaxList[0] < 0 ) { // 최소가 0보다 작은 경우
-    //     // 마이너스에서 시작하는 케이스
-    //     // 어차피 그려지니깐 상관없나?
-    // } else {
-    //     // 플러스에서 시작하는 케이스
-    // }
-    yLabels.push(minMaxList[0].toFixed(2)); //최소값이 아래에 있습니다.
-
-    //const yLabelGap = Math.floor((minMaxList[1] - minMaxList[0]) / 6).toFixed(2); //ex) '5.00'
-    const yLabelGap = Math.floor((minMaxList[1] - minMaxList[0]) / 6);
+    // //const yLabelGap = Math.floor((minMaxList[1] - minMaxList[0]) / 6).toFixed(2); //ex) '5.00'
+    const yLabelGap = Math.floor((minMaxList[1] - minMaxList[0]) / gapCount);
 
     // 아.. 나는 좀 헷갈리니깐 일단 y좌표 갭을 등차로 계산을 할까??
-    for ( let i = 1; i <= 6; i++ ) {
+    for ( let i = gapCount; i >= 1; i-- ) {
         yLabels.push((minMaxList[0] + yLabelGap * i).toFixed(2));
     }
-    yLabels.push(minMaxList[1].toFixed(2)); //최대값이 그래프의 Max위치 입니다.
+    yLabels.push(minMaxList[0].toFixed(2)); //최대값이 그래프의 Max위치 입니다.
 
-    if ( dayValue > 6 ) {
-        const xLabelGap = Math.floor(dayValue / 8); //dayValue가 12라면, 2가 됩니다. 그럼 이제
-        for ( let i = 1; i <= 6; i++ ) {
-            xLabels.push(dailyOnlyDayVer2[dailyOnlyDayVer2.length - 1 - xLabelGap * i]);
-        }
-        xLabels.push(dailyOnlyDayVer2[0]);
-    } 
-    // else {
-    //     // 1 ~ 6일치 데이터 커버
-    // }
+    const xLabelGap = Math.floor(dayValue / gapCount); //dayValue가 12라면, 2가 됩니다. 그럼 이제
+    for ( let i = 1; i <= gapCount; i++ ) {
+        xLabels.push(dailyOnlyDayVer2[dailyOnlyDayVer2.length - 1 - xLabelGap * i]);
+    }
+    xLabels.push(dailyOnlyDayVer2[0]);
 
     /*  fillText로 하니깐, canvas 해상도 때문에, 글씨가 깨져서 나옵니다.
         그래프는 어느 정도 깨져도 괜찮습니다. (그래프는 그냥 선이니깐)
@@ -908,7 +900,7 @@ function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
         } else if ( i == yTextChilsLen - 1 ) {
             yTextChilds[yTextChilsLen - 1].style.top = (yTextParent.clientHeight - 15) + "px";
         } else {
-            yTextChilds[i].style.top = canvas.height / 8 * i + "px";
+            yTextChilds[i].style.top = canvas.height / gapCountLen * i + "px";
         }
         yTextChilds[i].style.position = "absolute";
     }
@@ -919,7 +911,7 @@ function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
         } else if ( i == xTextChilsLen - 1 ) {
             xTextChilds[xTextChilsLen - 1].style.left = (xTextParent.clientWidth - 15) + "px";
         } else {
-            xTextChilds[i].style.left = canvas.width / 8 * i + "px";
+            xTextChilds[i].style.left = canvas.width / gapCountLen * i + "px";
         }
 
         xTextChilds[i].style.position = "absolute";
@@ -974,7 +966,7 @@ function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
     }
     // case 2) 최소값이 0보다 작고, 최대값은 0보다 큰 경우
     else if ( minMaxList[0] < 0 && minMaxList[1] > 0 ) {
-        yAxisStartPos = 0;
+        yAxisStartPos = Math.abs(minMaxList[1] * yAxisPercent); //ex) -11 ~ 4 -> 300/15 -> 20칸 여기서 0의 위치는 11칸이다.
     }
     // case 3) 최소값이 0보다 크고, 최대값도 0보다 큰 경우
     else if ( minMaxList[0] > 0 && minMaxList[1] > 0 ) {
@@ -1003,10 +995,13 @@ function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
             //     yPos =  ( yAxisPercent * (val) );
             // }
             
+            // y: 0   -> (0, 0)
+            // y: 383 -> (0, 383) 
+
             if ( xAxisDay === 0 ) {
-                ctx.moveTo(xPos, yHeight - yAxisStartPos * yAxisPercent);
+                ctx.moveTo(xPos, yAxisStartPos);
             } else {
-                ctx.lineTo(xPos, yHeight - yPos);
+                ctx.lineTo(xPos, yPos);
             }
         });
         ctx.stroke();
