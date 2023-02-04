@@ -654,7 +654,7 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
             // 회사가 저장된 순서를 가져오기 O(1) Get할거임
             let companyIdxArr = getCompanyIdxResult();
             let canDrawList = new Array();
-            let notDrawList = new Array();
+            let canNotDrawList = new Array();
             let rateDailyPercentList = new Array();
             let kospiDailyPercent = new Array();
             let kosdaqDailyPercent = new Array();
@@ -676,7 +676,7 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
                 //drawDetermineCanDraw(dayValue, dateList);
                 let canDraw = drawDetermineCanDraw(dayValue, dateList);
                 if (canDraw == false) {
-                    notDrawList.push(companyIdxArr[E_companyDataFormat.companyName][companyIdx]);
+                    canNotDrawList.push(companyIdxArr[E_companyDataFormat.companyName][companyIdx]);
                     continue;
                 } else {
                     canDrawList.push(canDraw);
@@ -737,10 +737,31 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
             ctx.beginPath();
             graphFillText(ctx, graphData, minMaxList, canvas, dayValue);
             drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue)
+            noDrawCompanyWrite(canNotDrawList);
         });
     }
     return;
 }
+
+/**
+ *    그래프를 그릴 수 없는 회사명을 맨아래에 표시해줍니다.
+ */
+function noDrawCompanyWrite(canNotDrawList) {
+
+    // step1) 그래프 아래의 Text 부모 클래스를 가져옵니다.
+
+    // step2) 파라미터의 길이를 받아와서, loop를 돌면서 div를 생성합니다.
+
+    // step3) div에 회사명을 넣어줍니다.
+
+    // step4) div를 부모 클래스에 넣어줍니다.
+
+    // step5) div의 style을 설정해줍니다.
+
+
+    return;
+}
+
 
 /**
  *    그래프의 x, y 축의 라벨을 설정합니다.
@@ -825,24 +846,32 @@ function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
 
     // 그러면, 최소가 0보다 큰 경우랑, 작은 경우 두개를 나눠서 해야겠다.
     const gapCount = 5;
-    const gapCountLen = gapCount + 1;
+    const firstLastCount = 2;
+    const gapCountLen = gapCount + firstLastCount;
     const xLabels = [];
     const yLabels = [];
-    xLabels.push(dailyOnlyDayVer1[dailyOnlyDayVer1.length - 1]);
-    yLabels.push(minMaxList[1].toFixed(2)); //최소값이 아래에 있습니다.
+    xLabels.push(dailyOnlyDayVer1[dayValue - 1]); //최근날짜 - dayValue를 먼저 넣습니다.
+    yLabels.push(minMaxList[1].toFixed(2)); //최대값을 먼저 넣어줍니다.
 
     // //const yLabelGap = Math.floor((minMaxList[1] - minMaxList[0]) / 6).toFixed(2); //ex) '5.00'
-    const yLabelGap = Math.floor((minMaxList[1] - minMaxList[0]) / gapCount);
+
+    // 마이너스값인지 확인하면서 넘겨야한다.
+    // 일단은 감이 안잡혀서 최대는 플러스, 최소는 마이너스로 생각하고 넘깁니다.
+    const yLabelGap = (minMaxList[1] - minMaxList[0]) / (gapCount + 1);
+
+    //const yLabelGap = Math.floor((minMaxList[1] - minMaxList[0]) / gapCount);
 
     // 아.. 나는 좀 헷갈리니깐 일단 y좌표 갭을 등차로 계산을 할까??
-    for ( let i = gapCount; i >= 1; i-- ) {
-        yLabels.push((minMaxList[0] + yLabelGap * i).toFixed(2));
+    for ( let i = 1; i <= gapCount; i++ ) {
+         yLabels.push((minMaxList[1] - yLabelGap * i).toFixed(2));
+         //yLabels.push((yLabelGap * i).toFixed(2));
     }
     yLabels.push(minMaxList[0].toFixed(2)); //최대값이 그래프의 Max위치 입니다.
 
-    const xLabelGap = Math.floor(dayValue / gapCount); //dayValue가 12라면, 2가 됩니다. 그럼 이제
+    const xLabelGap = Math.floor(dayValue / (gapCount + 1)); //dayValue가 12라면, 2가 됩니다. 그럼 이제
+    //const xLabelGap = Math.floor(dayValue / gapCount); //dayValue가 12라면, 2가 됩니다. 그럼 이제
     for ( let i = 1; i <= gapCount; i++ ) {
-        xLabels.push(dailyOnlyDayVer2[dailyOnlyDayVer2.length - 1 - xLabelGap * i]);
+        xLabels.push(dailyOnlyDayVer2[dayValue - xLabelGap * i]);
     }
     xLabels.push(dailyOnlyDayVer2[0]);
 
@@ -900,7 +929,7 @@ function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
         } else if ( i == yTextChilsLen - 1 ) {
             yTextChilds[yTextChilsLen - 1].style.top = (yTextParent.clientHeight - 15) + "px";
         } else {
-            yTextChilds[i].style.top = canvas.height / gapCountLen * i + "px";
+            yTextChilds[i].style.top = canvas.height / (gapCount + 1) * i + "px";
         }
         yTextChilds[i].style.position = "absolute";
     }
@@ -909,9 +938,9 @@ function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
         if ( i == 0 ) {
             xTextChilds[0].style.left = 0 + "px";
         } else if ( i == xTextChilsLen - 1 ) {
-            xTextChilds[xTextChilsLen - 1].style.left = (xTextParent.clientWidth - 15) + "px";
+            xTextChilds[i].style.left = (xTextParent.clientWidth - 15) + "px";
         } else {
-            xTextChilds[i].style.left = canvas.width / gapCountLen * i + "px";
+            xTextChilds[i].style.left = canvas.width / (gapCount + 1) * i + "px";
         }
 
         xTextChilds[i].style.position = "absolute";
@@ -953,7 +982,7 @@ function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
     // ctx.scale(dpr, dpr);
     let yAxisStartPos = 0;
     let yHeight = canvas.height;
-    let yAxisPercent = Number(canvas.height / (minMaxList[1] - minMaxList[0]));
+    let yAxisPercent = Number(canvas.height / (Math.abs(minMaxList[1]) + Math.abs(minMaxList[0])));
     let xAxisPercent = Number(canvas.width / (dayValue + 1)); //200일까지 그릴 수 있습니다.
     
     // (최대 + 최소) / 2 -> y축의 중간 값이다.
@@ -979,9 +1008,9 @@ function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
             const xPos = xAxisDay * xAxisPercent;
             let yPos = 0;
             if ( val < 0 ) {
-                yPos =  - ( yAxisPercent * (val) );
+                yPos =  yAxisStartPos - yAxisPercent * val;
             } else {
-                yPos =  ( yAxisPercent * (val) );
+                yPos =  yAxisStartPos - yAxisPercent * val;
             }
             // case 1) data가 평균값보다 작은 경우
             // if ( val < yAxisMidValue ) {
@@ -1017,8 +1046,8 @@ function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
 function getMinMaxValue(companyAveragePercent, kospiDailyPercent, kosdaqDailyPercent) {
     let minMaxList = new Array(0, 0);            
     let graphDataAllValues = [].concat(companyAveragePercent, kospiDailyPercent, kosdaqDailyPercent);
-    minMaxList[0] = Math.min.apply(null, graphDataAllValues) - 1;
-    minMaxList[1] = Math.max.apply(null, graphDataAllValues) + 1;
+    minMaxList[0] = Math.min.apply(null, graphDataAllValues);
+    minMaxList[1] = Math.max.apply(null, graphDataAllValues);
     return minMaxList;
 }
 
