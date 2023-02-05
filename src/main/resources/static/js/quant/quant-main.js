@@ -132,15 +132,15 @@ function quantPageInit() {
     let loadParsingBtn = document.querySelector(".load-data-parsing-btn");
     let loadExcelBtn = document.querySelector(".load-data-memory-btn");
     let saveParsingBtn = document.querySelector(".save-parsing-btn");
-    let month1Btn = document.querySelector(".month-1-btn");
-    let month2Btn = document.querySelector(".month-2-btn");
-    let month6Btn = document.querySelector(".month-6-btn");
-    let monthSelBtn = document.querySelector(".month-sel-btn");
-    let graphMonthSelArr = new Array( month1Btn, month2Btn, month6Btn, monthSelBtn );
+    // let month1Btn = document.querySelector(".month-1-btn");
+    // let month2Btn = document.querySelector(".month-2-btn");
+    // let month6Btn = document.querySelector(".month-6-btn");
+    // let monthSelBtn = document.querySelector(".month-sel-btn");
+    //let graphMonthSelArr = new Array( month1Btn, month2Btn, month6Btn, monthSelBtn );
     let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, 
-                                 strategyDeleteBtn, loadParsingBtn, loadExcelBtn, saveParsingBtn,
-                                 month1Btn, month2Btn, month6Btn, monthSelBtn );
-
+                                 strategyDeleteBtn, loadParsingBtn, loadExcelBtn, saveParsingBtn );
+    
+    let graphMonthSelArr = makeMonthSelBtn(document.querySelector(".group-quant-top-2"));
     marketRankingOperation(marketRankingArr);
     infoStyleTopAdjustment(infoDivArr);
     infoStyleAdjustment(infoDataArr);
@@ -148,6 +148,7 @@ function quantPageInit() {
     mouseOnOffStyleListVer(infoDataArr);
     objectClearText(strategySaveText);
     mouseOnOffStyleListVer3(divColorArr, "#FFFFFF", "#00FF00");
+    mouseOnOffStyleListVer3(graphMonthSelArr, "#FFFFFF", "#00FF00");
     mouseOnOffStyleVer2(strategyList);
     
     // 네이버 금융 파싱 버튼 클릭 이벤트
@@ -176,6 +177,69 @@ function quantPageInit() {
     //InitCanvas(canvas);
     drawCanvasOfDailyRate(canvas, graphMonthSelArr);
     return;
+}
+
+/**
+ *     그래프를 그릴 날짜를 선택하는 버튼들을 만듭니다.
+ */
+function makeMonthSelBtn(divParent) {
+    let btnList = [];
+    let btnListLenMax = 12;
+    
+    // step1) btnListLenMax의 길이만큼, 버튼을 만듭니다.
+    //        버튼의 부모 div class는 simulator-date-month-1, simulator-date-month-2 ... simulator-date-month-12 입니다.
+    //        버튼의 div class는 month-1-btn, month-2-btn ... month-12-btn 입니다.
+    
+    // step2) 버튼의 부모 div class의 style을 설정합니다.
+    //        버튼의 div class의 style을 설정합니다.
+    const leftPadding = 3.5;
+    for(let i = 0; i <= btnListLenMax; i++) {
+        let btnParent = document.createElement("div");
+        let btnChild = document.createElement("div");
+        btnParent.className = "simulator-date-month-" + (i + 1);
+        btnChild.className = "month-" + (i + 1) + "-btn";
+        btnChild.textContent = i + 1 + "개월";
+        btnChild.setAttribute("value", i + 1);
+        
+        if (i < 6) {
+            btnParent.style.display = "inline";
+            btnParent.style.position = "absolute";
+            btnParent.style.left = 30 + (leftPadding * i) + "%";
+            btnParent.style.paddingRight = "1px";
+
+        } else if ( i == btnListLenMax ) {
+            btnParent.className = "simulator-date-month-sel";
+            btnParent.style.display = "inline";
+            btnParent.style.position = "absolute";
+            btnParent.style.left = 30 + (leftPadding * (i - 6)) + "%";
+            btnParent.style.paddingRight = "1px";
+            btnParent.style.top = "25%";
+            btnParent.style.paddingTop = "1px";
+            
+            btnChild.className = "month-sel-btn";
+            btnChild.textContent = "기타";
+            btnChild.setAttribute("value", 0);
+        }
+        else {
+            btnParent.style.display = "inline";
+            btnParent.style.position = "absolute";
+            btnParent.style.left = 30 + (leftPadding * (i - 6)) + "%";
+            btnParent.style.paddingRight = "1px";
+            btnParent.style.top = "50%";
+        }
+        btnChild.style.position = "relative";
+        btnChild.style.fontSize = "13px";
+        btnChild.style.fontWeight = "bold";
+        btnChild.style.color = "black";
+        btnChild.style.textAlign = "left";
+        btnChild.style.paddingRight = "1px";
+
+        btnParent.appendChild(btnChild);
+        btnList.push(btnChild);
+        divParent.appendChild(btnParent);
+    }
+
+    return btnList;
 }
 
 /**
@@ -639,6 +703,7 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
     for (let i = 0; i < drawOptionArrLen; i++) {
         drawOptionArr[i].addEventListener("click", function() {            
             let drawOption = drawOptionArr[i].getAttribute("value");
+            // drawOption 0이면 달력 Call
             let dayValue = drawOption * 30;
             console.log("click!");
             // 결국.. Back -> front로 데이터 가져오기로 했습니다.
@@ -712,34 +777,97 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
             // canvas.height = canvas.getBoundingClientRect().height - E_graphExtra.height;
             canvas.width = canvas.getBoundingClientRect().width ;
             canvas.height = canvas.getBoundingClientRect().height;            
-            if ( G_canvasDrawing === true ) { 
+
+            if ( G_canvasDrawing === true ) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                 // text 영역을 초기화 해줍니다.
-                // step1) x, y좌표들의 부모 클래스를 가져옵니다.
-                let yTextParent = document.querySelector(".group-quant-mid-1-y-text");
-                let xTextParent = document.querySelector(".group-quant-mid-1-x-text");
-
-                // step2) 부모 클래스의 자식div이 있다면, 모두 삭제합니다.
-                if ( yTextParent.hasChildNodes() ) {
-                    while (yTextParent.firstChild) {
-                        yTextParent.removeChild(yTextParent.firstChild);
-                    }
-                }
-                if ( xTextParent.hasChildNodes() ) {
-                    while (xTextParent.firstChild) {
-                        xTextParent.removeChild(xTextParent.firstChild);
-                    }
-                }
+                removeTextArea(document.querySelector(".group-quant-mid-1-upper-graph-item-text"));
+                removeTextArea(document.querySelector(".group-quant-mid-1-y-text"));
+                removeTextArea(document.querySelector(".group-quant-mid-1-x-text"));
             }
             ctx.lineWidth = 1;
-            //ctx.font = "9px Arial";
             ctx.beginPath();
             graphFillText(ctx, graphData, minMaxList, canvas, dayValue);
+            graphNameInput(graphColors);
             drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue)
             noDrawCompanyWrite(canNotDrawList);
         });
     }
+    return;
+}
+
+/**
+ *    그래프들의 이름을 입력해주는 함수입니다.
+ */
+function graphNameInput(graphColors) {
+    let graphNameList = ["검색 회사 평균", "코스피", "코스닥"];
+    let graphNameDivPos = document.querySelector(".group-quant-mid-1-upper-graph-item-text");
+    makeTextArea(graphNameDivPos, graphNameList, graphColors);
+    
+    // step1) graphNameDivPos의 자식 div들을 가져옵니다.
+    //        text나 이런건 제외하고 div만 가져오고싶어요
+    let graphNameDivList = graphNameDivPos.querySelectorAll("div");
+
+    // step2) 자식 div들의 style을 display: inline, position: relative, left: 1 + idx*4 + "%"로 설정합니다.
+    for ( let idx = 0; idx < graphNameDivList.length; idx++ ) {
+        
+        graphNameDivList[idx].style.display = "inline";
+        graphNameDivList[idx].style.position = "relative";
+        graphNameDivList[idx].style.left = 1 + idx*4 + "%";
+    }
+
+    return;
+}
+
+/**
+ *    부모 클래스의 자식 div를 모두 삭제합니다.
+ */
+function removeTextArea(divParent) {
+    // step1) x, y좌표들의 부모 클래스를 가져옵니다.
+    // step2) 부모 클래스의 자식div이 있다면, 모두 삭제합니다.
+    if ( divParent.hasChildNodes() ) {
+        while (divParent.firstChild) {
+            divParent.removeChild(divParent.firstChild);
+        }
+    }
+    return;
+}
+
+/**
+ *    부모 클래스에 data만큼 자식div를 생성하고 넣어줍니다.
+ */
+function makeTextArea(divParent, inputData, graphColors) {
+    let childName = divParent.getAttribute("class") + "-child";
+    if (graphColors !== undefined) {
+        for ( let i = 0; i < inputData.length; i++ ) {
+            let divChild = document.createElement("div");
+            divChild.classList.add(childName);
+            divChild.style.color = graphColors[i];
+            divChild.innerText = inputData[i];
+            divParent.appendChild(divChild);
+        }
+    } else {
+        for ( let i = 0; i < inputData.length; i++ ) {
+            let divChild = document.createElement("div");
+            divChild.classList.add(childName);
+            divChild.innerText = inputData[i];
+            divParent.appendChild(divChild);
+        }        
+    }
+
+    // for ( let i = 0; i < yLabels.length; i++ ) {
+    //     let yTextChild = document.createElement("div");
+    //     yTextChild.classList.add("group-quant-mid-1-y-text-child");
+    //     yTextChild.innerText = yLabels[i];
+    //     yTextParent.appendChild(yTextChild);
+    // }
+    // for ( let i = 0; i < xLabels.length; i++ ) {
+    //     let xTextChild = document.createElement("div");
+    //     xTextChild.classList.add("group-quant-mid-1-x-text-child");
+    //     xTextChild.innerText = xLabels[i];
+    //     xTextParent.appendChild(xTextChild);
+    // }    
     return;
 }
 
@@ -903,18 +1031,8 @@ function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
     // step2) x, y의 text개수를 가져와서 div를 만들어 주고,
     //        y, x text의 부모 div class에 넣어줍니다.
     //        text는 y, x의 label을 넣어줍니다.
-    for ( let i = 0; i < yLabels.length; i++ ) {
-        let yTextChild = document.createElement("div");
-        yTextChild.classList.add("group-quant-mid-1-y-text-child");
-        yTextChild.innerText = yLabels[i];
-        yTextParent.appendChild(yTextChild);
-    }
-    for ( let i = 0; i < xLabels.length; i++ ) {
-        let xTextChild = document.createElement("div");
-        xTextChild.classList.add("group-quant-mid-1-x-text-child");
-        xTextChild.innerText = xLabels[i];
-        xTextParent.appendChild(xTextChild);
-    }
+    makeTextArea(yTextParent, yLabels);
+    makeTextArea(xTextParent, xLabels);
 
     // step3) y, x의 Gap(거리)를 이용해서 child div들의 position을 조정해줍니다.
     //        자식 div에 따라서, 거리가 변해야합니다.
@@ -922,6 +1040,7 @@ function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
     let xTextChilds = document.querySelectorAll(".group-quant-mid-1-x-text-child");
     let yTextChilsLen = yTextChilds.length;
     let xTextChilsLen = xTextChilds.length;
+    let yPosList = [];
 
     for ( let i = 0; i < yTextChilsLen; i++ ) {
         if ( i == 0 ) {
@@ -930,6 +1049,7 @@ function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
             yTextChilds[yTextChilsLen - 1].style.top = (yTextParent.clientHeight - 15) + "px";
         } else {
             yTextChilds[i].style.top = canvas.height / (gapCount + 1) * i + "px";
+            yPosList.push(canvas.height / (gapCount + 1) * i);
         }
         yTextChilds[i].style.position = "absolute";
     }
@@ -956,8 +1076,61 @@ function graphFillText(ctx, graphData, minMaxList, canvas, dayValue) {
         xTextChilds[i].style.fontWeight = "bold";
     }
 
+    // step5) y축의 값들을 그래프에 일직선으로 표시해줍니다.
+    drawGraphYLine(ctx, canvas, yPosList);         
+
     return;
 }
+
+/**
+ *     그래프의 Y축에 대한 일직선을 그려줍니다.
+ */
+function drawGraphYLine(ctx, canvas, yPosList) {
+
+    // step1) yLabels의 처음과 끝을 제외한 나머지 값들을 loop 돌면서, 일직선을 그려줍니다.
+    let yPosListLen = yPosList.length;
+    for ( let i = 0; i < yPosListLen; i++ ) {
+        ctx.beginPath();
+        ctx.strokeStyle = "black";
+        ctx.moveTo(0, yPosList[i]);
+        ctx.lineTo(canvas.width, yPosList[i]);
+        ctx.lineWidth = 0.1;
+        ctx.stroke();
+    }
+
+    return;
+}
+
+/**
+ *     그래프의 마지막 값에 대한 텍스트를 추가합니다.
+ */
+function graphLastValueFillText(graphLastValueInfo) {
+    
+    // step1) graph의 Y좌표 텍스트를 저장하는 부모 div를 가져옵니다.
+    let yTextParent = document.querySelector(".group-quant-mid-1-y-text");
+
+    // step2) graphLastValueInfo가 가지고있는,  position, font-size, font-weight, color를 graphLastValueInfo의 길이만큼 반복문을 돌려서
+    //        div를 만들어서, yTextParent에 넣어줍니다.
+    //        0: value, 1: top, 2: color
+    let graphLastValueInfoLen = graphLastValueInfo.length;
+    for ( let i = 0; i < graphLastValueInfoLen; i++ ) {
+        let div = document.createElement("div");
+        div.style.position = "absolute";
+        div.style.height = "4%";
+        div.style.top = ( graphLastValueInfo[i][1] - 5 ) + "px";
+        div.style.left = "1%";
+        div.style.fontSize = "0.9em";
+        div.style.fontWeight = "bold";
+        div.style.color = "white";
+        div.style.zIndex = "100";
+        div.style.backgroundColor = graphLastValueInfo[i][2];
+        div.innerText = graphLastValueInfo[i][0];
+        yTextParent.appendChild(div);
+    }
+
+    return;
+}
+
 
 /**
  *    그래프를 그리는 함수입니다.
@@ -983,7 +1156,7 @@ function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
     let yAxisStartPos = 0;
     let yHeight = canvas.height;
     let yAxisPercent = Number(canvas.height / (Math.abs(minMaxList[1]) + Math.abs(minMaxList[0])));
-    let xAxisPercent = Number(canvas.width / (dayValue + 1)); //200일까지 그릴 수 있습니다.
+    let xAxisPercent = Number(canvas.width / (dayValue)); //200일까지 그릴 수 있습니다. ( 나중에 제한 없도록 할 예정입니다. (한 2년은 되도록..) )
     
     // (최대 + 최소) / 2 -> y축의 중간 값이다.
     let yAxisMidValue = (minMaxList[1] + minMaxList[0]) / 2;
@@ -1001,31 +1174,19 @@ function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
     else if ( minMaxList[0] > 0 && minMaxList[1] > 0 ) {
         yAxisStartPos = minMaxList[0];
     }
-    graphData.forEach((y, x) => {
-        ctx.strokeStyle = graphColors[x];
+
+    // 데이터들의 마지막 데이터 기록합니다.
+    const graphLastValueInfo = [[graphData[0][graphData[0].length - 1]], [graphData[1][graphData[1].length - 1]], [graphData[2][graphData[2].length - 1]]];
+
+    ctx.lineWidth = 1;
+    graphData.forEach((dataList, dataIdx) => {
+        ctx.strokeStyle = graphColors[dataIdx];
         ctx.beginPath();
-        y.forEach((val, xAxisDay) => {
-            const xPos = xAxisDay * xAxisPercent;
-            let yPos = 0;
-            if ( val < 0 ) {
-                yPos =  yAxisStartPos - yAxisPercent * val;
-            } else {
-                yPos =  yAxisStartPos - yAxisPercent * val;
-            }
-            // case 1) data가 평균값보다 작은 경우
-            // if ( val < yAxisMidValue ) {
-            //     //yPos =  yAxisMidPos - ( yAxisPercent * (val) );
-            //     yPos =  ( yAxisPercent * (val) );
-            // }
-            
-            // // case 2) data가 평균값보다 크거나, 같은 경우
-            // else {
-            //     //yPos =  yAxisMidPos + ( yAxisPercent * (val) );
-            //     yPos =  ( yAxisPercent * (val) );
-            // }
-            
-            // y: 0   -> (0, 0)
-            // y: 383 -> (0, 383) 
+        let yPos = 0;
+        let xPos = 0;
+        dataList.forEach((val, xAxisDay) => {
+            xPos = xAxisDay * xAxisPercent;
+            yPos =  yAxisStartPos - yAxisPercent * val;
 
             if ( xAxisDay === 0 ) {
                 ctx.moveTo(xPos, yAxisStartPos);
@@ -1033,8 +1194,11 @@ function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
                 ctx.lineTo(xPos, yPos);
             }
         });
+        graphLastValueInfo[dataIdx].push(yPos, graphColors[dataIdx]);
         ctx.stroke();
     });
+    
+    graphLastValueFillText(graphLastValueInfo);
     G_canvasDrawing = true;
     return;
 }
