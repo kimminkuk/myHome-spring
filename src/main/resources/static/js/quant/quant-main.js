@@ -14,6 +14,12 @@ const E_quantStrategy = {
     3: "절대망하지않는 시리즈1 (망하는 중)"
 };
 
+const E_graphList = {
+    companies : 0,
+    kospi : 1,
+    kosdaq : 2
+}
+
 const E_day = {
     maxDay: 200
 };
@@ -21,6 +27,11 @@ const E_day = {
 const E_graphExtra = {
     width: 50,
     height: 50
+};
+
+const E_MinMax = {
+    min: 0,
+    max: 1
 };
 
 var G_canvasDrawing = false;
@@ -132,11 +143,9 @@ function quantPageInit() {
     let loadParsingBtn = document.querySelector(".load-data-parsing-btn");
     let loadExcelBtn = document.querySelector(".load-data-memory-btn");
     let saveParsingBtn = document.querySelector(".save-parsing-btn");
-    // let month1Btn = document.querySelector(".month-1-btn");
-    // let month2Btn = document.querySelector(".month-2-btn");
-    // let month6Btn = document.querySelector(".month-6-btn");
-    // let monthSelBtn = document.querySelector(".month-sel-btn");
-    //let graphMonthSelArr = new Array( month1Btn, month2Btn, month6Btn, monthSelBtn );
+    let tableParent = document.querySelector(".group-quant-mid-1-left-2");
+    let tableElement = document.querySelector(".group-quant-mid-1-left-2-table");    
+    
     let divColorArr = new Array( strategyDescription, strategySaveInputData, searchParsingBtn, searchMemoryBtn, 
                                  strategyDeleteBtn, loadParsingBtn, loadExcelBtn, saveParsingBtn );
     
@@ -150,7 +159,10 @@ function quantPageInit() {
     mouseOnOffStyleListVer3(divColorArr, "#FFFFFF", "#00FF00");
     mouseOnOffStyleListVer3(graphMonthSelArr, "#FFFFFF", "#00FF00");
     mouseOnOffStyleVer2(strategyList);
-    
+
+    // 파싱된 데이터를 저장하는 테이블의 스타일을 조정합니다.
+    tableStyleAdjustment(tableParent, tableElement);
+
     // 네이버 금융 파싱 버튼 클릭 이벤트
     naverFinanceParsingBtn(searchParsingBtn, searchParsingUpdateDateText);
     
@@ -177,6 +189,18 @@ function quantPageInit() {
     //InitCanvas(canvas);
     drawCanvasOfDailyRate(canvas, graphMonthSelArr);
     return;
+}
+
+/**
+ *     테이블의 스타일을 조정합니다.
+ */
+function tableStyleAdjustment(tableParent, tableElement) {
+    // 테이블의 부모노드에 y축 스크롤 추가합니다.
+    tableParent.style.overflowY = "scroll";
+
+    // 테이블의 위치를 조정합니다.
+    tableElement.style.position = "absolute"
+    tableElement.style.left = "10%";
 }
 
 /**
@@ -741,7 +765,7 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
                 //drawDetermineCanDraw(dayValue, dateList);
                 let canDraw = drawDetermineCanDraw(dayValue, dateList);
                 if (canDraw == false) {
-                    canNotDrawList.push(companyIdxArr[E_companyDataFormat.companyName][companyIdx]);
+                    canNotDrawList.push(companyIdxArr[companyIdx][E_companyDataFormat.companyName]);
                     continue;
                 } else {
                     canDrawList.push(canDraw);
@@ -782,6 +806,7 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                 // text 영역을 초기화 해줍니다.
+                removeTextArea(document.querySelector(".group-quant-mid-1-fail-company-list"));
                 removeTextArea(document.querySelector(".group-quant-mid-1-upper-graph-item-text"));
                 removeTextArea(document.querySelector(".group-quant-mid-1-y-text"));
                 removeTextArea(document.querySelector(".group-quant-mid-1-x-text"));
@@ -876,16 +901,37 @@ function makeTextArea(divParent, inputData, graphColors) {
  */
 function noDrawCompanyWrite(canNotDrawList) {
 
+    // step0) canNotDrawList가 0보다 큰 경웅에만 실행합니다.
+    if ( canNotDrawList === undefined || canNotDrawList.length <= 0 ) {
+        return;
+    }
     // step1) 그래프 아래의 Text 부모 클래스를 가져옵니다.
+    let parentDiv = document.querySelector(".group-quant-mid-1-fail-company-list");
 
     // step2) 파라미터의 길이를 받아와서, loop를 돌면서 div를 생성합니다.
-
     // step3) div에 회사명을 넣어줍니다.
-
     // step4) div를 부모 클래스에 넣어줍니다.
-
     // step5) div의 style을 설정해줍니다.
-
+    //        inline으로 열거하고, 간격은 1%로 설정하고, 한 줄에 5개 회사만 표시합니다.
+    //        height는 30%로 설정합니다.
+    //        parentDiv는 스크롤이 가능하도록 overflow-y: scroll; 설정합니다.
+    parentDiv.style.overflowY = "scroll";
+    // const maxRowCompanyCount = 5;
+    for ( let i = 0; i < canNotDrawList.length; i++ ) {
+        let div = document.createElement("div");
+        div.classList.add("group-quant-mid-1-fail-company-list-child");
+        div.style.position = "relative";
+        div.style.display = "inline-block";
+        div.style.paddingLeft = "1%";
+        div.style.paddingBottom = "1px";
+        // div.style.top = Math.floor(i / maxRowCompanyCount) * 30 + "%";
+        div.style.height = "30%";
+        // div.style.width = "19%";
+        div.style.fontSize = "12px";
+        div.style.fontWeight = "bold";
+        div.innerText = canNotDrawList[i];
+        parentDiv.appendChild(div);
+    }
 
     return;
 }
@@ -1153,30 +1199,34 @@ function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
     // canvas.width = rect.width * dpr;
     // canvas.height = rect.height * dpr;
     // ctx.scale(dpr, dpr);
+
+
     let yAxisStartPos = 0;
-    let yHeight = canvas.height;
-    let yAxisPercent = Number(canvas.height / (Math.abs(minMaxList[1]) + Math.abs(minMaxList[0])));
+    let yAxisPercent = 0;
     let xAxisPercent = Number(canvas.width / (dayValue)); //200일까지 그릴 수 있습니다. ( 나중에 제한 없도록 할 예정입니다. (한 2년은 되도록..) )
-    
-    // (최대 + 최소) / 2 -> y축의 중간 값이다.
-    let yAxisMidValue = (minMaxList[1] + minMaxList[0]) / 2;
-    let yAxisMidPos = yAxisPercent / 2;
 
     // case 1) 최소값이 0보다 작고, 최대값도 0보다 작은 경우
-    if ( minMaxList[0] < 0 && minMaxList[1] < 0 ) {
-        yAxisStartPos = minMaxList[0];
+    if ( minMaxList[E_MinMax.min] < 0 && minMaxList[E_MinMax.max] < 0 ) {
+        yAxisPercent = Number(canvas.height / (Math.abs(minMaxList[E_MinMax.min]) - Math.abs(minMaxList[E_MinMax.max])));
+        yAxisStartPos = 0;
     }
     // case 2) 최소값이 0보다 작고, 최대값은 0보다 큰 경우
-    else if ( minMaxList[0] < 0 && minMaxList[1] > 0 ) {
-        yAxisStartPos = Math.abs(minMaxList[1] * yAxisPercent); //ex) -11 ~ 4 -> 300/15 -> 20칸 여기서 0의 위치는 11칸이다.
+    else if ( minMaxList[E_MinMax.min] < 0 && minMaxList[E_MinMax.max] > 0 ) {
+        yAxisPercent = Number(canvas.height / (Math.abs(minMaxList[E_MinMax.max]) + Math.abs(minMaxList[E_MinMax.min])));
+        yAxisStartPos = Math.abs(minMaxList[E_MinMax.max] * yAxisPercent); //ex) -11 ~ 4 -> 300/15 -> 20칸 여기서 0의 위치는 11칸이다.
     }
     // case 3) 최소값이 0보다 크고, 최대값도 0보다 큰 경우
-    else if ( minMaxList[0] > 0 && minMaxList[1] > 0 ) {
-        yAxisStartPos = minMaxList[0];
+    else if ( minMaxList[E_MinMax.min] > 0 && minMaxList[E_MinMax.max] > 0 ) {
+        yAxisPercent = Number(canvas.height / (Math.abs(minMaxList[E_MinMax.max]) - Math.abs(minMaxList[E_MinMax.min])));
+        yAxisStartPos = canvas.height;
     }
 
     // 데이터들의 마지막 데이터 기록합니다.
-    const graphLastValueInfo = [[graphData[0][graphData[0].length - 1]], [graphData[1][graphData[1].length - 1]], [graphData[2][graphData[2].length - 1]]];
+    const graphLastValueInfo = [
+                                [graphData[E_graphList.companies][graphData[E_graphList.companies].length - 1]], 
+                                [graphData[E_graphList.kospi][graphData[E_graphList.kospi].length - 1]], 
+                                [graphData[E_graphList.kosdaq][graphData[E_graphList.kosdaq].length - 1]]
+    ];
 
     ctx.lineWidth = 1;
     graphData.forEach((dataList, dataIdx) => {
@@ -1210,8 +1260,8 @@ function drawGraph(ctx, graphData, graphColors, minMaxList, canvas, dayValue) {
 function getMinMaxValue(companyAveragePercent, kospiDailyPercent, kosdaqDailyPercent) {
     let minMaxList = new Array(0, 0);            
     let graphDataAllValues = [].concat(companyAveragePercent, kospiDailyPercent, kosdaqDailyPercent);
-    minMaxList[0] = Math.min.apply(null, graphDataAllValues);
-    minMaxList[1] = Math.max.apply(null, graphDataAllValues);
+    minMaxList[E_MinMax.min] = Math.min.apply(null, graphDataAllValues);
+    minMaxList[E_MinMax.max] = Math.max.apply(null, graphDataAllValues);
     return minMaxList;
 }
 
@@ -1297,9 +1347,14 @@ function drawDetermineCanDraw(day, dateList) {
 
     // Ver2
     let originalDateList = originalDate.slice(0, day);
-    let compareDateList = dateList.slice(0, day);
-    answer = JSON.stringify(originalDateList) === JSON.stringify(compareDateList);
-    
+
+    if ( dateList !== undefined && dateList.length >= day ) {
+        let compareDateList = dateList.slice(0, day);
+        answer = JSON.stringify(originalDateList) === JSON.stringify(compareDateList);
+    } else {
+        answer = false;
+    }
+        
     return answer
 }
 
@@ -1384,6 +1439,7 @@ function getDailyRatePercent(rateList, rateDenominator) {
  *    table의 회사 데이터를 가져옵니다.
  */
 function getCompanyIdxResult() {
+    
     let tdElements = document.querySelectorAll(".quant-table-th");
     let resultIdx = new Array();
 
@@ -1413,5 +1469,6 @@ function getCompanyIdxResult() {
     return resultIdx;
 }
 
-quantPageInit();
 
+
+quantPageInit();

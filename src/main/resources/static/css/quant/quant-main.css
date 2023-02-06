@@ -937,3 +937,12 @@
     height: 5%;
     top: 0%;
 }
+
+.group-quant-mid-1 .group-quant-mid-1-left-3-graph .group-quant-mid-1-fail-company-list {
+    position: absolute;
+    width : 90%;
+    height: 20%;
+    top: 80%;
+    border-top: 1px solid black;
+    border-right: 1px solid black;
+}
