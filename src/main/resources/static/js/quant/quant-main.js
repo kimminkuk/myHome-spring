@@ -781,6 +781,10 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
                 //             처음은 무조건 0으로 시작하고, +, - 로 리턴합니다.
                 rateDailyPercentList.push(getDailyRatePercent(rateListSplit, rateList[dayValue]));
             }
+            if ( rateDailyPercentList.length == 0 ) {
+                alert("그릴 수 있는 데이터가 없습니다.");
+                return;
+            }
             // Step 4) 코스피, 코스닥의 지수 데이터를 가져와서, +(퍼센트), -(퍼센트) 등으로 잘 정리해서, 각각 그래프로 그려줄 데이터를 만듭니다.
             kospiDailyPercent.push(getDailyRatePercent(kospiDailyIndexRate.slice(0, dayValue), kospiDailyIndexRate[dayValue]));
             kosdaqDailyPercent.push(getDailyRatePercent(kosdaqDailyIndexRate.slice(0, dayValue), kosdaqDailyIndexRate[dayValue]));
@@ -797,10 +801,8 @@ function drawCanvasOfDailyRate(canvas, drawOptionArr) {
             let minMaxList = getMinMaxValue(companyAveragePercent, kospiDailyPercent[0], kosdaqDailyPercent[0]);
 
             let ctx = canvas.getContext("2d");
-            // canvas.width = canvas.getBoundingClientRect().width - E_graphExtra.width;
-            // canvas.height = canvas.getBoundingClientRect().height - E_graphExtra.height;
             canvas.width = canvas.getBoundingClientRect().width ;
-            canvas.height = canvas.getBoundingClientRect().height;            
+            canvas.height = canvas.getBoundingClientRect().height;
 
             if ( G_canvasDrawing === true ) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1366,16 +1368,17 @@ function drawDetermineCanDraw(day, dateList) {
 function getAveragePercent(dataList) {
     let ave = [];
     let dataElLen = dataList[0].length;
+    let diviCompanyLen = dataList.length;
     for (let i = 0; i < dataList[0].length; i++) {
         ave.push(0);
     }
     
     for ( let elIdx = 0; elIdx < dataElLen; elIdx++ ) {
-        for (let dataIdx = 0; dataIdx < dataList.length; dataIdx++) {
+        for (let dataIdx = 0; dataIdx < diviCompanyLen; dataIdx++) {
             ave[elIdx] += dataList[dataIdx][elIdx];
         }
         //ave[elIdx] = parseFloat(ave[elIdx] / dataElLen).toFixed(2); 
-        ave[elIdx] = Number(((ave[elIdx] / dataElLen)).toFixed(2));
+        ave[elIdx] = Number(((ave[elIdx] / diviCompanyLen)).toFixed(2));
     }
     return ave;
 }
@@ -1416,7 +1419,8 @@ function getDailyRatePercent(rateList, rateDenominator) {
     //     2023-1-22 ~ 2022-12-23
     //     분모가 2022-12-22의 값입니다. (day에서 하루 더 빼야합니다!)
     //     데이터는 2022-12-23 부터 2023-1-22의 날짜에서 분모를 나눈 퍼센트입니다.
-    for (let i = rateList.length - 1; i >= 0; i--) {
+    //for (let i = rateList.length - 1; i >= 0; i--) {
+    for (let i = rateList.length - 1; i >= 0; i--) {        
         let now = rateList[i];
         
         //let percent = parseFloat((now - rateDenominator) / rateDenominator * 100).toFixed(2);
