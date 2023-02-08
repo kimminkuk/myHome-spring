@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 
 import org.jsoup.select.Elements;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -356,41 +357,59 @@ public class QuantStrategyService {
      */
     public void naverFinanceParsing() {
 
-        saveKospiKosdaqIndex();
-/*
-        String writeFilePathAndTitle = "src/main/text/" + getCurDate() + ".txt";
+        //saveKospiKosdaqIndex();
 
+        String writeFilePathAndTitle = "src/main/text/" + getCurDate() + "-Performance" + ".txt";
+
+        // "src/main/text/ 에 같은 파일이 있는 경우, getCurDate() + 카운트 + .txt 로 저장
+        String saveFilePathAndTitle = duplicateFileName(writeFilePathAndTitle, "-Performance");
+
+/*
         List<String> companyInfoDataList = getAllCompanyInfo();
         List<String> companyDailyRateList = new ArrayList<>();
         //1. ZSet 저장 ( 백업 용 )
         quantStrategyRedisRepository.saveVer2(companyInfoDataList, getCurDate());
         //2. Text 저장 ( 사용 용 )
         parsingResultFileWrite(companyInfoDataList, writeFilePathAndTitle);
-
+*/
         // etc) 일별시세 추가 및 Text 저장
         // 마지막 파싱 날짜에서, 현재 파싱한 날짜와 비교해서 부족한 부분만 추가하는거 구현해야함
         // 대신 맥스 데이는 200일이다.
         try {
-            getCompanyDailyRate(false);
+            getCompanyDailyRate(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        updateParsingDate();
- */
+        //updateParsingDate();
+
+    }
+
+    private String duplicateFileName(String writeFilePathAndTitle, String writeOption) {
+        if ( new File(writeFilePathAndTitle).exists() ) {
+            int count = 1;
+            while ( new File(writeFilePathAndTitle).exists() ) {
+                writeFilePathAndTitle = "src/main/text/" + getCurDate() + writeOption + count + ".txt";
+                count++;
+            }
+        } else {
+            writeFilePathAndTitle = "src/main/text/" + getCurDate() + ".txt";
+        }
+        return writeFilePathAndTitle;
     }
 
     /**
      *    코스피, 코스닥 지수를 파싱 후, 파일에 저장합니다.
      */
     public void saveKospiKosdaqIndex() {
-//        String writeKospiIndex = "src/main/text/" + getCurDate() + "-KOSPI.txt";
-//        String writeKosdaqIndex = "src/main/text/" + getCurDate() + "-KOSDAQ.txt";
-        String writeKospiIndex = "src/main/text/" + "2023-1-22" + "-KOSPI.txt";
-        String writeKosdaqIndex = "src/main/text/" + "2023-1-22" + "-KOSDAQ.txt";
+        String writeKospiIndex = "src/main/text/" + getCurDate() + "-KOSPI.txt";
+        String writeKosdaqIndex = "src/main/text/" + getCurDate() + "-KOSDAQ.txt";
+        String saveKospiIndex = duplicateFileName(writeKospiIndex, "-KOSPI");
+        String saveKosdaqIndex = duplicateFileName(writeKosdaqIndex, "-KOSDAQ");
 
         // Kospi, Kosdaq은 6일씩 나와있습니다.
         // 200일이 되기 위해선... 200 / 6 = 33.3333... 이므로, 34일치를 가져와야합니다.
-        int dayMax = 34;
+        // 600일이 되기 위해선... 600 / 6 = 100 이므로, 100일치를 가져와야합니다.
+        int dayMax = 100;
         int[] textTrIdx = { 3,4,5, 10,11,12 };
         String kospiIndexRateAll = "";
         String kosaqIndexRateAll = "";
@@ -398,9 +417,9 @@ public class QuantStrategyService {
         String urlKospi = "https://finance.naver.com/sise/sise_index_day.naver?code=KOSPI&page=";
         String urlKosdaq = "https://finance.naver.com/sise/sise_index_day.naver?code=KOSDAQ&page=";
         for ( int day = 1; day <= dayMax; day++ ) {
-            if (day == 1) textTrIdx = new int[]{ 10,11,12 };
-            else if (day == dayMax) textTrIdx = new int[]{ 3,4,5, 10,11 };
-            else textTrIdx = new int[]{ 3,4,5, 10,11,12 };
+//            if (day == 1) textTrIdx = new int[]{ 10,11,12 };
+//            else if (day == dayMax) textTrIdx = new int[]{ 3,4,5, 10,11 };
+//            else textTrIdx = new int[]{ 3,4,5, 10,11,12 };
             for ( int trIdx : textTrIdx) {
                 try {
                     Document doc = Jsoup.connect(urlKospi + day).get();
@@ -428,8 +447,8 @@ public class QuantStrategyService {
         // 마지막 '/' 제거
         kospiIndexRateAll = kospiIndexRateAll.replaceAll("/$", "");
         kosaqIndexRateAll = kosaqIndexRateAll.replaceAll("/$", "");
-        parsingResultFileWrite(kospiIndexRateAll, writeKospiIndex);
-        parsingResultFileWrite(kosaqIndexRateAll, writeKosdaqIndex);
+        parsingResultFileWrite(kospiIndexRateAll, saveKospiIndex);
+        parsingResultFileWrite(kosaqIndexRateAll, saveKosdaqIndex);
     }
 
     public List<String> getAllCompanyInfo() {
@@ -526,18 +545,24 @@ public class QuantStrategyService {
 
         String writeFilePathAndTitleRate = "src/main/text/" + getCurDate() +"-DailyRate" + ".txt";
         String writeFilePathAndTitleDate = "src/main/text/" + getCurDate() +"-DailyDate" + ".txt";
+        String saveFilePathAndTitleRate = duplicateFileName(writeFilePathAndTitleRate, "-DailyRate");
+        String saveFilePathAndTitleDate = duplicateFileName(writeFilePathAndTitleDate, "-DailyDate");
         CompanyCodeMember companyCodeMember = new CompanyCodeMember();
         String[] companyCode = companyCodeMember.getCompanyCode();
         List<String> dailyRateList = new ArrayList<>();
         List<String> dailyDateList = new ArrayList<>();
-        int dayMax = 20;
+        int dayMax = 20; // 약 200일, 600일까지해버리자. 1당 10일입니다.
         String dailyRateAll = "";
         String dailyDateAll = "";
         int[] textTrIdx = {3, 4, 5, 6, 7, 11, 12, 13, 14, 15};
 
-        for (int companyCount = 0; companyCount < companyCode.length; companyCount++) {
+        //for (int companyCount = 0; companyCount < companyCode.length; companyCount++) {
+        for (int companyCount = 814; companyCount <= 814; companyCount++) {
             for (int day = 1; day <= dayMax; day++) {
                 String urlDailyRate2 = "https://finance.naver.com/item/sise_day.naver?code=" + companyCode[companyCount] + "&page=" + day;
+/*
+ *
+ *  Jsoup에서 몇몇 사이트가 접속이 지연되서 에러를 발생시켰습니다. 그래서, 네트워크를 다시 접속시키는 방법으로 재도전해봅니다.
                 try {
                     Document document = Jsoup.connect(urlDailyRate2).get();
                     // 가장 최신 날짜 ( curDate의 날짜와 같다. )
@@ -568,7 +593,49 @@ public class QuantStrategyService {
                     System.out.println("[DEBUG] urlDailyRate2: " + urlDailyRate2);
                     System.out.println("e = " + e);
                 }
+*/
+                // Chat GPT Solution
+                // 네트워크 연결 속도가 느리거나, 신뢰할 수 없기 때문(?)입니다.
+                // 네트워크를 다시 시도합니다.
+                int retryCount = 0, maxRetries = 4; //1초 -> 2초 -> 3초 기다림
+                boolean parsingSuccess = false;
+                while (!parsingSuccess && retryCount < maxRetries) {
+                    try {
+                        Document document = Jsoup.connect(urlDailyRate2).get();
+                        for (int trIdx = 0; trIdx < textTrIdx.length; trIdx++) {
+                            // tr:nth-child(3 ~ 7), tr:nth-child(11 ~ 15)
+                            Elements dailyRate = document.select("body > table.type2 > tbody > tr:nth-child(" + textTrIdx[trIdx] + ") > td:nth-child(2) > span");
+                            String dailyRateText = dailyRate.text().trim();
+                            String curDateRateRst = textContentBlankCheck(dailyRateText) == false ? "0" : dailyRateText;
+
+                            Elements dateSelect = document.select("body > table.type2 > tbody > tr:nth-child(" + textTrIdx[trIdx] + ") > td:nth-child(1) > span");
+                            String dateText = dateSelect.text().trim();
+                            String curDateRst = textContentBlankCheck(dateText) == false ? "0" : dateText;
+
+                            if ( curDateRateRst.equals("0") || curDateRst.equals("0") ) {
+                                dailyRateAll += curDateRateRst + "/";
+                                dailyDateAll += curDateRst + "/";
+                            } else {
+                                dailyRateAll += curDateRateRst + "/";
+                                dailyDateAll += curDateRst + "/";
+                            }
+                        }
+                        parsingSuccess = true;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        //System.out.println("[DEBUG] urlDailyRate2: " + urlDailyRate2);
+                        System.out.println("[FAIL] companyCode[companyCount]: " + retryCount);
+                        retryCount++;
+                        try {
+                            Thread.sleep(retryCount * 1000);
+                        } catch (InterruptedException e1) {
+                            System.out.println("Thread.sleep() error");
+                            e1.printStackTrace();
+                        }
+                    }
+                }
             }
+            System.out.println( companyCode[companyCount] + "Pass" + " No: " + companyCount );
             /**
              // 마지막 '/'제거하기 Ver 1
              if (dailyRateAll.endsWith("/")) {
@@ -588,8 +655,8 @@ public class QuantStrategyService {
             dailyDateAll = "";
             dailyRateAll = "";
         }
-        parsingResultFileWrite(dailyRateList, writeFilePathAndTitleRate);
-        parsingResultFileWrite(dailyDateList, writeFilePathAndTitleDate);
+        parsingResultFileWrite(dailyRateList, saveFilePathAndTitleRate);
+        parsingResultFileWrite(dailyDateList, saveFilePathAndTitleDate);
         return;
     }
 

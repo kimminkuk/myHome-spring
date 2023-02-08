@@ -107,6 +107,12 @@ public class quantMainController {
         // etc) 일별시세 ( 파싱기준 200일 전까지 가져오기)
         quantStrategyService.naverFinanceParsing();
 
+        //   파싱 결과가 다른 애들 조사 중
+        //   803 이노인스트루먼트 값이 잘못 나옴 ( 어느 날짜부터, 시세가 갑자기 커짐, 파싱결과도 이상하다. )
+        //   814 포시에스
+        //   821 도 그러는듯
+        //   822 도! 얘네 뭐야 왜이래!
+
         System.out.println("[DEBUG] naverFinanceParsing END");
         return "quant/quant-main";
     }
