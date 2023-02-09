@@ -1,16 +1,23 @@
 package com.example.myHome.myHomespring.service.quant;
 
+import com.alibaba.fastjson.JSONException;
 import com.example.myHome.myHomespring.domain.quant.*;
 import com.example.myHome.myHomespring.repository.quant.QuantStrategyRedisRepository;
 import com.example.myHome.myHomespring.repository.quant.QuantStrategyRepository;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import org.apache.tomcat.util.json.JSONParser;
+import org.json.JSONArray;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import org.json.JSONObject;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.json.Json;
+import org.openqa.selenium.json.JsonInput;
+import org.openqa.selenium.json.JsonOutput;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -25,6 +32,65 @@ public class QuantStrategyService {
         this.quantStrategyRedisRepository = quantStrategyRedisRepository;
     }
 
+    /**
+     *   파이썬 코드 실행 테스트
+     */
+    public void runPythonCode() {
+        System.out.println("Current working directory : " + System.getProperty("user.dir"));
+        String companyName = "Mk-Corporation";
+        String companyCode = "111111";
+        //String pythonFilePathAndName = "src/main/resources/python/company_daily_rate/python_test.py";
+        String pythonBuildPath = "/opt/homebrew/bin/python3";
+        String pythonFilePathAndName = "/Users/mkkim/Desktop/study/myHome-spring/src/main/resources/python/company_daily_rate/parse_data.py";
+        ProcessBuilder pb = new ProcessBuilder(pythonBuildPath, pythonFilePathAndName, companyName, companyCode);
+        pb.redirectErrorStream(true);
+        StringBuilder result = new StringBuilder();
+        try {
+            Process process = pb.start();
+            process.waitFor();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
+            }
+            reader.close();
+
+            System.out.println("[DEBUG] runPythonCode END");
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            System.err.println("[ERROR] runPythonCode " + e.getMessage());
+        }
+
+//        JSON DATA 1개 받아오는 경우
+//        try {
+//            JSONObject json = new JSONObject(result.toString());
+//            String dayilRate = json.get("daily_rate").toString();
+//            System.out.println("dayilRate = " + dayilRate);
+//            System.out.println("json.get(\"company_name\") = " + json.get("company_name"));
+//            System.out.println("json.get(\"company_code\") = " + json.get("company_code"));
+//            System.out.println("json.get(\"daily_rate\") = " + json.get("daily_rate"));
+//            System.out.println("json.get(\"daily_date\") = " + json.get("daily_date"));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+        try {
+            JSONArray jsonArray = new JSONArray(result.toString());
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject json = jsonArray.getJSONObject(i);
+                String dayilRate = json.get("daily_rate").toString();
+                System.out.println("dayilRate = " + dayilRate);
+                System.out.println("json.get(\"company_name\") = " + json.get("company_name"));
+                System.out.println("json.get(\"company_code\") = " + json.get("company_code"));
+                System.out.println("json.get(\"daily_rate\") = " + json.get("daily_rate"));
+                System.out.println("json.get(\"daily_date\") = " + json.get("daily_date"));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     /**
      *   전략 저장

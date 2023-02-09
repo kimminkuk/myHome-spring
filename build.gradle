@@ -27,6 +27,13 @@ dependencies {
 	//jsoup
 	implementation 'org.jsoup:jsoup:1.13.1'
 	implementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
+
+	//JSON
+	implementation 'com.alibaba:fastjson:1.2.72'
+
+	// json import
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+	implementation 'org.json:json:20220924'
 }
 
 tasks.named('test') {

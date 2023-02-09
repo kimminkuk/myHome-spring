@@ -105,7 +105,8 @@ public class quantMainController {
         // 2. Zset에 저장 ( 백업용 )
         // 3. .txt에 저장 ( 인 메모리에서 사용 용 )
         // etc) 일별시세 ( 파싱기준 200일 전까지 가져오기)
-        quantStrategyService.naverFinanceParsing();
+        //quantStrategyService.naverFinanceParsing();
+        quantStrategyService.runPythonCode();
 
         //   파싱 결과가 다른 애들 조사 중
         //   803 이노인스트루먼트 값이 잘못 나옴 ( 어느 날짜부터, 시세가 갑자기 커짐, 파싱결과도 이상하다. )
