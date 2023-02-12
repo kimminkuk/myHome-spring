@@ -75,6 +75,8 @@ public class QuantStrategyService {
 //        } catch (JSONException e) {
 //            e.printStackTrace();
 //        }
+
+        // JSON DATA 여러개 받아오는 경우
         try {
             JSONArray jsonArray = new JSONArray(result.toString());
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -622,9 +624,16 @@ public class QuantStrategyService {
         String dailyDateAll = "";
         int[] textTrIdx = {3, 4, 5, 6, 7, 11, 12, 13, 14, 15};
 
-        //for (int companyCount = 0; companyCount < companyCode.length; companyCount++) {
-        for (int companyCount = 814; companyCount <= 814; companyCount++) {
+
+
+        for (int companyCount = 0; companyCount < companyCode.length; companyCount++) {
+            //companyCount가 % 10 == 0 일 때, 5초 정도 Wait를 줍니다.
+
+        //for (int companyCount = 814; companyCount <= 814; companyCount++) {
             for (int day = 1; day <= dayMax; day++) {
+                if (day % 5 == 0) {
+                    Thread.sleep(5000);
+                }
                 String urlDailyRate2 = "https://finance.naver.com/item/sise_day.naver?code=" + companyCode[companyCount] + "&page=" + day;
 /*
  *

@@ -976,6 +976,22 @@ body > div.reserve-main-facility-table > table {
     color: #777;
 }
 
+.reserve-popup-calendar-main .calendar-select-year-ul {
+    position: relative;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    background-color: #eee;
+}
+
+.reserve-popup-calendar-main .calendar-select-year-ul .calendar-select-year-li {
+    list-style-type: none;
+    display: inline-block;
+    width: 28.6%;
+    text-align: center;
+    color: #777;
+}
+
 .div-reserve-span-pointer {
     background: #1abc9c;
     position : absolute;

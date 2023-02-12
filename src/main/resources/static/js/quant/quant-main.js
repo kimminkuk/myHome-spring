@@ -150,6 +150,7 @@ function quantPageInit() {
                                  strategyDeleteBtn, loadParsingBtn, loadExcelBtn, saveParsingBtn );
     
     let graphMonthSelArr = makeMonthSelBtn(document.querySelector(".group-quant-top-2"));
+    makeCompanyPerformanceSelBtn(document.querySelector(".group-quant-top-2"));
     marketRankingOperation(marketRankingArr);
     infoStyleTopAdjustment(infoDivArr);
     infoStyleAdjustment(infoDataArr);
@@ -180,7 +181,6 @@ function quantPageInit() {
 
     // 결과 전략을 저장합니다.
     SaveParsingResultData(saveParsingBtn);
-    //SaveParsingResultDataVer2(saveParsingBtn);
     //SaveParsingResultDataVer3(saveParsingBtn);
     //SaveParsingVer4();
     //SaveParsingResultDataVer4(saveParsingBtn);
@@ -188,6 +188,10 @@ function quantPageInit() {
     // 캔버스 그리기
     //InitCanvas(canvas);
     drawCanvasOfDailyRate(canvas, graphMonthSelArr);
+
+    // 디버그 용도로 모든 회사의 데이터를 불러옵니다.
+    debugAllCompanyLoad(loadExcelBtn);
+
     return;
 }
 
@@ -201,6 +205,40 @@ function tableStyleAdjustment(tableParent, tableElement) {
     // 테이블의 위치를 조정합니다.
     tableElement.style.position = "absolute"
     tableElement.style.left = "10%";
+}
+
+/**
+ *     모든 회사의 데이터를 불러옵니다.
+ */
+function debugAllCompanyLoad(btn) {
+
+    //step1) btn을 클릭하면 동작합니다.
+
+    //step2) 모든 회사를 loop를 돌면서, 평균값을 구합니다.
+
+    //step3) 평균값의 가장 큰 값, 가장 작은 값을 하나씩 print합니다.
+    let result = []
+    let onoff = false;
+    btn.addEventListener("click", function() {
+        let companyLen = companyDailyRate.length
+        for (let i = 0; i < companyLen; i++) {
+            let lastData = companyDailyRate[i].slice(0, 180);
+            let dateList = companyDailyDate[i].slice(0, 180);
+            if (drawDetermineCanDraw(180, dateList)) {
+                result.push(getDailyRatePercent(lastData, companyDailyRate[i][180]));
+            }
+        }
+        onoff = true;
+    });
+    //SaveParsingResultDataVer2(result, onoff);
+    return;
+}
+
+/**
+ *     실적 데이터를 고를 수 있는 버튼을 만듭니다.
+ */
+function makeCompanyPerformanceSelBtn(parentElement) {
+    return;
 }
 
 /**
@@ -322,9 +360,9 @@ function SaveParsingResultData(object) {
     return;
 }
 
-function SaveParsingResultDataVer2(object) {
-    object.addEventListener("click", function() {
-        var data = 'data to write';
+function SaveParsingResultDataVer2(data, onoff) {
+    if (onoff == true) {
+        //var data = 'data to write';
         var fileName = prompt("Please enter the file name:", "file.txt");
         
         // check if user entered a file name
@@ -356,7 +394,7 @@ function SaveParsingResultDataVer2(object) {
         document.body.appendChild(saveAs);
         saveAs.click();
         document.body.removeChild(saveAs);        
-    });
+    }
     return;
 }
 

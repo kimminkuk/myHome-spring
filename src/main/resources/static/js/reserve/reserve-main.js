@@ -2,7 +2,10 @@ const E_calendarStatus = {
     START: 0,
     END: 1,
     MAIN: 2,
-    NONE: 3
+    NONE: 3,
+    MONTH_CLICK: 4,
+    YEAR_CLICK: 5,
+    FIRST_YEAR: 2021
 };
 
 const E_reserveStatus = {
@@ -509,9 +512,11 @@ function reserveGridMakeAndClear(startDivIdx, endDivIdx, facIdx, status) {
  *            이건 무조건 0000-00-00 이렇게 값을 받아오는걸로 하자.
  */
  function initDispFacReserveTimeVer2() {
+    initCalendar();
     let facReserveTimes = document.querySelectorAll(".reserve-iter-list-time");
     let facReserveTimesLength = facReserveTimes.length;
     let calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+    //let calendar2023 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
     let resStartTimes = new Array();
     let resEndTimes = new Array();
     let curReservePageDate = document.querySelector(".reserve-cur-date-list").innerText; //0000-00-00 (FRI)
@@ -1434,6 +1439,8 @@ function initCalendar() {
     // day를 초기화 하고, 적절한 month의 day들을 가져온다.
     document.querySelector(".calendar-weekdays-ul").style.display = "none";
     document.querySelector(".calendar-select-month-ul").style.display = "none";
+    document.querySelector(".calendar-select-year-ul").style.display = "none";
+
     let calendarMainPopupDayUls = document.querySelectorAll(".calendar-days-ul");
     let dayUlsLen = calendarMainPopupDayUls.length;
     for ( let dayUlIdx = 0; dayUlIdx < dayUlsLen; dayUlIdx++ ) {
@@ -1457,6 +1464,7 @@ function closeCalendar() {
  *    현재 달력 날짜 배열 만들기 함수
  */
 function makeCalendarYear2022() {
+    initCalendar();
     let calendarMainPopupClose = document.querySelector(".calendar-popup-close");
     let calendarMainPopupPrevMonth = document.querySelector(".calendar-month-prev");
     let calendarMainPopupNextMonth = document.querySelector(".calendar-month-next");
@@ -1652,6 +1660,258 @@ function makeCalendarYear2022() {
 }
 
 /**
+ * 
+ *    달력 2023년 추가
+ */
+function makeCalendarYear2023() {
+    initCalendar();
+    let calendarMainPopupClose = document.querySelector(".calendar-popup-close");
+    let calendarMainPopupPrevMonth = document.querySelector(".calendar-month-prev");
+    let calendarMainPopupNextMonth = document.querySelector(".calendar-month-next");
+    let calendarMainPopupYearMonthText = document.querySelector(".calendar-text-year-month");
+    let calendarMainPopup = document.querySelector(".reserve-popup-calendar-main");
+    let calendarMainPopupMonthDiv = document.querySelector(".calendar-month");
+    let calendarMainPopupWeekUl = document.querySelector(".calendar-weekdays-ul");
+
+    let calendarMainPopupDayUlArr = new Array();
+    for (let monthIdx = 0; monthIdx < 12; monthIdx++) {
+        calendarMainPopupDayUlArr[monthIdx] = document.createElement("ul");
+        calendarMainPopupDayUlArr[monthIdx].className = "calendar-days-ul";
+        calendarMainPopupDayUlArr[monthIdx].style.display = "none";
+        calendarMainPopup.appendChild(calendarMainPopupDayUlArr[monthIdx]);
+    }
+
+    let calendarMainPopupDayUls = document.querySelectorAll(".calendar-days-ul");
+    let calendarSelectMonthUl = document.querySelector(".calendar-select-month-ul");
+    let calendarSelectMonthLi = document.querySelectorAll(".calendar-select-month-li");
+    let calendarSelectYearLi = document.querySelectorAll(".calendar-select-year-li");
+    let curYear = new Date().getFullYear();
+    let monthLiLength = calendarSelectMonthLi.length;
+    let yearLiLength = calendarSelectYearLi.length;
+    let calendarMainPopupHeightOri = calendarMainPopup.offsetHeight;
+    
+
+    // 달력 닫기
+    mouseOnOffStyleMake(calendarMainPopupClose, "#777");
+    calendarMainPopupClose.addEventListener("click", function() {
+        closeCalendar();
+    });
+
+    // Year-Month (ex 2022-11) 을 선택 시, Month를 선택할 수 있는 화면 제공
+    calendarMainPopupYearMonthText.addEventListener("click", function() {
+        if ( G_calendarStatus == E_calendarStatus.MONTH_CLICK ) {
+            initCalendar();
+            document.querySelector(".calendar-select-year-ul").style.display = "block";
+            calendarMainPopup.style.height = "80px";
+            G_calendarStatus = E_calendarStatus.NONE;
+            calendarSelectMonthUl.style.display = "none";
+        } else {
+            initCalendar();
+            calendarMainPopupYearMonthText.value = curYear;
+            calendarMainPopupYearMonthText.innerHTML = curYear;
+            calendarSelectMonthUl.style.display = "block";
+            calendarMainPopup.style.height = "80px";
+            G_calendarStatus = E_calendarStatus.MONTH_CLICK;
+        }
+    })
+
+    // Month를 선택할 때, 해당 Month의 Day를 보여준다.
+    for ( let monthIdx = 0; monthIdx < monthLiLength; monthIdx++ ) {
+        mouseOnOffStyleMake(calendarSelectMonthLi[monthIdx], "#777");
+        calendarSelectMonthLi[monthIdx].addEventListener("click", function() {
+            
+            initCalendar();
+
+            calendarMainPopupYearMonthText.value = curYear + "-" + ( monthIdx + 1 );
+            calendarMainPopupYearMonthText.innerHTML = curYear + "-" + ( monthIdx + 1 );
+            calendarMainPopupWeekUl.style.backgroundColor = "#1abc9c";
+            calendarMainPopupMonthDiv.style.backgroundColor = "#1abc9c";
+            calendarSelectMonthUl.style.display = "none";
+
+            calendarMainPopupWeekUl.style.display = "block";
+            calendarMainPopup.style.height = calendarMainPopupHeightOri + "px";
+            calendarMainPopupDayUls[monthIdx].style.display = "block";
+        });
+    }
+
+    // Year를 선택할 때, 해당 Year의 Month를 보여준다.
+    for ( let yearIdx = 0; yearIdx < yearLiLength; yearIdx++ ) {
+        mouseOnOffStyleMake(calendarSelectYearLi[yearIdx], "#777");
+        calendarSelectYearLi[yearIdx].addEventListener("click", function() {
+            switch ( yearIdx ) {
+                case 0:
+                    makeCalendarYear2021();
+                    break;
+                case 1:
+                    makeCalendarYear2022();
+                    break;
+                case 2:
+                    makeCalendarYear2023();
+                    break;
+                case 3:
+                    makeCalendarYear2024();
+                    break;
+                default:
+                    break;
+            }
+            // initCalendar();
+
+            // calendarMainPopupYearMonthText.value = ( E_calendarStatus.FIRST_YEAR + yearIdx );
+            // calendarMainPopupYearMonthText.innerHTML = ( E_calendarStatus.FIRST_YEAR + yearIdx );
+            // calendarSelectMonthUl.style.display = "block";
+            // calendarMainPopup.style.height = "80px";
+            // calendarMainPopupWeekUl.style.display = "none";
+            // calendarMainPopupMonthDiv.style.backgroundColor = "#1abc9c";
+            // calendarMainPopupWeekUl.style.backgroundColor = "#1abc9c";
+        });
+    }
+
+    calendarMainPopupPrevMonth.addEventListener("click", function() {
+        let curMoveMon = calendarMainPopupYearMonthText.value.split("-")[1];
+        let prevMoveMon = parseInt(curMoveMon) - 1;
+        if ( prevMoveMon <= 0 ) {
+            prevMoveMon = 12;
+        }
+        moveOpenCalendar(prevMoveMon);
+    });
+
+    calendarMainPopupNextMonth.addEventListener("click", function() {
+        let curMoveMon = calendarMainPopupYearMonthText.value.split("-")[1];
+        let nextMoveMon = parseInt(curMoveMon) + 1;
+        if ( nextMoveMon > 12 ) {
+            nextMoveMon = 1;
+        }        
+        moveOpenCalendar(nextMoveMon);
+    });
+
+    let curDate = new Date().getDate();         //현재 날짜
+    let curMon = new Date().getMonth();     //현재 월
+    let weekNum = 7;
+    
+    let calendarActive = document.createElement("span");
+    calendarActive.className = "calendar-active";
+
+    
+    //2023년의 1월 1일이 토요일이였습니다.
+    let monthFirstDayRow = 0; //일요일
+    let emptySpace = ' ';
+    let dayCnt = 0;
+    let curDayText = new Array("(SUN)", "(MON)", "(TUE)", "(WED)", "(THU)", "(FRI)", "(SAT)");
+    for ( let monthIdx = 0; monthIdx < 12; monthIdx++ ) {
+        
+        //dayIdx에서는 컬럼 숫자까지 증가해야합니다.
+        //1월  1일이 토요일, Col:0, Row:6 -> 1월2일이 일요일, Col:1, Row:0
+        //1월 29일은 토요일, Col:4, Row:6 -> 1월 30일은 일요일, Col:5, Row:0
+        //1월 31일은 월요일, Col:5, Row:1 -> 2월 1일은 화요일, Col:0, Row:2 (다음달)
+        
+        // TODO:
+        // 지금 7월달은 왜 배열이 안맞는지 모르겠네;;
+        // 달력 popup을 적절한 크기로 다 변경하기 -> 좀 빡세네, 근데 굳이 이렇게해야하나?? 오히려 그림배열이 이상해보이는느낌도 있고 흠..
+        // 결국 다음 달 , 저번 달 날짜를 보여줘야 깔끔하지만, 일단 이건 넘어가고 다른거 먼저 하자.
+
+        let curMonMaxCol = parseInt( ( G_calendar2022[monthIdx] ) / weekNum) + 1;
+        //let curMonMaxDay = curMonMaxCol * weekNum + monthFirstDayRow;
+        let curMonMaxDay = ( curMonMaxCol + 1 ) * weekNum;
+        let offsetCurMonRow = monthFirstDayRow;
+        let nextMonthStartWeekDataFlag = false;
+        
+        //for ( let dayIdx = 0; dayIdx < G_calendar2022[monthIdx] + offsetCurMonRow; dayIdx++ ) {
+        for ( let dayIdx = 0; dayIdx <= curMonMaxDay; dayIdx++ ) {
+            let calendarDay = document.createElement("li");
+            calendarDay.className = "calendar-day";
+
+            if ( dayIdx < offsetCurMonRow ) {
+                //이전 달 내용 (일단 공백)
+                calendarDay.innerHTML = emptySpace;
+                calendarDay.value = emptySpace;
+            } else if ( dayIdx >= offsetCurMonRow && dayIdx < offsetCurMonRow + G_calendar2022[monthIdx] ) {
+                //현재 달 내용
+                if ( ( curMon == monthIdx ) && ( curDate == dayIdx - offsetCurMonRow + 1 ) ) {
+                    calendarActive.value = curDate;
+                    calendarActive.innerHTML = curDate;
+                    calendarDay.appendChild(calendarActive);
+                    let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarActive.value ); 
+                    let curDayInfo = new Date(curYear, monthIdx, calendarActive.value).getDay();
+                    calendarDayClickEvent(calendarActive, "#777", curDateInfo, curDayText[curDayInfo]);                    
+                } else {
+                    calendarDay.innerHTML = dayIdx - offsetCurMonRow + 1;
+                    calendarDay.value = dayIdx - offsetCurMonRow + 1;
+                    let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarDay.value ); 
+                    let curDayInfo = new Date(curYear, monthIdx, calendarDay.value).getDay();
+                    calendarDayClickEvent(calendarDay, "#777", curDateInfo, curDayText[curDayInfo]);                    
+                }
+
+            } else {
+                //다음 달 내용 (일단 공백)
+                calendarDay.innerHTML = emptySpace;
+                calendarDay.value = emptySpace;
+
+                //처음 들어오는 위치에서 다음달 요일을 유추할 수 있습니다.
+                if ( !nextMonthStartWeekDataFlag ) {
+                    monthFirstDayRow = dayIdx % weekNum;
+                    nextMonthStartWeekDataFlag = true;
+                }
+            } 
+            
+            //mouseOnOffStyleMake(calendarDay, "#777");
+            //let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarDay.value ); 
+            //calendarDayClickEvent(calendarDay, "#777", curDateInfo, curDayText[ ( monthFirstDayRow + dayCnt ) % weekNum]);
+            calendarMainPopupDayUls[monthIdx].appendChild(calendarDay);
+            dayCnt++;
+        }
+        //calendarMainPopup.appendChild(calendarMainPopupDayUls[monthIdx]);
+        //calendarMainPopupDayUls[monthIdx].style.display = "none";
+    }
+    // 1.  아 이거,, prev day, next day도 만들어야함 (전달, 다음달 날짜도 알아야합니다.)
+    // 2.  현재 날짜에 active 클래스를 주어야함
+    // 3.  현재 날짜, 요일을 기준으로 달력을 만들어야함
+    // 4.  달력을 만들 때는 7일 단위로 만들어야함
+    // 5.  달력을 만들 때는 5~6주 단위로 만들어야함 (이전, 다음달 생각까지 하자)
+    // 6.  로우, 컬럼 배열을 이용하자
+    // 7.  로우 배열은 0부터 시작하고, 컬럼 배열은 1부터 시작한다
+    // 8.  calendarRow, calendarCol을 조합해서 현재 날짜를 알아내고, 그 날짜에 active 클래스를 주어야함
+    // 9.  현재 날짜에서 7일 단위로 Calander의 index를 채운다.
+    // 10. 각 달의 마지막 날짜를 알아내고, 넘어가는 경우는 next day로 (연한 회색으로 처리)
+    // 11. 마지막 칼럼(5) 의 위치를 row배열을 채운다.
+    // 12. 일단 1년단위까지만 만들어보자 (2022년 달력입니다.)
+
+    // ex) 1월 1일의 위치를 알아내고 해야하는건가?????
+    // ex) 2022-01-01은 토요일이였습니다.
+    // ex) 2022-01-01은 Col 0, Row 6에 위치합니다.
+    // 현재 날짜를 기준으로, 컬럼을 쪼개야함
+    
+    //[1월]
+    //            0    1   2    3    4    5    6 (Row)
+    //          sun  mon tue  wed  thu  fri  sat (Row)
+    //(Col) [0]                                 1 
+    //(Col) [1]  2     3    4    5    6    7    8                                    
+    //(Col) [2]  9    10   11   12   13   14   15                           
+    //(Col) [3]  16   17   18   19   20   21   22
+    //(Col) [4]  23   24   25   26   27   28   29
+    //(Col) [5]  30   31   1(n) 2(n) 3(n) 4(n) 5(n)
+
+    //[2월]
+    //            0      1     2    3    4    5    6 (Row)
+    //          sun    mon   tue  wed  thu  fri  sat (Row)
+    //(Col) [0] 30(p) 31(p)   1     2    3    4    5
+    //(Col) [1]  6     7     8     9    10    11    12
+    //(Col) [2]  13    14    15   16    17    18    19
+    //(Col) [3]  20    21    22   23    24    25    26
+    //(Col) [4]  27    28    1(n) 2(n) 3(n) 4(n) 5(n)
+    return;
+}
+
+function makeCalendarYear2021() {
+    console.log("makeCalendarYear2021 Call");
+    return;
+}
+
+function makeCalendarYear2024() {
+    console.log("makeCalendarYear2024 Call");
+    return;
+}
+
+/**
  *    오늘 날짜 가져오는 함수
  */
 function getNowDate() {
@@ -1783,7 +2043,10 @@ function thTimeHeaderInit() {
 
     // 윤년은 일단 버린다.
     // 2022년 달력 배열 만들기
-    makeCalendarYear2022();
+    //makeCalendarYear2022();
+
+    // 2023년 달력 배열 만들기
+    makeCalendarYear2023();
 
 
     // Grid 시간표 좌, 우 이동해주는 Div Btn
@@ -1939,8 +2202,10 @@ function thTimeHeaderInit() {
 
     // 윤년은 일단 버린다.
     // 2022년 달력 배열 만들기
-    makeCalendarYear2022();
+    //makeCalendarYear2022();
 
+    // 2023년 달력 배열 만들기
+    makeCalendarYear2023();
 
     // Grid 시간표 좌, 우 이동해주는 Div Btn
     // html 코드에서 table > tr > div 이런식으로 헀는데, 적용이 안 돼서 appendChild로 처리했습니다. ( display가 table이라서 설정을 못해주나? )
@@ -2922,7 +3187,7 @@ function initEventListener() {
     
     reserveStartTimeText.addEventListener("click", function() {
         G_calendarStatus = E_calendarStatus.START;
-    
+        reserveStartTimeText.style.left
         openCalendar(curMonth);
     });
 
