@@ -77,6 +77,7 @@ const E_reserveDivTableInfo = {
 }
 
 var G_calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+var G_calendarLeapYear = new Array(31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 var G_topOffsetIdx = 5;
 var G_gridColumnLength = 48;
 var G_calendarStatus = E_calendarStatus.NONE;
@@ -1697,23 +1698,26 @@ function makeCalendarYear2023() {
         closeCalendar();
     });
 
-    // Year-Month (ex 2022-11) 을 선택 시, Month를 선택할 수 있는 화면 제공
-    calendarMainPopupYearMonthText.addEventListener("click", function() {
-        if ( G_calendarStatus == E_calendarStatus.MONTH_CLICK ) {
-            initCalendar();
-            document.querySelector(".calendar-select-year-ul").style.display = "block";
-            calendarMainPopup.style.height = "80px";
-            G_calendarStatus = E_calendarStatus.NONE;
-            calendarSelectMonthUl.style.display = "none";
-        } else {
-            initCalendar();
-            calendarMainPopupYearMonthText.value = curYear;
-            calendarMainPopupYearMonthText.innerHTML = curYear;
-            calendarSelectMonthUl.style.display = "block";
-            calendarMainPopup.style.height = "80px";
-            G_calendarStatus = E_calendarStatus.MONTH_CLICK;
-        }
-    })
+    // 달력의 년도, 달 선택 창
+    monthSpanOpen(calendarMainPopupYearMonthText, calendarMainPopup, calendarSelectMonthUl, curYear);
+    
+    // // Year-Month (ex 2022-11) 을 선택 시, Month를 선택할 수 있는 화면 제공
+    // calendarMainPopupYearMonthText.addEventListener("click", function() {
+    //     if ( G_calendarStatus == E_calendarStatus.MONTH_CLICK ) {
+    //         initCalendar();
+    //         document.querySelector(".calendar-select-year-ul").style.display = "block";
+    //         calendarMainPopup.style.height = "80px";
+    //         G_calendarStatus = E_calendarStatus.NONE;
+    //         calendarSelectMonthUl.style.display = "none";
+    //     } else {
+    //         initCalendar();
+    //         calendarMainPopupYearMonthText.value = curYear;
+    //         calendarMainPopupYearMonthText.innerHTML = curYear;
+    //         calendarSelectMonthUl.style.display = "block";
+    //         calendarMainPopup.style.height = "80px";
+    //         G_calendarStatus = E_calendarStatus.MONTH_CLICK;
+    //     }
+    // })
 
     // Month를 선택할 때, 해당 Month의 Day를 보여준다.
     for ( let monthIdx = 0; monthIdx < monthLiLength; monthIdx++ ) {
@@ -1738,31 +1742,9 @@ function makeCalendarYear2023() {
     for ( let yearIdx = 0; yearIdx < yearLiLength; yearIdx++ ) {
         mouseOnOffStyleMake(calendarSelectYearLi[yearIdx], "#777");
         calendarSelectYearLi[yearIdx].addEventListener("click", function() {
-            switch ( yearIdx ) {
-                case 0:
-                    makeCalendarYear2021();
-                    break;
-                case 1:
-                    makeCalendarYear2022();
-                    break;
-                case 2:
-                    makeCalendarYear2023();
-                    break;
-                case 3:
-                    makeCalendarYear2024();
-                    break;
-                default:
-                    break;
-            }
-            // initCalendar();
-
-            // calendarMainPopupYearMonthText.value = ( E_calendarStatus.FIRST_YEAR + yearIdx );
-            // calendarMainPopupYearMonthText.innerHTML = ( E_calendarStatus.FIRST_YEAR + yearIdx );
-            // calendarSelectMonthUl.style.display = "block";
-            // calendarMainPopup.style.height = "80px";
-            // calendarMainPopupWeekUl.style.display = "none";
-            // calendarMainPopupMonthDiv.style.backgroundColor = "#1abc9c";
-            // calendarMainPopupWeekUl.style.backgroundColor = "#1abc9c";
+            let clickCurYear = parseInt(calendarSelectYearLi[yearIdx].textContent);
+            makeCalendarUlLi(clickCurYear);
+            monthSpanOpen(calendarSelectYearLi[yearIdx], calendarMainPopup, calendarSelectMonthUl, clickCurYear);
         });
     }
 
@@ -1783,85 +1765,87 @@ function makeCalendarYear2023() {
         }        
         moveOpenCalendar(nextMoveMon);
     });
-
-    let curDate = new Date().getDate();         //현재 날짜
-    let curMon = new Date().getMonth();     //현재 월
-    let weekNum = 7;
     
-    let calendarActive = document.createElement("span");
-    calendarActive.className = "calendar-active";
+    makeCalendarUlLi(2023);
+    
+    // let curDate = new Date().getDate();         //현재 날짜
+    // let curMon = new Date().getMonth();     //현재 월
+    // let weekNum = 7;
+    
+    // let calendarActive = document.createElement("span");
+    // calendarActive.className = "calendar-active";
 
     
-    //2023년의 1월 1일이 토요일이였습니다.
-    let monthFirstDayRow = 0; //일요일
-    let emptySpace = ' ';
-    let dayCnt = 0;
-    let curDayText = new Array("(SUN)", "(MON)", "(TUE)", "(WED)", "(THU)", "(FRI)", "(SAT)");
-    for ( let monthIdx = 0; monthIdx < 12; monthIdx++ ) {
+    // //2023년의 1월 1일이 토요일이였습니다.
+    // let monthFirstDayRow = 0; //일요일
+    // let emptySpace = ' ';
+    // let dayCnt = 0;
+    // let curDayText = new Array("(SUN)", "(MON)", "(TUE)", "(WED)", "(THU)", "(FRI)", "(SAT)");
+    // for ( let monthIdx = 0; monthIdx < 12; monthIdx++ ) {
         
-        //dayIdx에서는 컬럼 숫자까지 증가해야합니다.
-        //1월  1일이 토요일, Col:0, Row:6 -> 1월2일이 일요일, Col:1, Row:0
-        //1월 29일은 토요일, Col:4, Row:6 -> 1월 30일은 일요일, Col:5, Row:0
-        //1월 31일은 월요일, Col:5, Row:1 -> 2월 1일은 화요일, Col:0, Row:2 (다음달)
+    //     //dayIdx에서는 컬럼 숫자까지 증가해야합니다.
+    //     //1월  1일이 토요일, Col:0, Row:6 -> 1월2일이 일요일, Col:1, Row:0
+    //     //1월 29일은 토요일, Col:4, Row:6 -> 1월 30일은 일요일, Col:5, Row:0
+    //     //1월 31일은 월요일, Col:5, Row:1 -> 2월 1일은 화요일, Col:0, Row:2 (다음달)
         
-        // TODO:
-        // 지금 7월달은 왜 배열이 안맞는지 모르겠네;;
-        // 달력 popup을 적절한 크기로 다 변경하기 -> 좀 빡세네, 근데 굳이 이렇게해야하나?? 오히려 그림배열이 이상해보이는느낌도 있고 흠..
-        // 결국 다음 달 , 저번 달 날짜를 보여줘야 깔끔하지만, 일단 이건 넘어가고 다른거 먼저 하자.
+    //     // TODO:
+    //     // 지금 7월달은 왜 배열이 안맞는지 모르겠네;;
+    //     // 달력 popup을 적절한 크기로 다 변경하기 -> 좀 빡세네, 근데 굳이 이렇게해야하나?? 오히려 그림배열이 이상해보이는느낌도 있고 흠..
+    //     // 결국 다음 달 , 저번 달 날짜를 보여줘야 깔끔하지만, 일단 이건 넘어가고 다른거 먼저 하자.
 
-        let curMonMaxCol = parseInt( ( G_calendar2022[monthIdx] ) / weekNum) + 1;
-        //let curMonMaxDay = curMonMaxCol * weekNum + monthFirstDayRow;
-        let curMonMaxDay = ( curMonMaxCol + 1 ) * weekNum;
-        let offsetCurMonRow = monthFirstDayRow;
-        let nextMonthStartWeekDataFlag = false;
+    //     let curMonMaxCol = parseInt( ( G_calendar2022[monthIdx] ) / weekNum) + 1;
+    //     //let curMonMaxDay = curMonMaxCol * weekNum + monthFirstDayRow;
+    //     let curMonMaxDay = ( curMonMaxCol + 1 ) * weekNum;
+    //     let offsetCurMonRow = monthFirstDayRow;
+    //     let nextMonthStartWeekDataFlag = false;
         
-        //for ( let dayIdx = 0; dayIdx < G_calendar2022[monthIdx] + offsetCurMonRow; dayIdx++ ) {
-        for ( let dayIdx = 0; dayIdx <= curMonMaxDay; dayIdx++ ) {
-            let calendarDay = document.createElement("li");
-            calendarDay.className = "calendar-day";
+    //     //for ( let dayIdx = 0; dayIdx < G_calendar2022[monthIdx] + offsetCurMonRow; dayIdx++ ) {
+    //     for ( let dayIdx = 0; dayIdx <= curMonMaxDay; dayIdx++ ) {
+    //         let calendarDay = document.createElement("li");
+    //         calendarDay.className = "calendar-day";
 
-            if ( dayIdx < offsetCurMonRow ) {
-                //이전 달 내용 (일단 공백)
-                calendarDay.innerHTML = emptySpace;
-                calendarDay.value = emptySpace;
-            } else if ( dayIdx >= offsetCurMonRow && dayIdx < offsetCurMonRow + G_calendar2022[monthIdx] ) {
-                //현재 달 내용
-                if ( ( curMon == monthIdx ) && ( curDate == dayIdx - offsetCurMonRow + 1 ) ) {
-                    calendarActive.value = curDate;
-                    calendarActive.innerHTML = curDate;
-                    calendarDay.appendChild(calendarActive);
-                    let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarActive.value ); 
-                    let curDayInfo = new Date(curYear, monthIdx, calendarActive.value).getDay();
-                    calendarDayClickEvent(calendarActive, "#777", curDateInfo, curDayText[curDayInfo]);                    
-                } else {
-                    calendarDay.innerHTML = dayIdx - offsetCurMonRow + 1;
-                    calendarDay.value = dayIdx - offsetCurMonRow + 1;
-                    let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarDay.value ); 
-                    let curDayInfo = new Date(curYear, monthIdx, calendarDay.value).getDay();
-                    calendarDayClickEvent(calendarDay, "#777", curDateInfo, curDayText[curDayInfo]);                    
-                }
+    //         if ( dayIdx < offsetCurMonRow ) {
+    //             //이전 달 내용 (일단 공백)
+    //             calendarDay.innerHTML = emptySpace;
+    //             calendarDay.value = emptySpace;
+    //         } else if ( dayIdx >= offsetCurMonRow && dayIdx < offsetCurMonRow + G_calendar2022[monthIdx] ) {
+    //             //현재 달 내용
+    //             if ( ( curMon == monthIdx ) && ( curDate == dayIdx - offsetCurMonRow + 1 ) ) {
+    //                 calendarActive.value = curDate;
+    //                 calendarActive.innerHTML = curDate;
+    //                 calendarDay.appendChild(calendarActive);
+    //                 let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarActive.value ); 
+    //                 let curDayInfo = new Date(curYear, monthIdx, calendarActive.value).getDay();
+    //                 calendarDayClickEvent(calendarActive, "#777", curDateInfo, curDayText[curDayInfo]);                    
+    //             } else {
+    //                 calendarDay.innerHTML = dayIdx - offsetCurMonRow + 1;
+    //                 calendarDay.value = dayIdx - offsetCurMonRow + 1;
+    //                 let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarDay.value ); 
+    //                 let curDayInfo = new Date(curYear, monthIdx, calendarDay.value).getDay();
+    //                 calendarDayClickEvent(calendarDay, "#777", curDateInfo, curDayText[curDayInfo]);                    
+    //             }
 
-            } else {
-                //다음 달 내용 (일단 공백)
-                calendarDay.innerHTML = emptySpace;
-                calendarDay.value = emptySpace;
+    //         } else {
+    //             //다음 달 내용 (일단 공백)
+    //             calendarDay.innerHTML = emptySpace;
+    //             calendarDay.value = emptySpace;
 
-                //처음 들어오는 위치에서 다음달 요일을 유추할 수 있습니다.
-                if ( !nextMonthStartWeekDataFlag ) {
-                    monthFirstDayRow = dayIdx % weekNum;
-                    nextMonthStartWeekDataFlag = true;
-                }
-            } 
+    //             //처음 들어오는 위치에서 다음달 요일을 유추할 수 있습니다.
+    //             if ( !nextMonthStartWeekDataFlag ) {
+    //                 monthFirstDayRow = dayIdx % weekNum;
+    //                 nextMonthStartWeekDataFlag = true;
+    //             }
+    //         } 
             
-            //mouseOnOffStyleMake(calendarDay, "#777");
-            //let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarDay.value ); 
-            //calendarDayClickEvent(calendarDay, "#777", curDateInfo, curDayText[ ( monthFirstDayRow + dayCnt ) % weekNum]);
-            calendarMainPopupDayUls[monthIdx].appendChild(calendarDay);
-            dayCnt++;
-        }
-        //calendarMainPopup.appendChild(calendarMainPopupDayUls[monthIdx]);
-        //calendarMainPopupDayUls[monthIdx].style.display = "none";
-    }
+    //         //mouseOnOffStyleMake(calendarDay, "#777");
+    //         //let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarDay.value ); 
+    //         //calendarDayClickEvent(calendarDay, "#777", curDateInfo, curDayText[ ( monthFirstDayRow + dayCnt ) % weekNum]);
+    //         calendarMainPopupDayUls[monthIdx].appendChild(calendarDay);
+    //         dayCnt++;
+    //     }
+    //     //calendarMainPopup.appendChild(calendarMainPopupDayUls[monthIdx]);
+    //     //calendarMainPopupDayUls[monthIdx].style.display = "none";
+    // }
     // 1.  아 이거,, prev day, next day도 만들어야함 (전달, 다음달 날짜도 알아야합니다.)
     // 2.  현재 날짜에 active 클래스를 주어야함
     // 3.  현재 날짜, 요일을 기준으로 달력을 만들어야함
@@ -1898,6 +1882,154 @@ function makeCalendarYear2023() {
     //(Col) [2]  13    14    15   16    17    18    19
     //(Col) [3]  20    21    22   23    24    25    26
     //(Col) [4]  27    28    1(n) 2(n) 3(n) 4(n) 5(n)
+    return;
+}
+
+/**
+ *    년도별로, 달력을 생성해주는 함수
+ */
+function makeCalendarUlLi(yearSelect) {
+    
+    let calendarMainPopupDayUls = document.querySelectorAll(".calendar-days-ul");
+    calendarMainPopupDayUls.forEach( (calendarMainPopupDayUl) => {
+        clearChildNode(calendarMainPopupDayUl);
+    });
+
+    let curYear = new Date().getFullYear();
+    let curDate = new Date().getDate();         //현재 날짜
+    let curMon = new Date().getMonth();     //현재 월
+    let weekNum = 7;
+    let calendarActive = document.createElement("span");
+    calendarActive.className = "calendar-active";
+
+    let monthFirstDayRow = 0; //0:일요일, 1:월요일..
+
+    switch ( yearSelect ) {
+        case 2021:
+            monthFirstDayRow = 5;
+            break;
+        case 2022:
+            monthFirstDayRow = 6;
+            break;
+        case 2023:
+            monthFirstDayRow = 0; //일요일
+            break;
+        case 2024:
+            monthFirstDayRow = 1; //월요일
+            break;
+        default:
+            console.log (" YearSelect Error Call ");
+            break;
+    }
+
+    let curYearCalendarDays = [];
+    // yearSelect가 윤년인지 검사합니다.
+    let isLeapYear = false;
+    if ( yearSelect % 4 == 0 ) {
+        if ( yearSelect % 100 == 0 ) {
+            if ( yearSelect % 400 == 0 ) {
+                isLeapYear = true;
+            }
+        } else {
+            isLeapYear = true;
+        }
+    }
+    if ( isLeapYear ) {
+        curYearCalendarDays = [31,29,31,30,31,30,31,31,30,31,30,31];
+    } else {
+        curYearCalendarDays = [31,28,31,30,31,30,31,31,30,31,30,31];
+    }
+    //2023년의 1월 1일이 토요일이였습니다.
+    let curDayText = new Array("(SUN)", "(MON)", "(TUE)", "(WED)", "(THU)", "(FRI)", "(SAT)");
+    let emptySpace = ' ';
+    let dayCnt = 0;
+    for ( let monthIdx = 0; monthIdx < 12; monthIdx++ ) {
+        //dayIdx에서는 컬럼 숫자까지 증가해야합니다.
+        //1월  1일이 토요일, Col:0, Row:6 -> 1월2일이 일요일, Col:1, Row:0
+        //1월 29일은 토요일, Col:4, Row:6 -> 1월 30일은 일요일, Col:5, Row:0
+        //1월 31일은 월요일, Col:5, Row:1 -> 2월 1일은 화요일, Col:0, Row:2 (다음달)
+
+        let curMonMaxCol = parseInt( ( curYearCalendarDays[monthIdx] ) / weekNum) + 1;
+        let curMonMaxDay = ( curMonMaxCol + 1 ) * weekNum;
+        let offsetCurMonRow = monthFirstDayRow;
+        let nextMonthStartWeekDataFlag = false;
+        
+        for ( let dayIdx = 0; dayIdx <= curMonMaxDay; dayIdx++ ) {
+            let calendarDay = document.createElement("li");
+            calendarDay.className = "calendar-day";
+
+            if ( dayIdx < offsetCurMonRow ) {
+                //이전 달 내용 (일단 공백)
+                calendarDay.innerHTML = emptySpace;
+                calendarDay.value = emptySpace;
+            } else if ( dayIdx >= offsetCurMonRow && dayIdx < offsetCurMonRow + curYearCalendarDays[monthIdx] ) {
+                //현재 달 내용
+                if ( ( curMon == monthIdx ) && ( curDate == dayIdx - offsetCurMonRow + 1 ) ) {
+                    calendarActive.value = curDate;
+                    calendarActive.innerHTML = curDate;
+                    calendarDay.appendChild(calendarActive);
+                    let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarActive.value ); 
+                    let curDayInfo = new Date(curYear, monthIdx, calendarActive.value).getDay();
+                    calendarDayClickEvent(calendarActive, "#777", curDateInfo, curDayText[curDayInfo]);                    
+                } else {
+                    calendarDay.innerHTML = dayIdx - offsetCurMonRow + 1;
+                    calendarDay.value = dayIdx - offsetCurMonRow + 1;
+                    let curDateInfo = String( new Date().getFullYear() + "-" + ( monthIdx + 1 ) + "-" + calendarDay.value ); 
+                    let curDayInfo = new Date(curYear, monthIdx, calendarDay.value).getDay();
+                    calendarDayClickEvent(calendarDay, "#777", curDateInfo, curDayText[curDayInfo]);                    
+                }
+
+            } else {
+                //다음 달 내용 (일단 공백)
+                calendarDay.innerHTML = emptySpace;
+                calendarDay.value = emptySpace;
+
+                //처음 들어오는 위치에서 다음달 요일을 유추할 수 있습니다.
+                if ( !nextMonthStartWeekDataFlag ) {
+                    monthFirstDayRow = dayIdx % weekNum;
+                    nextMonthStartWeekDataFlag = true;
+                }
+            } 
+            calendarMainPopupDayUls[monthIdx].appendChild(calendarDay);
+            dayCnt++;
+        }
+    }
+    return;    
+}
+
+
+/**
+ *    달력의 년도, 달 오픈하는 Div    
+ */
+function monthSpanOpen(calendarMainPopupYearMonthText, calendarMainPopup, calendarSelectMonthUl, curYear) {
+    // Year-Month (ex 2022-11) 을 선택 시, Month를 선택할 수 있는 화면 제공
+    //let curYear = new Date().getFullYear();
+    calendarMainPopupYearMonthText.addEventListener("click", function() {
+        if ( G_calendarStatus == E_calendarStatus.MONTH_CLICK ) {
+            initCalendar();
+            document.querySelector(".calendar-select-year-ul").style.display = "block";
+            calendarMainPopup.style.height = "80px";
+            G_calendarStatus = E_calendarStatus.NONE;
+            calendarSelectMonthUl.style.display = "none";
+        } else {
+            initCalendar();
+            document.querySelector(".calendar-select-year-ul").style.display = "none";
+            calendarMainPopupYearMonthText.value = curYear;
+            calendarMainPopupYearMonthText.innerHTML = curYear;
+            calendarSelectMonthUl.style.display = "block";
+            calendarMainPopup.style.height = "80px";
+            G_calendarStatus = E_calendarStatus.MONTH_CLICK;
+        }
+    });
+}
+
+/**
+ *    자식 노드 삭제하는 함수
+ */
+function clearChildNode(node) {
+    while ( node.hasChildNodes() ) {
+        node.removeChild(node.firstChild);
+    }
     return;
 }
 
