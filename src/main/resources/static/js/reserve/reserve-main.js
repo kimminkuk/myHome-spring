@@ -76,6 +76,13 @@ const E_reserveDivTableInfo = {
     RESERVE_POPUP_STYLE_HEIGHT : 170
 }
 
+const E_reservePoupStatus = {
+    NONE : 0,
+    OPEN : 1,
+    START_TIME : 2,
+    END_TIME : 3
+}
+
 var G_calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 var G_calendarLeapYear = new Array(31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 var G_topOffsetIdx = 5;
@@ -99,6 +106,7 @@ var G_reserveSpanBtnPos = new Array(0, 80, 80);
 var G_reserveCurDivXYpos = new Array(0, 0);
 var G_reserveTablePosInfo = new Array(0, 0, 0, 0, 0, 0);
 
+var G_reservePopupStatus = E_reservePoupStatus.NONE;
 var G_curYear = new Date().getFullYear();
 var G_reserveDivLeftRightPos = new Array(0, 0);
 
@@ -518,6 +526,13 @@ function reserveGridMakeAndClear(startDivIdx, endDivIdx, facIdx, status) {
     let facReserveTimes = document.querySelectorAll(".reserve-iter-list-time");
     let facReserveTimesLength = facReserveTimes.length;
     let calendar2022 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+    if ( G_curYear !== undefined ) {
+        // 윤년 검사
+        if ( G_curYear % 4 == 0 && G_curYear % 100 != 0 || G_curYear % 400 == 0 ) {
+            calendar2022[1] = 29;
+        }
+        
+    }
     //let calendar2023 = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
     let resStartTimes = new Array();
     let resEndTimes = new Array();
@@ -1035,18 +1050,29 @@ function calendarDayClickEvent(curObject, oriColor, curDateInfo, curDayText) {
             let reserveStartDate = document.querySelector(".reserve-date-start-text");
             reserveStartDate.innerHTML = curDateInfo;
             reserveStartDate.value = curDateInfo;
+            //G_reservePopupStatus = E_reservePoupStatus.OPEN;
             
         } else if ( calendarStatus == E_calendarStatus.END ) {
             let reserveEndDate = document.querySelector(".reserve-date-end-text");
             reserveEndDate.innerHTML = curDateInfo;
             reserveEndDate.value = curDateInfo;
-            
-        } else if ( calendarStatus == E_calendarStatus.MAIN || calendarStatus == E_calendarStatus.MONTH_CLICK) {
-            let reserveMainPageCurDate = document.querySelector(".reserve-cur-date-list");
-            reserveMainPageCurDate.innerHTML = curDateInfo + ' ' + curDayText;
-            reserveMainPageCurDate.innerText = curDateInfo + ' ' + curDayText;
-            G_curYear = parseInt(curDateInfo.substring(0, 4));
+            //G_reservePopupStatus = E_reservePoupStatus.OPEN;
 
+        } else if ( calendarStatus == E_calendarStatus.MAIN || calendarStatus == E_calendarStatus.MONTH_CLICK) {
+            if ( G_reservePopupStatus == E_reservePoupStatus.START_TIME ) {
+                let reserveStartDate = document.querySelector(".reserve-date-start-text");
+                reserveStartDate.innerHTML = curDateInfo;
+                reserveStartDate.value = curDateInfo;
+            } else if ( G_reservePopupStatus == E_reservePoupStatus.END_TIME ) {
+                let reserveEndDate = document.querySelector(".reserve-date-end-text");
+                reserveEndDate.innerHTML = curDateInfo;
+                reserveEndDate.value = curDateInfo;
+            } else {
+                let reserveMainPageCurDate = document.querySelector(".reserve-cur-date-list");
+                reserveMainPageCurDate.innerHTML = curDateInfo + ' ' + curDayText;
+                reserveMainPageCurDate.innerText = curDateInfo + ' ' + curDayText;
+            }
+            G_curYear = parseInt(curDateInfo.substring(0, 4));
             // 달력에서 날짜 선택하면, 해당 날짜의 예약grid를 보여준다.
             initDispFacReserveTimeVer2();
         }
@@ -3094,6 +3120,11 @@ function reserveAllSettingClose() {
     G_curReserveDirectionStatus = E_curMouseEventStatus.NONE;    
     G_curReserveDivIdx = 0;
     G_curReserveLeftRngCheck = E_reserveDivTableInfo.NONE_RNG_OUT;
+    G_reservePopupStatus = E_reservePoupStatus.NONE;
+    document.querySelector(".reserve-date-start-text").value = new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate();
+    document.querySelector(".reserve-date-start-text").innerHTML = new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate();
+    document.querySelector(".reserve-date-end-text").value = new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate();
+    document.querySelector(".reserve-date-end-text").innerHTML = new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate();
     styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer", "none", E_reserveDivChild.MAIN);
     styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-left", "none", E_reserveDivChild.LEFT_BTN);
     styleNoneOrBlockElementByQuerySelectorAll(".div-reserve-span-pointer-right", "none", E_reserveDivChild.RIGHT_BTN);
@@ -3181,12 +3212,13 @@ function initEventListener() {
     
     reserveStartTimeText.addEventListener("click", function() {
         G_calendarStatus = E_calendarStatus.START;
-        reserveStartTimeText.style.left
+        G_reservePopupStatus = E_reservePoupStatus.START_TIME;
         openCalendar(curMonth);
     });
 
     reserveEndTimeText.addEventListener("click", function() {
         G_calendarStatus = E_calendarStatus.END;
+        G_reservePopupStatus = E_reservePoupStatus.END_TIME;
         openCalendar(curMonth);
     });
     mouseOnOffStyleMake(reserveStartTimeText, "#000000");
