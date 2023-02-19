@@ -101,7 +101,8 @@
 
 2. H2 Database
     - localhost로 사용 중 ( 예약페이지 )
- 
+    - 실행위치: /Users/mkkim/Downloads/h2/bin
+    
 # REDIS Command
 1. redis-server : redis server 실행
 2. redis-cli ping :PONG 출력되면 Redis Server 실행 중
