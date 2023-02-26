@@ -36,6 +36,85 @@ dependencies {
 	implementation 'org.json:json:20220924'
 }
 
+def webappDir = "$projectDir/src/main/resources/templates/fronend-react-test"
+//def webappDir = "$projectDir/src/main/resources/templates"
+def webappDir2 = "$projectDir/src/main/resources/templates/react-game"
+
+sourceSets {
+	main {
+		resources {
+//			srcDirs = [
+//						"$webappDir/build",
+//					    "$projectDir/src/main/resources"
+//			]
+			srcDirs = [
+						"$webappDir/build",
+						"$webappDir2/build",
+					    "$projectDir/src/main/resources"
+			]
+		}
+	}
+}
+
+
+processResources {
+	dependsOn "buildReact"
+}
+
+task buildReact(type: Exec) {
+	dependsOn "installReact"
+	workingDir "$webappDir"
+	inputs.dir "$webappDir"
+	group = BasePlugin.BUILD_GROUP
+	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+		commandLine "npm.cmd", "run-script", "build"
+	} else {
+		commandLine "npm", "run-script", "build"
+	}
+}
+
+task installReact(type: Exec) {
+	workingDir "$webappDir"
+	inputs.dir "$webappDir"
+	group = BasePlugin.BUILD_GROUP
+	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+		commandLine "npm.cmd", "audit", "fix"
+		commandLine 'npm.cmd', 'install'
+	} else {
+		commandLine "npm", "audit", "fix"
+		commandLine 'npm', 'install'
+	}
+}
+
+task buildReact2(type: Exec) {
+	dependsOn "installReact"
+	workingDir "$webappDir2"
+	inputs.dir "$webappDir2"
+	group = BasePlugin.BUILD_GROUP
+	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+		commandLine "npm.cmd", "run-script", "build"
+	} else {
+		commandLine "npm", "run-script", "build"
+	}
+}
+
+task installReact2(type: Exec) {
+	workingDir "$webappDir2"
+	inputs.dir "$webappDir2"
+	group = BasePlugin.BUILD_GROUP
+	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+		commandLine "npm.cmd", "audit", "fix"
+		commandLine 'npm.cmd', 'install'
+	} else {
+		commandLine "npm", "audit", "fix"
+		commandLine 'npm', 'install'
+	}
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+processResources {
+	duplicatesStrategy = 'include'
 }
