@@ -36,17 +36,25 @@ dependencies {
 	implementation 'org.json:json:20220924'
 }
 
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+
+/*
+ *    React Build, Install
+ *    마무리 테스트 할 때만..
+ *    빌드 시간이 너무 오래걸립니다.
+ *    build2개 2~3분정도 걸림..
+ *    이거 끄면, 꺼도 2분???? 미친
+ /
+/*
 def webappDir = "$projectDir/src/main/resources/templates/fronend-react-test"
-//def webappDir = "$projectDir/src/main/resources/templates"
 def webappDir2 = "$projectDir/src/main/resources/templates/react-game"
 
 sourceSets {
 	main {
 		resources {
-//			srcDirs = [
-//						"$webappDir/build",
-//					    "$projectDir/src/main/resources"
-//			]
 			srcDirs = [
 						"$webappDir/build",
 						"$webappDir2/build",
@@ -56,9 +64,9 @@ sourceSets {
 	}
 }
 
-
 processResources {
-	dependsOn "buildReact"
+	//dependsOn "buildReact"
+	dependsOn("buildReact", "buildReact2")
 }
 
 task buildReact(type: Exec) {
@@ -87,7 +95,7 @@ task installReact(type: Exec) {
 }
 
 task buildReact2(type: Exec) {
-	dependsOn "installReact"
+	dependsOn "installReact2"
 	workingDir "$webappDir2"
 	inputs.dir "$webappDir2"
 	group = BasePlugin.BUILD_GROUP
@@ -111,10 +119,7 @@ task installReact2(type: Exec) {
 	}
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
 processResources {
 	duplicatesStrategy = 'include'
 }
+*/
